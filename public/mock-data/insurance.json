@@ -1,0 +1,30 @@
+[
+  {
+    "id": "1",
+    "vehicleId": "1",
+    "provider": "SafeDrive Insurance",
+    "policyNumber": "POL123456",
+    "startDate": "2023-01-01",
+    "endDate": "2023-12-31",
+    "coverage": "Comprehensive",
+    "premium": 1200,
+    "status": "active",
+    "documents": [],
+    "createdAt": "2023-01-01",
+    "updatedAt": "2023-01-01"
+  },
+  {
+    "id": "2",
+    "vehicleId": "2",
+    "provider": "SecureAuto Insurance",
+    "policyNumber": "POL789012",
+    "startDate": "2023-02-01",
+    "endDate": "2023-12-31",
+    "coverage": "Comprehensive",
+    "premium": 1500,
+    "status": "active",
+    "documents": [],
+    "createdAt": "2023-02-01",
+    "updatedAt": "2023-02-01"
+  }
+]

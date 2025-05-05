@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "vehicleId": 1,
+    "type": "preventive",
+    "description": "Regular oil change",
+    "date": "2023-01-15",
+    "cost": 50,
+    "status": "completed",
+    "provider": "AutoCare",
+    "documents": [],
+    "notes": "Next service due in 6 months",
+    "createdAt": "2023-01-15",
+    "updatedAt": "2023-01-15"
+  },
+  {
+    "id": 2,
+    "vehicleId": 2,
+    "type": "inspection",
+    "description": "Annual safety inspection",
+    "date": "2023-02-20",
+    "cost": 75,
+    "status": "completed",
+    "provider": "SafetyFirst",
+    "documents": [],
+    "notes": "All systems checked",
+    "createdAt": "2023-02-20",
+    "updatedAt": "2023-02-20"
+  }
+]

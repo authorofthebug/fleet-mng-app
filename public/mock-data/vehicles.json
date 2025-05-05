@@ -1,0 +1,24 @@
+[
+  {
+    "id": 1,
+    "brand": "Toyota",
+    "model": "Camry",
+    "licensePlate": "ABC123",
+    "status": "active",
+    "type": "Sedan",
+    "year": 2020,
+    "lastMaintenance": "2023-01-15",
+    "nextMaintenance": "2023-07-15"
+  },
+  {
+    "id": 2,
+    "brand": "Honda",
+    "model": "CR-V",
+    "licensePlate": "XYZ789",
+    "status": "active",
+    "type": "SUV",
+    "year": 2021,
+    "lastMaintenance": "2023-02-20",
+    "nextMaintenance": "2023-08-20"
+  }
+]

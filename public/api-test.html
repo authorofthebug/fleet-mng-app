@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    button {
+      padding: 10px 15px;
+      margin: 5px;
+      cursor: pointer;
+    }
+    pre {
+      background-color: #f5f5f5;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>API Test</h1>
+  
+  <div>
+    <h2>Test API Endpoints</h2>
+    <button id="testRoles">Test /api/roles</button>
+    <button id="testEmployees">Test /api/employees</button>
+    <button id="testCompanies">Test /api/companies</button>
+    <button id="testDirect">Test Direct URL</button>
+  </div>
+  
+  <div>
+    <h3>Response:</h3>
+    <pre id="response">No response yet</pre>
+  </div>
+  
+  <script>
+    const API_BASE_URL = 'http://localhost:8080';
+    
+    async function fetchAPI(endpoint) {
+      const responseElement = document.getElementById('response');
+      responseElement.textContent = `Fetching ${endpoint}...`;
+      
+      try {
+        const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          credentials: 'include',
+          mode: 'cors'
+        });
+        
+        const data = await response.json();
+        responseElement.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        responseElement.textContent = `Error: ${error.message}`;
+      }
+    }
+    
+    document.getElementById('testRoles').addEventListener('click', () => {
+      fetchAPI('/api/roles');
+    });
+    
+    document.getElementById('testEmployees').addEventListener('click', () => {
+      fetchAPI('/api/employees');
+    });
+    
+    document.getElementById('testCompanies').addEventListener('click', () => {
+      fetchAPI('/api/companies');
+    });
+    
+    document.getElementById('testDirect').addEventListener('click', () => {
+      fetchAPI('/');
+    });
+  </script>
+</body>
+</html> 

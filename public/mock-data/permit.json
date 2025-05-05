@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "vehicleId": 1,
+    "type": "registration",
+    "number": "REG123456",
+    "issueDate": "2023-01-01",
+    "expiryDate": "2023-12-31",
+    "status": "active",
+    "issuingAuthority": "DMV",
+    "documents": [],
+    "notes": "Annual registration",
+    "createdAt": "2023-01-01",
+    "updatedAt": "2023-01-01"
+  },
+  {
+    "id": 2,
+    "vehicleId": 2,
+    "type": "registration",
+    "number": "REG789012",
+    "issueDate": "2023-02-01",
+    "expiryDate": "2023-12-31",
+    "status": "active",
+    "issuingAuthority": "DMV",
+    "documents": [],
+    "notes": "Annual registration",
+    "createdAt": "2023-02-01",
+    "updatedAt": "2023-02-01"
+  }
+]

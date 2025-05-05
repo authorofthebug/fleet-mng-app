@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Standard Rate",
+    "description": "Standard hourly rate",
+    "rate": 50,
+    "currency": "USD",
+    "type": "hourly",
+    "status": "active",
+    "startDate": "2023-01-01",
+    "endDate": "2023-12-31",
+    "conditions": "Minimum 1 hour",
+    "createdAt": "2023-01-01",
+    "updatedAt": "2023-01-01"
+  },
+  {
+    "id": 2,
+    "name": "Premium Rate",
+    "description": "Premium daily rate",
+    "rate": 200,
+    "currency": "USD",
+    "type": "daily",
+    "status": "active",
+    "startDate": "2023-01-01",
+    "endDate": "2023-12-31",
+    "conditions": "Minimum 1 day",
+    "createdAt": "2023-01-01",
+    "updatedAt": "2023-01-01"
+  }
+]

@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "name": "Client A",
+    "email": "clienta@example.com",
+    "phone": "111-222-3333",
+    "address": "789 Pine St",
+    "company": "Acme Corp",
+    "status": "active",
+    "type": "corporate",
+    "notes": "VIP client",
+    "createdAt": "2023-01-01",
+    "updatedAt": "2023-01-01"
+  },
+  {
+    "id": 2,
+    "name": "Client B",
+    "email": "clientb@example.com",
+    "phone": "444-555-6666",
+    "address": "321 Elm St",
+    "company": "Globex Inc",
+    "status": "active",
+    "type": "individual",
+    "notes": "New client",
+    "createdAt": "2023-02-01",
+    "updatedAt": "2023-02-01"
+  }
+]
