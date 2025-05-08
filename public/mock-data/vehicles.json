@@ -6,7 +6,11 @@
     "licensePlate": "ABC123",
     "status": "active",
     "type": "Sedan",
+    "make": "Toyota",
+    "plateNumber": "ABC123",
     "year": 2020,
+    "color": "Silver",
+    "notes": "Regular maintenance",
     "lastMaintenance": "2023-01-15",
     "nextMaintenance": "2023-07-15"
   },
@@ -17,8 +21,27 @@
     "licensePlate": "XYZ789",
     "status": "active",
     "type": "SUV",
+    "make": "Honda",
+    "plateNumber": "XYZ789",
     "year": 2021,
+    "color": "Blue",
+    "notes": "New tires installed",
     "lastMaintenance": "2023-02-20",
     "nextMaintenance": "2023-08-20"
+  },
+  {
+    "id": 3,
+    "brand": "Tesla",
+    "model": "Model 3",
+    "licensePlate": "JKL012",
+    "status": "NEW",
+    "type": "Electric",
+    "make": "Tesla",
+    "plateNumber": "JKL012",
+    "year": 2024,
+    "color": "Red",
+    "notes": "Just added to fleet, pending first inspection",
+    "lastMaintenance": "",
+    "nextMaintenance": ""
   }
 ]

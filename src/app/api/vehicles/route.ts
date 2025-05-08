@@ -27,32 +27,30 @@ async function verifyToken(request: NextRequest) {
 
 // GET /api/vehicles - Get all vehicles
 export async function GET(request: NextRequest) {
-  const user = await verifyToken(request);
-  
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
-    // Here you would typically fetch vehicles from your database
-    // For now, we'll return mock data
-    const vehicles = [
-      {
-        id: '1',
-        plate: 'ABC123',
-        model: 'Toyota Camry',
-        year: '2020',
-        color: 'Silver',
-        vin: '1HGCM82633A123456',
-      },
-      // Add more mock vehicles as needed
-    ];
+    console.log('API route: Fetching vehicles from backend');
+    const response = await fetch('http://localhost:8385/api/vehicles', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      }
+    });
 
-    return NextResponse.json(vehicles);
+    console.log('API route: Backend response status:', response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API route: Error response from backend:', errorText);
+      throw new Error(`Failed to fetch vehicles: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    console.log('API route: Successfully fetched vehicles data');
+    return NextResponse.json(data);
   } catch (error) {
-    console.log(error);
+    console.error('API route: Error fetching vehicles:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch vehicles' },
+      { error: error instanceof Error ? error.message : 'Failed to fetch vehicles' },
       { status: 500 }
     );
   }
@@ -60,39 +58,41 @@ export async function GET(request: NextRequest) {
 
 // POST /api/vehicles - Create a new vehicle
 export async function POST(request: NextRequest) {
-  const user = await verifyToken(request);
-  
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
     const body = await request.json();
-    
-    // Validate required fields
-    const requiredFields = ['plate', 'model', 'year', 'color', 'vin'];
-    for (const field of requiredFields) {
-      if (!body[field]) {
-        return NextResponse.json(
-          { error: `Missing required field: ${field}` },
-          { status: 400 }
-        );
+    console.log('API route: Creating vehicle with data:', body);
+
+    const response = await fetch('http://localhost:8385/api/vehicles', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body)
+    });
+
+    console.log('API route: Backend response status for vehicle creation:', response.status);
+
+    if (!response.ok) {
+      let errorMessage = 'Failed to create vehicle';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch (parseError) {
+        const errorText = await response.text();
+        console.error('API route: Error response from backend (not JSON):', errorText);
+        errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
       }
+      throw new Error(errorMessage);
     }
 
-    // Here you would typically save the vehicle to your database
-    // For now, we'll just return the created vehicle with a mock ID
-    const newVehicle = {
-      id: Date.now().toString(),
-      ...body,
-    };
-
-    return NextResponse.json(newVehicle, { status: 201 });
+    const data = await response.json();
+    console.log('API route: Successfully created vehicle:', data);
+    return NextResponse.json(data, { status: 201 });
   } catch (error) {
-    console.log(error);
+    console.error('API route: Error creating vehicle:', error);
     return NextResponse.json(
-      { error: 'Failed to create vehicle' },
+      { error: error instanceof Error ? error.message : 'Failed to create vehicle' },
       { status: 500 }
     );
   }
-} 
+}

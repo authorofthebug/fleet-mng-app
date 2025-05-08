@@ -117,7 +117,7 @@ export default function DataTable<T extends { id: number | string }>({
                 <tr key={item.id} className="hover:bg-gray-50">
                   {columns.map((column) => (
                     <td
-                      key={String(column.key)}
+                      key={`${item.id}-${String(column.key)}`}
                       className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
                     >
                       {column.render
@@ -180,4 +180,4 @@ export default function DataTable<T extends { id: number | string }>({
       </div>
     </div>
   );
-} 
+}

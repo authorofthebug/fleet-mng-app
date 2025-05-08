@@ -17,7 +17,7 @@ export default function ApiTestPage() {
       setResult('');
       setServerInfo('');
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8385';
       console.log('Testing server connection to:', baseUrl);
 
       // Test server connection
@@ -66,7 +66,7 @@ export default function ApiTestPage() {
       setError(null);
       setResult('');
       
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8385';
       const fullUrl = `${baseUrl}${endpoint}`;
       console.log('Testing endpoint:', fullUrl);
 

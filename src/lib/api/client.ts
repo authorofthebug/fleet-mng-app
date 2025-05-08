@@ -1,28 +1,26 @@
 import { get, post, put, del } from './base';
 
 export interface Client {
-  id: number;
+  id: string;
   name: string;
   email: string;
   phone: string;
   address: string;
-  company: string;
-  status: 'active' | 'inactive';
-  type: 'individual' | 'corporate';
+  taxId: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
   notes: string;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 const clientService = {
   getAll: () => get<Client[]>('/api/clients'),
-  getById: (id: number) => get<Client>(`/api/clients/${id}`),
+  getById: (id: string) => get<Client>(`/api/clients/${id}`),
   create: (data: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>) => post<Client>('/api/clients', data),
-  update: (id: number, data: Partial<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>) => 
+  update: (id: string, data: Partial<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>) =>
     put<Client>(`/api/clients/${id}`, data),
-  delete: (id: number) => del(`/api/clients/${id}`),
-  getByStatus: (status: Client['status']) => get<Client[]>(`/api/clients/status/${status}`),
-  getByType: (type: Client['type']) => get<Client[]>(`/api/clients/type/${type}`)
+  delete: (id: string) => del(`/api/clients/${id}`),
+  getByStatus: (status: Client['status']) => get<Client[]>(`/api/clients/status/${status}`)
 };
 
-export { clientService }; 
+export { clientService };

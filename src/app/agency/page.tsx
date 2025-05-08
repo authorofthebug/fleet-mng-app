@@ -30,7 +30,7 @@ export default function AgencyPage() {
 /*
   const loadCompanies = async () => {
     try {
-      const response = await fetch('http://localhost:8080/api/companies', {
+      const response = await fetch('http://localhost:8385/api/companies', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

@@ -26,7 +26,7 @@
 </head>
 <body>
   <h1>API Test</h1>
-  
+
   <div>
     <h2>Test API Endpoints</h2>
     <button id="testRoles">Test /api/roles</button>
@@ -34,19 +34,19 @@
     <button id="testCompanies">Test /api/companies</button>
     <button id="testDirect">Test Direct URL</button>
   </div>
-  
+
   <div>
     <h3>Response:</h3>
     <pre id="response">No response yet</pre>
   </div>
-  
+
   <script>
-    const API_BASE_URL = 'http://localhost:8080';
-    
+    const API_BASE_URL = 'http://localhost:8385';
+
     async function fetchAPI(endpoint) {
       const responseElement = document.getElementById('response');
       responseElement.textContent = `Fetching ${endpoint}...`;
-      
+
       try {
         const response = await fetch(`${API_BASE_URL}${endpoint}`, {
           method: 'GET',
@@ -57,29 +57,29 @@
           credentials: 'include',
           mode: 'cors'
         });
-        
+
         const data = await response.json();
         responseElement.textContent = JSON.stringify(data, null, 2);
       } catch (error) {
         responseElement.textContent = `Error: ${error.message}`;
       }
     }
-    
+
     document.getElementById('testRoles').addEventListener('click', () => {
       fetchAPI('/api/roles');
     });
-    
+
     document.getElementById('testEmployees').addEventListener('click', () => {
       fetchAPI('/api/employees');
     });
-    
+
     document.getElementById('testCompanies').addEventListener('click', () => {
       fetchAPI('/api/companies');
     });
-    
+
     document.getElementById('testDirect').addEventListener('click', () => {
       fetchAPI('/');
     });
   </script>
 </body>
-</html> 
+</html>

@@ -149,7 +149,7 @@
                 <div id="request" class="response">No request details yet</div>
             </div>
         </div>
-        
+
         <div class="panel">
             <h2>Common Endpoints</h2>
             <div>
@@ -167,7 +167,7 @@
             <h3>Server Configuration</h3>
             <div>
                 <label>API Base URL:</label>
-                <input type="text" id="baseUrl" class="endpoint-input" value="http://localhost:8080">
+                <input type="text" id="baseUrl" class="endpoint-input" value="http://localhost:8385">
                 <button class="button" onclick="updateBaseUrl()">Update</button>
             </div>
             <div>
@@ -190,23 +190,23 @@
     </div>
 
     <script>
-        const API_BASE_URL = 'http://localhost:8080';
+        const API_BASE_URL = 'http://localhost:8385';
         let currentEndpoint = '/api/roles';
-        
+
         // Check server status
         async function checkServerStatus() {
             const statusIndicator = document.getElementById('serverStatus');
             const statusText = document.getElementById('serverStatusText');
-            
+
             statusIndicator.className = 'status-indicator status-unknown';
             statusText.textContent = 'Checking server status...';
-            
+
             try {
                 const response = await fetch(`${API_BASE_URL}/api/health`, {
                     method: 'GET',
                     mode: 'cors'
                 });
-                
+
                 if (response.ok) {
                     statusIndicator.className = 'status-indicator status-online';
                     statusText.textContent = 'Server is online';
@@ -220,39 +220,39 @@
                 console.error('Server status check failed:', error);
             }
         }
-        
+
         // Update base URL
         function updateBaseUrl() {
             const baseUrlInput = document.getElementById('baseUrl');
             API_BASE_URL = baseUrlInput.value;
             console.log('Updated API base URL:', API_BASE_URL);
         }
-        
+
         // Set endpoint
         function setEndpoint(endpoint) {
             document.getElementById('endpoint').value = endpoint;
             currentEndpoint = endpoint;
         }
-        
+
         // Show tab
         function showTab(tabName) {
             // Hide all tabs
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             // Deactivate all tab buttons
             document.querySelectorAll('.tab').forEach(tab => {
                 tab.classList.remove('active');
             });
-            
+
             // Show selected tab
             document.getElementById(`${tabName}Tab`).classList.add('active');
-            
+
             // Activate selected tab button
             document.querySelector(`.tab[onclick="showTab('${tabName}')"]`).classList.add('active');
         }
-        
+
         // Test endpoint
         async function testEndpoint(method) {
             const endpointInput = document.getElementById('endpoint');
@@ -260,16 +260,16 @@
             const responseDiv = document.getElementById('response');
             const headersDiv = document.getElementById('headers');
             const requestDiv = document.getElementById('request');
-            
+
             const credentials = document.getElementById('credentials').value;
             const mode = document.getElementById('mode').value;
-            
+
             responseDiv.textContent = 'Loading...';
             headersDiv.textContent = 'Loading...';
             requestDiv.textContent = 'Loading...';
-            
+
             const url = `${API_BASE_URL}${endpoint}`;
-            
+
             // Log request details
             const requestDetails = {
                 url,
@@ -281,9 +281,9 @@
                     'Accept': 'application/json'
                 }
             };
-            
+
             requestDiv.textContent = JSON.stringify(requestDetails, null, 2);
-            
+
             try {
                 const options = {
                     method,
@@ -294,21 +294,21 @@
                     credentials,
                     mode
                 };
-                
+
                 // Add body for POST and PUT requests
                 if (method === 'POST' || method === 'PUT') {
                     options.body = JSON.stringify({ test: true });
                 }
-                
+
                 const response = await fetch(url, options);
-                
+
                 // Log response headers
                 const headers = {};
                 response.headers.forEach((value, key) => {
                     headers[key] = value;
                 });
                 headersDiv.textContent = JSON.stringify(headers, null, 2);
-                
+
                 // Try to parse response as JSON
                 try {
                     const data = await response.json();
@@ -320,10 +320,10 @@
                     responseDiv.textContent = text;
                     responseDiv.className = 'response info';
                 }
-                
+
                 // Add status code to response
                 responseDiv.textContent = `Status: ${response.status} ${response.statusText}\n\n${responseDiv.textContent}`;
-                
+
                 if (!response.ok) {
                     responseDiv.className = 'response error';
                 }
@@ -333,11 +333,11 @@
                 console.error('API test error:', error);
             }
         }
-        
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             checkServerStatus();
         });
     </script>
 </body>
-</html> 
+</html>

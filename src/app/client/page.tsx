@@ -17,9 +17,8 @@ export default function ClientPage() {
     email: '',
     phone: '',
     address: '',
-    company: '',
-    status: 'active',
-    type: 'individual',
+    taxId: '',
+    status: 'ACTIVE',
     notes: ''
   });
 
@@ -48,15 +47,14 @@ export default function ClientPage() {
       email: client.email,
       phone: client.phone,
       address: client.address,
-      company: client.company,
+      taxId: client.taxId,
       status: client.status,
-      type: client.type,
       notes: client.notes
     });
     setShowForm(true);
   };
-/*
-  const handleDelete = async (id: number) => {
+
+  const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this client?')) {
       try {
         setError(null);
@@ -67,7 +65,7 @@ export default function ClientPage() {
         setError(error instanceof Error ? error.message : 'Failed to delete client');
       }
     }
-  };*/
+  };
 
   const handleAdd = () => {
     setEditingClient(null);
@@ -76,9 +74,8 @@ export default function ClientPage() {
       email: '',
       phone: '',
       address: '',
-      company: '',
-      status: 'active',
-      type: 'individual',
+      taxId: '',
+      status: 'ACTIVE',
       notes: ''
     });
     setShowForm(true);
@@ -90,7 +87,7 @@ export default function ClientPage() {
       setError(null);
       if (editingClient) {
         const updatedClient = await clientService.update(editingClient.id, formData);
-        setClients(clients.map(client => 
+        setClients(clients.map(client =>
           client.id === editingClient.id ? updatedClient : client
         ));
       } else {
@@ -108,41 +105,24 @@ export default function ClientPage() {
     setShowForm(false);
   };
 
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString();
-  };
-
   const columns = [
     { key: 'name', label: 'Name' },
     { key: 'email', label: 'Email' },
     { key: 'phone', label: 'Phone' },
-    { key: 'company', label: 'Company' },
-    { 
-      key: 'type', 
-      label: 'Type',
-      render: (client: Client) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          client.type === 'corporate' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
-        }`}>
-          {client.type.charAt(0).toUpperCase() + client.type.slice(1)}
-        </span>
-      )
-    },
-    { 
-      key: 'status', 
+    { key: 'address', label: 'Address' },
+    { key: 'taxId', label: 'Tax ID' },
+    {
+      key: 'status',
       label: 'Status',
       render: (client: Client) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          client.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          client.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
+          client.status === 'INACTIVE' ? 'bg-red-100 text-red-800' :
+          'bg-yellow-100 text-yellow-800'
         }`}>
-          {client.status.charAt(0).toUpperCase() + client.status.slice(1)}
+          {client.status}
         </span>
       )
-    },
-    { 
-      key: 'createdAt', 
-      label: 'Created',
-      render: (client: Client) => formatDate(client.createdAt)
     }
   ];
 
@@ -173,78 +153,67 @@ export default function ClientPage() {
               {editingClient ? 'Edit Client' : 'Add New Client'}
             </h2>
             <form onSubmit={handleFormSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
-                  <input
-                    type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Phone</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Company</label>
-                  <input
-                    type="text"
-                    value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Type</label>
-                  <select
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value as Client['type'] })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    <option value="individual">Individual</option>
-                    <option value="corporate">Corporate</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as Client['status'] })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <input
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <input
+                  type="text"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  required
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Address</label>
-                <textarea
+                <input
+                  type="text"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  rows={2}
                   required
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Tax ID</label>
+                <input
+                  type="text"
+                  value={formData.taxId}
+                  onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value as Client['status'] })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                >
+                  <option value="ACTIVE">Active</option>
+                  <option value="INACTIVE">Inactive</option>
+                  <option value="PENDING">Pending</option>
+                </select>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Notes</label>
@@ -283,11 +252,11 @@ export default function ClientPage() {
               data={clients}
               columns={columns}
               onEdit={handleEdit}
-              onDelete={()=>{}}
+              onDelete={handleDelete}
             />
           </div>
         )}
       </div>
     </Layout>
   );
-} 
+}

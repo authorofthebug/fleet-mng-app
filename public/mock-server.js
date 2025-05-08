@@ -4,7 +4,7 @@ const url = require('url');
 const fs = require('fs');
 const path = require('path');
 
-const PORT = 8080;
+const PORT = 8385;
 const MOCK_DATA_DIR = path.join(__dirname, 'mock-data');
 
 // Create mock data directory if it doesn't exist
@@ -98,10 +98,57 @@ const server = http.createServer((req, res) => {
 
   // API endpoints
   if (pathSegments[0] === 'api') {
-    const resource = pathSegments[1];
+    let resource = pathSegments[1];
     const id = pathSegments[2];
     const subResource = pathSegments[3];
     const subId = pathSegments[4];
+
+    console.log(`Request for resource: ${resource}, id: ${id}, subResource: ${subResource}, subId: ${subId}`);
+    console.log(`Full URL: ${req.url}`);
+
+    // Special case for vehicles endpoint
+    if (resource === 'vehicles') {
+      console.log('Handling vehicles endpoint');
+      // Use the vehicles data directly
+      const vehiclesData = defaultData.vehicles;
+
+      if (req.method === 'GET') {
+        if (!id) {
+          // GET all vehicles
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(vehiclesData));
+          return;
+        } else {
+          // GET vehicle by ID
+          const vehicle = vehiclesData.find(v => v.id.toString() === id);
+          if (!vehicle) {
+            res.writeHead(404, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Vehicle not found' }));
+            return;
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(JSON.stringify(vehicle));
+          return;
+        }
+      }
+    }
+
+    // Handle plural/singular resource names for other resources
+    const resourceMappings = {
+      'clients': 'client',
+      'contracts': 'contract',
+      'employees': 'employee',
+      'permits': 'permit',
+      'maintenances': 'maintenance',
+      'insurances': 'insurance',
+      'tariffs': 'tariff'
+    };
+
+    // Check if we need to map a plural resource name to singular
+    if (resourceMappings[resource]) {
+      console.log(`Mapping plural resource '${resource}' to singular '${resourceMappings[resource]}'`);
+      resource = resourceMappings[resource];
+    }
 
     // Handle file uploads and document operations
     if (subResource === 'documents' || resource === 'documents') {
@@ -112,7 +159,7 @@ const server = http.createServer((req, res) => {
 
     // Handle main resource operations
     const filePath = path.join(MOCK_DATA_DIR, `${resource}.json`);
-    
+
     if (!fs.existsSync(filePath)) {
       res.writeHead(404, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: 'Resource not found' }));
@@ -225,4 +272,4 @@ server.listen(PORT, () => {
     console.log(`  PUT    /api/${key}/:id`);
     console.log(`  DELETE /api/${key}/:id`);
   });
-}); 
+});

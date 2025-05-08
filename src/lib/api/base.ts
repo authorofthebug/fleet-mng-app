@@ -1,4 +1,5 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+// When running in the browser, we want to use relative URLs
+const API_BASE_URL = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8385');
 
 // Log the API base URL for debugging
 console.log('API Base URL:', API_BASE_URL);
@@ -22,15 +23,15 @@ async function handleResponse<T>(response: Response): Promise<T> {
       errorData = await response.json();
     } catch (parseError) {
       console.error('Error parsing error response:', parseError);
-      errorData = { 
-        message: 'An error occurred', 
+      errorData = {
+        message: 'An error occurred',
         details: response.statusText,
         status: response.status,
         statusText: response.statusText,
         url: response.url
       };
     }
-    
+
     console.error('API Error Response:', {
       status: response.status,
       statusText: response.statusText,
@@ -73,24 +74,27 @@ export async function get<T>(endpoint: string): Promise<T> {
   console.log('Fetching:', url, {
     method: 'GET',
     headers: defaultHeaders,
-    credentials: 'include',
-    mode: 'cors'
+    // Removed credentials and mode to avoid CORS issues
+    // credentials: 'include',
+    // mode: 'cors'
   });
-  
+
   try {
+    console.log('Making fetch request to:', url);
     const response = await fetch(url, {
       method: 'GET',
       headers: defaultHeaders,
-      credentials: 'include',
-      mode: 'cors'
+      // Removed credentials and mode to avoid CORS issues
+      // credentials: 'include',
+      // mode: 'cors'
     });
-    
+
     console.log('Response status:', response.status, {
       url: response.url,
       statusText: response.statusText,
       headers: Object.fromEntries(response.headers.entries())
     });
-    
+
     return handleResponse<T>(response);
   } catch (error) {
     console.error('Fetch error:', {
@@ -99,7 +103,7 @@ export async function get<T>(endpoint: string): Promise<T> {
       endpoint,
       baseUrl: API_BASE_URL
     });
-    
+
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       throw new ApiError(0, 'Unable to connect to the server. Please check if the server is running and CORS is properly configured.');
     }
@@ -113,21 +117,33 @@ export async function get<T>(endpoint: string): Promise<T> {
 export async function post<T>(endpoint: string, data: unknown): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   console.log('Posting to:', url, data);
-  
+
   try {
+    console.log('Making POST request to:', url);
     const response = await fetch(url, {
       method: 'POST',
       headers: defaultHeaders,
-      credentials: 'include',
-      mode: 'cors',
+      // Removed credentials and mode to avoid CORS issues
+      // credentials: 'include',
+      // mode: 'cors',
       body: JSON.stringify(data)
     });
-    
-    console.log('Response status:', response.status);
+
+    console.log('Response status:', response.status, {
+      url: response.url,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
     return handleResponse<T>(response);
   } catch (error) {
-    console.error('Fetch error:', error);
-    
+    console.error('Fetch error:', {
+      error,
+      url,
+      endpoint,
+      baseUrl: API_BASE_URL,
+      data
+    });
+
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       throw new ApiError(0, 'Unable to connect to the server. Please check if the server is running and CORS is properly configured.');
     }
@@ -141,21 +157,33 @@ export async function post<T>(endpoint: string, data: unknown): Promise<T> {
 export async function put<T>(endpoint: string, data: unknown): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   console.log('Putting to:', url, data);
-  
+
   try {
+    console.log('Making PUT request to:', url);
     const response = await fetch(url, {
       method: 'PUT',
       headers: defaultHeaders,
-      credentials: 'include',
-      mode: 'cors',
+      // Removed credentials and mode to avoid CORS issues
+      // credentials: 'include',
+      // mode: 'cors',
       body: JSON.stringify(data)
     });
-    
-    console.log('Response status:', response.status);
+
+    console.log('Response status:', response.status, {
+      url: response.url,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
     return handleResponse<T>(response);
   } catch (error) {
-    console.error('Fetch error:', error);
-    
+    console.error('Fetch error:', {
+      error,
+      url,
+      endpoint,
+      baseUrl: API_BASE_URL,
+      data
+    });
+
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       throw new ApiError(0, 'Unable to connect to the server. Please check if the server is running and CORS is properly configured.');
     }
@@ -169,20 +197,31 @@ export async function put<T>(endpoint: string, data: unknown): Promise<T> {
 export async function del<T>(endpoint: string): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   console.log('Deleting:', url);
-  
+
   try {
+    console.log('Making DELETE request to:', url);
     const response = await fetch(url, {
       method: 'DELETE',
       headers: defaultHeaders,
-      credentials: 'include',
-      mode: 'cors'
+      // Removed credentials and mode to avoid CORS issues
+      // credentials: 'include',
+      // mode: 'cors'
     });
-    
-    console.log('Response status:', response.status);
+
+    console.log('Response status:', response.status, {
+      url: response.url,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
     return handleResponse<T>(response);
   } catch (error) {
-    console.error('Fetch error:', error);
-    
+    console.error('Fetch error:', {
+      error,
+      url,
+      endpoint,
+      baseUrl: API_BASE_URL
+    });
+
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       throw new ApiError(0, 'Unable to connect to the server. Please check if the server is running and CORS is properly configured.');
     }
@@ -191,4 +230,4 @@ export async function del<T>(endpoint: string): Promise<T> {
     }
     throw error;
   }
-} 
+}

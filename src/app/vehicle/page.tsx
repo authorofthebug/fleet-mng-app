@@ -5,26 +5,202 @@ import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
 import { vehicleService, Vehicle } from '@/lib/api/vehicle';
+import { useSidebarWidth } from '@/hooks/useSidebarWidth';
+import {
+  TruckIcon,
+  Cog6ToothIcon,
+  WrenchScrewdriverIcon,
+  ExclamationTriangleIcon,
+  PlusIcon,
+  PencilSquareIcon,
+  TrashIcon
+} from '@heroicons/react/24/outline';
+
+// Modal component for the vehicle form
+const VehicleFormModal = ({
+  show,
+  onClose,
+  onSubmit,
+  formData,
+  setFormData,
+  editingVehicle
+}: {
+  show: boolean;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+  formData: Vehicle;
+  setFormData: React.Dispatch<React.SetStateAction<Vehicle>>;
+  editingVehicle: Vehicle | null;
+}) => {
+  if (!show) return null;
+
+  // Get the sidebar width - could be 16rem (expanded) or 4rem (collapsed)
+  // We'll use a CSS variable to make it responsive
+  return (
+    <>
+      {/* Overlay that covers only the main content area */}
+      <div
+        className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40"
+        onClick={onClose}
+        style={{ left: 'var(--sidebar-width, 16rem)' }}
+      ></div>
+
+      {/* Modal container positioned in the main content area */}
+      <div
+        className="fixed inset-0 z-50 overflow-y-auto"
+        style={{ left: 'var(--sidebar-width, 16rem)' }}
+      >
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {editingVehicle ? 'Edit Vehicle' : 'Add New Vehicle'}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div className="p-6">
+              <form onSubmit={onSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex flex-col">
+                    <label className="text-xs font-semibold text-blue-700">License Plate</label>
+                    <input
+                      type="text"
+                      value={formData.licensePlate}
+                      onChange={(e) => setFormData({ ...formData, licensePlate: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-xs font-semibold text-blue-700">Brand</label>
+                    <input
+                      type="text"
+                      value={formData.brand}
+                      onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-xs font-semibold text-blue-700">Model</label>
+                    <input
+                      type="text"
+                      value={formData.model}
+                      onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-xs font-semibold text-blue-700">Year</label>
+                    <input
+                      type="text"
+                      value={formData.year}
+                      onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      required
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-xs font-semibold text-blue-700">Color</label>
+                    <input
+                      type="text"
+                      value={formData.color}
+                      onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <label className="text-xs font-semibold text-blue-700">Status</label>
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value as Vehicle['status'] })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    >
+                      <option value="NEW">New</option>
+                      <option value="AVAILABLE">Available</option>
+                      <option value="IN_SERVICE">In Service</option>
+                      <option value="IN_MAINTENANCE">In Maintenance</option>
+                      <option value="WITH_ISSUE">With Issue</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label className="text-xs font-semibold text-blue-700">Notes</label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    rows={3}
+                  />
+                </div>
+                <div className="flex justify-end space-x-3 pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+                  >
+                    {editingVehicle ? (
+                      <>
+                        <PencilSquareIcon className="h-5 w-5 mr-2" />
+                        Update
+                      </>
+                    ) : (
+                      <>
+                        <PlusIcon className="h-5 w-5 mr-2" />
+                        Create
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default function VehiclePage() {
+  // Use the sidebar width hook to set the CSS variable
+  useSidebarWidth();
+
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Omit<Vehicle, 'id'>>({
-    brand: 'string',
-    licensePlate: 'string',
-    type: 'string',
-
-    plateNumber: 'string',
-    make: 'string',
-    model: 'string',
-    year: 1983,
-    status: 'active',
-
-    lastMaintenance: 'string',
-    nextMaintenance: 'string'
+  const [searchText, setSearchText] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
+  // No tabs are used anymore
+  const [formData, setFormData] = useState<Vehicle>({
+    id: '',
+    brand: '',
+    licensePlate: '',
+    model: '',
+    year: new Date().getFullYear().toString(),
+    color: '',
+    notes: '',
+    status: 'AVAILABLE',
+    plateNumber: '',
+    make: ''
   });
 
   useEffect(() => {
@@ -35,11 +211,18 @@ export default function VehiclePage() {
     try {
       setLoading(true);
       setError(null);
+      console.log('Attempting to load vehicles...');
       const data = await vehicleService.getAll();
+      console.log('Vehicles loaded successfully:', data);
       setVehicles(data);
+      setFilteredVehicles(data);
     } catch (error) {
       console.error('Error loading vehicles:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load vehicles');
+      let errorMessage = 'Failed to load vehicles';
+      if (error instanceof Error) {
+        errorMessage = `${error.name}: ${error.message}`;
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -48,46 +231,45 @@ export default function VehiclePage() {
   const handleEdit = (vehicle: Vehicle) => {
     setEditingVehicle(vehicle);
     setFormData({
-      brand: 'BMW',
-      licensePlate: 'SAY777',
-      type: 'COUPE',
-      plateNumber: vehicle.plateNumber,
-      make: vehicle.make,
-      model: vehicle.model,
-      year: vehicle.year,
-      status: vehicle.status,
-      lastMaintenance: '04/05/2022',
-      nextMaintenance: '04/05/2025',
+      brand: vehicle.brand || vehicle.make || '',
+      licensePlate: vehicle.licensePlate || vehicle.plateNumber || '',
+      model: vehicle.model || '',
+      year: vehicle.year || '',
+      color: vehicle.color || '',
+      notes: vehicle.notes || '',
+      status: vehicle.status || 'AVAILABLE',
+      plateNumber: vehicle.plateNumber || vehicle.licensePlate || '',
+      make: vehicle.make || vehicle.brand || ''
     });
     setShowForm(true);
   };
-/*
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this vehicle?')) {
       try {
         setError(null);
         await vehicleService.delete(id);
-        setVehicles(vehicles.filter(vehicle => vehicle.id !== id));
+        const updatedVehicles = vehicles.filter(vehicle => vehicle.id !== id);
+        setVehicles(updatedVehicles);
+        // Apply filtering to the updated vehicles array directly
+        filterVehicles(searchText, statusFilter, updatedVehicles);
       } catch (error) {
         console.error('Error deleting vehicle:', error);
         setError(error instanceof Error ? error.message : 'Failed to delete vehicle');
       }
     }
-  };*/
+  };
 
   const handleAdd = () => {
     setEditingVehicle(null);
     setFormData({
-      brand: 'string',
-      licensePlate: 'string',
-      type: 'string',
-      plateNumber: '',
-      make: '',
-      model: '',
-      year: new Date().getFullYear(),
-      status: 'active',
-      lastMaintenance: 'string',
-      nextMaintenance: 'string'
+      id: '',
+      brand: 'Tesla',
+      licensePlate: 'JKL012',
+      model: 'Model 3',
+      year: '2024',
+      color: 'Red',
+      notes: 'Just added to fleet, pending first inspection',
+      status: 'NEW'
     });
     setShowForm(true);
   };
@@ -97,57 +279,155 @@ export default function VehiclePage() {
     try {
       setError(null);
       if (editingVehicle) {
-        const updatedVehicle = await vehicleService.update(editingVehicle.id, formData);
-        setVehicles(vehicles.map(vehicle => 
-          vehicle.id === editingVehicle.id ? updatedVehicle : vehicle
-        ));
+        const id = editingVehicle.id;
+        console.log('Updating vehicle with ID:', id, 'Data:', formData);
+        const updatedVehicle = await vehicleService.update(id, formData);
+        console.log('Vehicle updated successfully:', updatedVehicle);
+        const updatedVehicles = vehicles.map(vehicle =>
+          vehicle.id === id ? updatedVehicle : vehicle
+        );
+        setVehicles(updatedVehicles);
+        // Apply filtering to the updated vehicles array directly
+        filterVehicles(searchText, statusFilter, updatedVehicles);
       } else {
+        console.log('Creating new vehicle with data:', formData);
         const newVehicle = await vehicleService.create(formData);
-        setVehicles([...vehicles, newVehicle]);
+        console.log('Vehicle created successfully:', newVehicle);
+        const updatedVehicles = [...vehicles, newVehicle];
+        setVehicles(updatedVehicles);
+        // Apply filtering to the updated vehicles array directly
+        filterVehicles(searchText, statusFilter, updatedVehicles);
       }
       setShowForm(false);
     } catch (error) {
       console.error('Error saving vehicle:', error);
-      setError(error instanceof Error ? error.message : 'Failed to save vehicle');
+      let errorMessage = 'Failed to save vehicle';
+      if (error instanceof Error) {
+        errorMessage = `${error.name}: ${error.message}`;
+      }
+      setError(errorMessage);
     }
   };
 
   const handleFormCancel = () => {
     setShowForm(false);
+    setEditingVehicle(null);
+  };
+
+  // Function to filter vehicles based on search text and status
+  const filterVehicles = (text: string, status: string, vehiclesToFilter = vehicles) => {
+    let filtered = [...vehiclesToFilter];
+
+    // Filter by status if selected
+    if (status) {
+      filtered = filtered.filter(vehicle =>
+        vehicle.status === status ||
+        // Handle legacy status values
+        (status === 'AVAILABLE' && vehicle.status === 'active') ||
+        (status === 'IN_MAINTENANCE' && vehicle.status === 'maintenance') ||
+        (status === 'WITH_ISSUE' && vehicle.status === 'inactive')
+      );
+    }
+
+    // Filter by search text if provided
+    if (text) {
+      const searchLower = text.toLowerCase();
+      filtered = filtered.filter(vehicle => {
+        // Search across all relevant fields
+        return (
+          (vehicle.licensePlate && vehicle.licensePlate.toLowerCase().includes(searchLower)) ||
+          (vehicle.plateNumber && vehicle.plateNumber.toLowerCase().includes(searchLower)) ||
+          (vehicle.brand && vehicle.brand.toLowerCase().includes(searchLower)) ||
+          (vehicle.make && vehicle.make.toLowerCase().includes(searchLower)) ||
+          (vehicle.model && vehicle.model.toLowerCase().includes(searchLower)) ||
+          (vehicle.year && vehicle.year.toString().includes(searchLower)) ||
+          (vehicle.color && vehicle.color.toLowerCase().includes(searchLower)) ||
+          (vehicle.notes && vehicle.notes.toLowerCase().includes(searchLower))
+        );
+      });
+    }
+
+    setFilteredVehicles(filtered);
   };
 
   const columns = [
-    { key: 'plateNumber', label: 'Plate Number' },
-    { key: 'make', label: 'Make' },
+    {
+      key: 'licensePlate',
+      label: 'License Plate',
+      render: (vehicle: Vehicle) => vehicle.plateNumber || vehicle.licensePlate
+    },
+    {
+      key: 'brand',
+      label: 'Brand',
+      render: (vehicle: Vehicle) => vehicle.make || vehicle.brand
+    },
     { key: 'model', label: 'Model' },
     { key: 'year', label: 'Year' },
-    { 
-      key: 'status', 
+    { key: 'color', label: 'Color' },
+    {
+      key: 'status',
       label: 'Status',
-      render: (vehicle: Vehicle) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          vehicle.status === 'active' ? 'bg-green-100 text-green-800' :
-          vehicle.status === 'maintenance' ? 'bg-yellow-100 text-yellow-800' :
-          'bg-red-100 text-red-800'
-        }`}>
-          {vehicle.status.charAt(0).toUpperCase() + vehicle.status.slice(1)}
-        </span>
-      )
+      render: (vehicle: Vehicle) => {
+        // Define status colors that match the dashboard stats
+        const statusColors = {
+          'AVAILABLE': 'bg-blue-100 text-blue-800',
+          'active': 'bg-blue-100 text-blue-800',
+          'IN_SERVICE': 'bg-green-100 text-green-800',
+          'IN_MAINTENANCE': 'bg-yellow-100 text-yellow-800',
+          'maintenance': 'bg-yellow-100 text-yellow-800',
+          'NEW': 'bg-blue-100 text-blue-800',
+          'WITH_ISSUE': 'bg-red-100 text-red-800',
+          'inactive': 'bg-red-100 text-red-800'
+        };
+
+        const statusKey = vehicle.status as keyof typeof statusColors;
+        const colorClass = statusColors[statusKey] || 'bg-gray-100 text-gray-800';
+
+        return (
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>
+            {typeof vehicle.status === 'string' ? vehicle.status.replace('_', ' ') : vehicle.status}
+          </span>
+        );
+      }
     }
+  ];
+
+  // Dashboard stats - using the filtered vehicles to update stats based on filters
+  const vehicleStats = [
+    {
+      label: "Available Vehicles",
+      icon: TruckIcon,
+      value: filteredVehicles.filter(v => v.status === 'AVAILABLE' || v.status === 'active').length,
+      color: "text-blue-700",
+      bgColor: "bg-blue-100",
+    },
+    {
+      label: "In Service",
+      icon: Cog6ToothIcon,
+      value: filteredVehicles.filter(v => v.status === 'IN_SERVICE').length,
+      color: "text-green-600",
+      bgColor: "bg-green-100",
+    },
+    {
+      label: "In Maintenance",
+      icon: WrenchScrewdriverIcon,
+      value: filteredVehicles.filter(v => v.status === 'IN_MAINTENANCE' || v.status === 'maintenance').length,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-100",
+    },
+    {
+      label: "With Issues",
+      icon: ExclamationTriangleIcon,
+      value: filteredVehicles.filter(v => v.status === 'WITH_ISSUE' || v.status === 'inactive').length,
+      color: "text-red-600",
+      bgColor: "bg-red-100",
+    },
   ];
 
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Vehicle Management</h1>
-          <button
-            onClick={handleAdd}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Add Vehicle
-          </button>
-        </div>
+        {/* Title removed as requested */}
 
         {error && (
           <Notification
@@ -157,99 +437,98 @@ export default function VehiclePage() {
           />
         )}
 
-        {showForm ? (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">
-              {editingVehicle ? 'Edit Vehicle' : 'Add New Vehicle'}
-            </h2>
-            <form onSubmit={handleFormSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Plate Number</label>
-                <input
-                  type="text"
-                  value={formData.plateNumber}
-                  onChange={(e) => setFormData({ ...formData, plateNumber: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
+        {/* Dashboard Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          {vehicleStats.map((stat) => (
+            <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+              <div className="flex items-center">
+                <div className={`p-3 rounded-full ${stat.bgColor} mr-4`}>
+                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">{stat.label}</p>
+                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Make</label>
-                <input
-                  type="text"
-                  value={formData.make}
-                  onChange={(e) => setFormData({ ...formData, make: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Model</label>
-                <input
-                  type="text"
-                  value={formData.model}
-                  onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Year</label>
-                <input
-                  type="number"
-                  value={formData.year}
-                  onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                  min="1900"
-                  max={new Date().getFullYear() + 1}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Status</label>
+            </div>
+          ))}
+        </div>
+
+        {/* Vehicle Inventory Section */}
+        <div className="w-full bg-white/90 rounded-xl shadow p-6">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800">Vehicle Inventory</h3>
+          </div>
+
+          {/* Vehicle form modal */}
+          <VehicleFormModal
+            show={showForm}
+            onClose={handleFormCancel}
+            onSubmit={handleFormSubmit}
+            formData={formData}
+            setFormData={setFormData}
+            editingVehicle={editingVehicle}
+          />
+
+          {/* Inventory content */}
+          <div className="relative">
+            <div className="mb-4 flex justify-between items-center">
+              <div className="flex space-x-2">
+                <div className="relative">
+                  <input
+                    type="text"
+                    placeholder="Search vehicles..."
+                    className="border border-gray-300 rounded-md text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                    value={searchText}
+                    onChange={(e) => {
+                      const newSearchText = e.target.value;
+                      setSearchText(newSearchText);
+                      filterVehicles(newSearchText, statusFilter);
+                    }}
+                  />
+                </div>
                 <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as Vehicle['status'] })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  className="border border-gray-300 rounded-md text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={statusFilter}
+                  onChange={(e) => {
+                    const newStatusFilter = e.target.value;
+                    setStatusFilter(newStatusFilter);
+                    filterVehicles(searchText, newStatusFilter);
+                  }}
                 >
-                  <option value="active">Active</option>
-                  <option value="maintenance">Maintenance</option>
-                  <option value="inactive">Inactive</option>
+                  <option value="">All Statuses</option>
+                  <option value="AVAILABLE">Available</option>
+                  <option value="IN_SERVICE">In Service</option>
+                  <option value="IN_MAINTENANCE">In Maintenance</option>
+                  <option value="WITH_ISSUE">With Issues</option>
+                  <option value="NEW">New</option>
                 </select>
               </div>
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={handleFormCancel}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  {editingVehicle ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
+              <button
+                onClick={handleAdd}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
+              >
+                <PlusIcon className="h-5 w-5 mr-2" />
+                Add Vehicle
+              </button>
+            </div>
+
+            <div className="relative">
+              {loading && (
+                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              )}
+              <DataTable
+                data={filteredVehicles}
+                columns={columns}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </div>
           </div>
-        ) : (
-          <div className="relative">
-            {loading && (
-              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-            )}
-            <DataTable
-              data={vehicles}
-              columns={columns}
-              onEdit={handleEdit}
-              onDelete={()=>{}}
-            />
-          </div>
-        )}
+        </div>
       </div>
     </Layout>
   );
-} 
+}
