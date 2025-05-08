@@ -87,7 +87,7 @@ export default function CertificationPage() {
       setError(null);
       if (editingCertification) {
         const updatedCertification = await certificationService.update(editingCertification.id, formData);
-        setCertifications(certifications.map(cert => 
+        setCertifications(certifications.map(cert =>
           cert.id === editingCertification.id ? updatedCertification : cert
         ));
       } else {
@@ -113,24 +113,24 @@ export default function CertificationPage() {
   const columns = [
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' },
-    { 
-      key: 'employeeId', 
+    {
+      key: 'employeeId',
       label: 'Employee',
       render: (certification: Certification) => getEmployeeName(certification.employeeId)
     },
-    { 
-      key: 'expiryDate', 
+    {
+      key: 'expiryDate',
       label: 'Expiry Date',
       render: (certification: Certification) => new Date(certification.expiryDate).toLocaleDateString()
     },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       label: 'Status',
       render: (certification: Certification) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          certification.status === 'active' ? 'bg-green-100 text-green-800' :
-          certification.status === 'expired' ? 'bg-red-100 text-red-800' :
-          'bg-yellow-100 text-yellow-800'
+          certification.status === 'active' ? 'bg-green-100 text-green-700' :
+          certification.status === 'expired' ? 'bg-red-100 text-red-700' :
+          'bg-yellow-100 text-yellow-500'
         }`}>
           {certification.status.charAt(0).toUpperCase() + certification.status.slice(1)}
         </span>
@@ -258,4 +258,4 @@ export default function CertificationPage() {
       </div>
     </Layout>
   );
-} 
+}

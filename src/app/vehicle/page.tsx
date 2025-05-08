@@ -70,76 +70,76 @@ const VehicleFormModal = ({
               <form onSubmit={onSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex flex-col">
-                    <label className="text-xs font-semibold text-blue-700">License Plate</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">License Plate</label>
                     <input
                       type="text"
                       value={formData.licensePlate}
                       onChange={(e) => setFormData({ ...formData, licensePlate: e.target.value })}
-                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-semibold text-blue-700">Brand</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</label>
                     <input
                       type="text"
                       value={formData.brand}
                       onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
-                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-semibold text-blue-700">Model</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Model</label>
                     <input
                       type="text"
                       value={formData.model}
                       onChange={(e) => setFormData({ ...formData, model: e.target.value })}
-                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-semibold text-blue-700">Year</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Year</label>
                     <input
                       type="text"
                       value={formData.year}
                       onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-semibold text-blue-700">Color</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Color</label>
                     <input
                       type="text"
                       value={formData.color}
                       onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-semibold text-blue-700">Status</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Status</label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as Vehicle['status'] })}
-                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                     >
-                      <option value="NEW">New</option>
-                      <option value="AVAILABLE">Available</option>
-                      <option value="IN_SERVICE">In Service</option>
-                      <option value="IN_MAINTENANCE">In Maintenance</option>
-                      <option value="WITH_ISSUE">With Issue</option>
+                      <option value="NEW" className="text-sm">New</option>
+                      <option value="AVAILABLE" className="text-sm">Available</option>
+                      <option value="IN_SERVICE" className="text-sm">In Service</option>
+                      <option value="IN_MAINTENANCE" className="text-sm">In Maintenance</option>
+                      <option value="WITH_ISSUE" className="text-sm">With Issue</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-xs font-semibold text-blue-700">Notes</label>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</label>
                   <textarea
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                     rows={3}
                   />
                 </div>
@@ -370,14 +370,14 @@ export default function VehiclePage() {
       render: (vehicle: Vehicle) => {
         // Define status colors that match the dashboard stats
         const statusColors = {
-          'AVAILABLE': 'bg-blue-100 text-blue-800',
-          'active': 'bg-blue-100 text-blue-800',
-          'IN_SERVICE': 'bg-green-100 text-green-800',
-          'IN_MAINTENANCE': 'bg-yellow-100 text-yellow-800',
-          'maintenance': 'bg-yellow-100 text-yellow-800',
-          'NEW': 'bg-blue-100 text-blue-800',
-          'WITH_ISSUE': 'bg-red-100 text-red-800',
-          'inactive': 'bg-red-100 text-red-800'
+          'AVAILABLE': 'bg-blue-100 text-blue-700',
+          'active': 'bg-blue-100 text-blue-700',
+          'IN_SERVICE': 'bg-green-100 text-green-600',
+          'IN_MAINTENANCE': 'bg-yellow-100 text-yellow-500',
+          'maintenance': 'bg-yellow-100 text-yellow-500',
+          'NEW': 'bg-blue-100 text-blue-700',
+          'WITH_ISSUE': 'bg-red-100 text-red-600',
+          'inactive': 'bg-red-100 text-red-600'
         };
 
         const statusKey = vehicle.status as keyof typeof statusColors;

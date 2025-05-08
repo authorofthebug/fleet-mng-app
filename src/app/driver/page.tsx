@@ -81,7 +81,7 @@ export default function DriverPage() {
       setError(null);
       if (editingDriver) {
         const updatedDriver = await driverService.update(editingDriver.id, formData);
-        setDrivers(drivers.map(driver => 
+        setDrivers(drivers.map(driver =>
           driver.id === editingDriver.id ? updatedDriver : driver
         ));
       } else {
@@ -104,14 +104,14 @@ export default function DriverPage() {
     { key: 'licenseNumber', label: 'License Number' },
     { key: 'phone', label: 'Phone' },
     { key: 'email', label: 'Email' },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       label: 'Status',
       render: (driver: Driver) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          driver.status === 'active' ? 'bg-green-100 text-green-800' :
-          driver.status === 'inactive' ? 'bg-red-100 text-red-800' :
-          'bg-yellow-100 text-yellow-800'
+          driver.status === 'active' ? 'bg-green-100 text-green-700' :
+          driver.status === 'inactive' ? 'bg-red-100 text-red-700' :
+          'bg-yellow-100 text-yellow-500'
         }`}>
           {driver.status.charAt(0).toUpperCase() + driver.status.slice(1)}
         </span>
@@ -233,4 +233,4 @@ export default function DriverPage() {
       </div>
     </Layout>
   );
-} 
+}

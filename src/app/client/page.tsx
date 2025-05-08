@@ -5,13 +5,213 @@ import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
 import { clientService, Client } from '@/lib/api/client';
+import { useSidebarWidth } from '@/hooks/useSidebarWidth';
+import {
+  UserGroupIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  XCircleIcon,
+  PlusIcon,
+  PencilSquareIcon,
+  TrashIcon
+} from '@heroicons/react/24/outline';
+
+// Modal component for the client form
+const ClientFormModal = ({
+  show,
+  onClose,
+  onSubmit,
+  formData,
+  setFormData,
+  editingClient
+}: {
+  show: boolean;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+  formData: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>;
+  setFormData: React.Dispatch<React.SetStateAction<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>>;
+  editingClient: Client | null;
+}) => {
+  if (!show) return null;
+
+  return (
+    <>
+      {/* Overlay that covers only the main content area */}
+      <div
+        className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40"
+        onClick={onClose}
+        style={{ left: 'var(--sidebar-width, 16rem)' }}
+      ></div>
+
+      {/* Modal container positioned in the main content area */}
+      <div
+        className="fixed inset-0 z-50 overflow-y-auto"
+        style={{ left: 'var(--sidebar-width, 16rem)' }}
+      >
+        <div className="flex items-center justify-center min-h-screen p-4">
+          <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
+              <h2 className="text-xl font-semibold text-gray-900">
+                {editingClient ? 'Edit Client' : 'Add New Client'}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-500 focus:outline-none"
+              >
+                <XCircleIcon className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <form onSubmit={onSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex flex-col">
+                    <label htmlFor="name" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="email" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="phone" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Phone
+                    </label>
+                    <input
+                      type="text"
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="taxId" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Tax ID
+                    </label>
+                    <input
+                      type="text"
+                      id="taxId"
+                      value={formData.taxId}
+                      onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="status" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </label>
+                    <select
+                      id="status"
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value as Client['status'] })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    >
+                      <option value="ACTIVE" className="text-green-600">Active</option>
+                      <option value="INACTIVE" className="text-red-600">Inactive</option>
+                      <option value="PENDING" className="text-yellow-500">Pending</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <label htmlFor="address" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Address
+                  </label>
+                  <textarea
+                    id="address"
+                    value={formData.address}
+                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                    rows={3}
+                    required
+                  />
+                </div>
+
+                <div className="flex flex-col">
+                  <label htmlFor="notes" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Notes
+                  </label>
+                  <textarea
+                    id="notes"
+                    value={formData.notes}
+                    onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                    rows={3}
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3 pt-4 border-t">
+                  <button
+                    type="button"
+                    onClick={onClose}
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+                  >
+                    {editingClient ? (
+                      <>
+                        <PencilSquareIcon className="h-5 w-5 mr-2" />
+                        Update
+                      </>
+                    ) : (
+                      <>
+                        <PlusIcon className="h-5 w-5 mr-2" />
+                        Create
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
 
 export default function ClientPage() {
+  // Use the sidebar width hook to set the CSS variable
+  useSidebarWidth();
+
   const [clients, setClients] = useState<Client[]>([]);
+  const [filteredClients, setFilteredClients] = useState<Client[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [formData, setFormData] = useState<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>({
     name: '',
     email: '',
@@ -30,11 +230,18 @@ export default function ClientPage() {
     try {
       setLoading(true);
       setError(null);
+      console.log('Attempting to load clients...');
       const data = await clientService.getAll();
+      console.log('Clients loaded successfully:', data);
       setClients(data);
+      setFilteredClients(data);
     } catch (error) {
       console.error('Error loading clients:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load clients');
+      let errorMessage = 'Failed to load clients';
+      if (error instanceof Error) {
+        errorMessage = `${error.name}: ${error.message}`;
+      }
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -43,13 +250,13 @@ export default function ClientPage() {
   const handleEdit = (client: Client) => {
     setEditingClient(client);
     setFormData({
-      name: client.name,
-      email: client.email,
-      phone: client.phone,
-      address: client.address,
-      taxId: client.taxId,
-      status: client.status,
-      notes: client.notes
+      name: client.name || '',
+      email: client.email || '',
+      phone: client.phone || '',
+      address: client.address || '',
+      taxId: client.taxId || '',
+      status: client.status || 'ACTIVE',
+      notes: client.notes || ''
     });
     setShowForm(true);
   };
@@ -60,9 +267,14 @@ export default function ClientPage() {
         setError(null);
         await clientService.delete(id);
         setClients(clients.filter(client => client.id !== id));
+        setFilteredClients(filteredClients.filter(client => client.id !== id));
       } catch (error) {
         console.error('Error deleting client:', error);
-        setError(error instanceof Error ? error.message : 'Failed to delete client');
+        let errorMessage = 'Failed to delete client';
+        if (error instanceof Error) {
+          errorMessage = `${error.name}: ${error.message}`;
+        }
+        setError(errorMessage);
       }
     }
   };
@@ -86,23 +298,80 @@ export default function ClientPage() {
     try {
       setError(null);
       if (editingClient) {
-        const updatedClient = await clientService.update(editingClient.id, formData);
-        setClients(clients.map(client =>
-          client.id === editingClient.id ? updatedClient : client
-        ));
+        const id = editingClient.id;
+        console.log('Updating client with ID:', id, 'Data:', formData);
+        const updatedClient = await clientService.update(id, formData);
+        console.log('Client updated successfully:', updatedClient);
+        const updatedClients = clients.map(client =>
+          client.id === id ? updatedClient : client
+        );
+        setClients(updatedClients);
+        setFilteredClients(
+          filterClients(searchText, statusFilter, updatedClients)
+        );
       } else {
+        console.log('Creating new client with data:', formData);
         const newClient = await clientService.create(formData);
-        setClients([...clients, newClient]);
+        console.log('Client created successfully:', newClient);
+        const updatedClients = [...clients, newClient];
+        setClients(updatedClients);
+        setFilteredClients(
+          filterClients(searchText, statusFilter, updatedClients)
+        );
       }
       setShowForm(false);
     } catch (error) {
       console.error('Error saving client:', error);
-      setError(error instanceof Error ? error.message : 'Failed to save client');
+      let errorMessage = 'Failed to save client';
+      if (error instanceof Error) {
+        errorMessage = `${error.name}: ${error.message}`;
+      }
+      setError(errorMessage);
     }
   };
 
   const handleFormCancel = () => {
     setShowForm(false);
+    setEditingClient(null);
+  };
+
+  // Function to filter clients based on search text and status
+  const filterClients = (text: string, status: string, clientsToFilter = clients) => {
+    let filtered = [...clientsToFilter];
+
+    // Filter by status if selected
+    if (status) {
+      filtered = filtered.filter(client => client.status === status);
+    }
+
+    // Filter by search text if provided
+    if (text) {
+      const searchLower = text.toLowerCase();
+      filtered = filtered.filter(client => {
+        return (
+          client.name?.toLowerCase().includes(searchLower) ||
+          client.email?.toLowerCase().includes(searchLower) ||
+          client.phone?.toLowerCase().includes(searchLower) ||
+          client.address?.toLowerCase().includes(searchLower) ||
+          client.taxId?.toLowerCase().includes(searchLower) ||
+          client.notes?.toLowerCase().includes(searchLower)
+        );
+      });
+    }
+
+    return filtered;
+  };
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
+    setSearchText(text);
+    setFilteredClients(filterClients(text, statusFilter));
+  };
+
+  const handleStatusFilter = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const status = e.target.value;
+    setStatusFilter(status);
+    setFilteredClients(filterClients(searchText, status));
   };
 
   const columns = [
@@ -114,148 +383,144 @@ export default function ClientPage() {
     {
       key: 'status',
       label: 'Status',
-      render: (client: Client) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          client.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
-          client.status === 'INACTIVE' ? 'bg-red-100 text-red-800' :
-          'bg-yellow-100 text-yellow-800'
-        }`}>
-          {client.status}
-        </span>
-      )
+      render: (client: Client) => {
+        // Define status colors that match the dashboard stats
+        const statusColors = {
+          'ACTIVE': 'bg-green-100 text-green-600',
+          'INACTIVE': 'bg-red-100 text-red-600',
+          'PENDING': 'bg-yellow-100 text-yellow-500'
+        };
+
+        const color = statusColors[client.status] || 'bg-gray-100 text-gray-800';
+
+        return (
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${color}`}>
+            {client.status}
+          </span>
+        );
+      }
+    }
+  ];
+
+  // Dashboard stats - using the filtered clients to update stats based on filters
+  const clientStats = [
+    {
+      label: "Active Clients",
+      icon: CheckCircleIcon,
+      value: filteredClients.filter(c => c.status === 'ACTIVE').length,
+      color: "text-green-600",
+      bgColor: "bg-green-100",
+    },
+    {
+      label: "Pending Clients",
+      icon: ClockIcon,
+      value: filteredClients.filter(c => c.status === 'PENDING').length,
+      color: "text-yellow-500",
+      bgColor: "bg-yellow-100",
+    },
+    {
+      label: "Inactive Clients",
+      icon: XCircleIcon,
+      value: filteredClients.filter(c => c.status === 'INACTIVE').length,
+      color: "text-red-600",
+      bgColor: "bg-red-100",
+    },
+    {
+      label: "Total Clients",
+      icon: UserGroupIcon,
+      value: filteredClients.length,
+      color: "text-blue-700",
+      bgColor: "bg-blue-100",
     }
   ];
 
   return (
     <Layout>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Client Management</h1>
-          <button
-            onClick={handleAdd}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Add Client
-          </button>
+        {/* Dashboard Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {clientStats.map((stat, index) => (
+            <div key={index} className="bg-white rounded-xl shadow p-4 flex items-center">
+              <div className={`p-3 rounded-lg ${stat.bgColor} mr-4`}>
+                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+              </div>
+            </div>
+          ))}
         </div>
 
-        {error && (
-          <Notification
-            message={error}
-            type="error"
-            onClose={() => setError(null)}
-          />
-        )}
+        {/* Client Inventory Section */}
+        <div className="w-full bg-white/90 rounded-xl shadow p-6">
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-800">Client Inventory</h3>
+          </div>
 
-        {showForm ? (
-          <div className="bg-white p-6 rounded-lg shadow">
-            <h2 className="text-xl font-semibold mb-4">
-              {editingClient ? 'Edit Client' : 'Add New Client'}
-            </h2>
-            <form onSubmit={handleFormSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+          {/* Client form modal */}
+          <ClientFormModal
+            show={showForm}
+            onClose={handleFormCancel}
+            onSubmit={handleFormSubmit}
+            formData={formData}
+            setFormData={setFormData}
+            editingClient={editingClient}
+          />
+
+          {error && (
+            <Notification
+              type="error"
+              message={error}
+              onClose={() => setError(null)}
+            />
+          )}
+
+          <div className="space-y-4">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
                 <input
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
+                  placeholder="Search clients..."
+                  value={searchText}
+                  onChange={handleSearch}
+                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Email</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Phone</label>
-                <input
-                  type="text"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Address</label>
-                <input
-                  type="text"
-                  value={formData.address}
-                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Tax ID</label>
-                <input
-                  type="text"
-                  value={formData.taxId}
-                  onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Status</label>
                 <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value as Client['status'] })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  value={statusFilter}
+                  onChange={handleStatusFilter}
+                  className="border border-gray-300 rounded-md text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="ACTIVE">Active</option>
-                  <option value="INACTIVE">Inactive</option>
-                  <option value="PENDING">Pending</option>
+                  <option value="">All Statuses</option>
+                  <option value="ACTIVE" className="text-green-600">Active</option>
+                  <option value="PENDING" className="text-yellow-500">Pending</option>
+                  <option value="INACTIVE" className="text-red-600">Inactive</option>
                 </select>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Notes</label>
-                <textarea
-                  value={formData.notes}
-                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  rows={3}
-                />
-              </div>
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={handleFormCancel}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  {editingClient ? 'Update' : 'Create'}
-                </button>
-              </div>
-            </form>
+              <button
+                onClick={handleAdd}
+                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
+              >
+                <PlusIcon className="h-5 w-5 mr-2" />
+                Add Client
+              </button>
+            </div>
+
+            <div className="relative">
+              {loading && (
+                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                </div>
+              )}
+              <DataTable
+                data={filteredClients}
+                columns={columns}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+              />
+            </div>
           </div>
-        ) : (
-          <div className="relative">
-            {loading && (
-              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-            )}
-            <DataTable
-              data={clients}
-              columns={columns}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-            />
-          </div>
-        )}
+        </div>
       </div>
     </Layout>
   );

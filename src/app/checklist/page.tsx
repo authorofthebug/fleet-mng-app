@@ -88,7 +88,7 @@ export default function ChecklistPage() {
       setError(null);
       if (editingChecklist) {
         const updatedChecklist = await checklistService.update(editingChecklist.id, formData);
-        setChecklists(checklists.map(checklist => 
+        setChecklists(checklists.map(checklist =>
           checklist.id === editingChecklist.id ? updatedChecklist : checklist
         ));
       } else {
@@ -152,13 +152,13 @@ export default function ChecklistPage() {
   const columns = [
     { key: 'name', label: 'Name' },
     { key: 'description', label: 'Description' },
-    { 
-      key: 'vehicleId', 
+    {
+      key: 'vehicleId',
       label: 'Vehicle',
       render: (checklist: Checklist) => getVehicleName(checklist.vehicleId)
     },
-    { 
-      key: 'items', 
+    {
+      key: 'items',
       label: 'Progress',
       render: (checklist: Checklist) => (
         <div className="flex items-center">
@@ -168,12 +168,12 @@ export default function ChecklistPage() {
         </div>
       )
     },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       label: 'Status',
       render: (checklist: Checklist) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          checklist.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+          checklist.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
         }`}>
           {checklist.status.charAt(0).toUpperCase() + checklist.status.slice(1)}
         </span>
@@ -329,4 +329,4 @@ export default function ChecklistPage() {
       </div>
     </Layout>
   );
-} 
+}

@@ -36,11 +36,11 @@ export default function AgencyPage() {
           'Content-Type': 'application/json',
         }
       });
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch companies');
       }
-      
+
       const data = await response.json();
       setCompanies(data);
       return data;
@@ -75,7 +75,7 @@ export default function AgencyPage() {
 */
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.company) {
       setError('Please select a company');
       return;
@@ -85,7 +85,7 @@ export default function AgencyPage() {
       setError(null);
       if (editingAgency) {
         const updatedAgency = await agencyService.update(editingAgency.id, formData);
-        setAgencies(agencies.map(agency => 
+        setAgencies(agencies.map(agency =>
           agency.id === editingAgency.id ? updatedAgency : agency
         ));
       } else {
@@ -116,22 +116,22 @@ export default function AgencyPage() {
   };*/
 
   const columns = [
-    { 
-      key: 'name', 
+    {
+      key: 'name',
       label: 'Name',
       render: (agency: Agency) => (
         <span className={styles.tableCell}>{agency.name}</span>
       )
     },
-    { 
-      key: 'company', 
+    {
+      key: 'company',
       label: 'Company',
       render: (agency: Agency) => (
         <span className={styles.tableCell}>{agency.company?.name || 'No Company'}</span>
       )
     },
-    { 
-      key: 'employees', 
+    {
+      key: 'employees',
       label: 'Employees',
       render: (agency: Agency) => (
         <span className="px-2 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-medium">
@@ -139,15 +139,15 @@ export default function AgencyPage() {
         </span>
       )
     },
-    { 
-      key: 'status', 
+    {
+      key: 'status',
       label: 'Status',
       render: (agency: Agency) => {
         const status = agency.status || 'pending';
         const statusStyles = {
-          active: 'bg-green-100 text-green-800',
-          inactive: 'bg-red-100 text-red-800',
-          pending: 'bg-yellow-100 text-yellow-800'
+          active: 'bg-green-100 text-green-700',
+          inactive: 'bg-red-100 text-red-700',
+          pending: 'bg-yellow-100 text-yellow-500'
         };
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusStyles[status]}`}>
@@ -200,7 +200,7 @@ export default function AgencyPage() {
                 {editingAgency ? 'Edit Agency' : 'Add New Agency'}
               </h2>
             </div>
-            
+
             <form onSubmit={handleFormSubmit} className={styles.formBody}>
               <div className={styles.fieldGroup}>
                 <label htmlFor="name" className={styles.label}>Agency Name</label>
@@ -260,18 +260,18 @@ export default function AgencyPage() {
                 <button
                   type="button"
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border 
-                           border-gray-300 rounded-md shadow-sm hover:bg-gray-50 
-                           focus:outline-none focus:ring-2 focus:ring-offset-2 
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border
+                           border-gray-300 rounded-md shadow-sm hover:bg-gray-50
+                           focus:outline-none focus:ring-2 focus:ring-offset-2
                            focus:ring-blue-500"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="inline-flex justify-center px-4 py-2 text-sm font-medium 
-                           text-white bg-blue-600 border border-transparent rounded-md 
-                           shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 
+                  className="inline-flex justify-center px-4 py-2 text-sm font-medium
+                           text-white bg-blue-600 border border-transparent rounded-md
+                           shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2
                            focus:ring-offset-2 focus:ring-blue-500"
                 >
                   {editingAgency ? 'Update Agency' : 'Create Agency'}
@@ -309,4 +309,4 @@ export default function AgencyPage() {
       </div>
     </Layout>
   );
-} 
+}
