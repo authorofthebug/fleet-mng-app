@@ -4,14 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aacdc023-e3cc-4ddc-803e-7f0226c9ddae" name="Changes" comment="crud vehicle almost complete">
+    <list default="true" id="aacdc023-e3cc-4ddc-803e-7f0226c9ddae" name="Changes" comment="crud schedule almost ready">
+      <change afterPath="$PROJECT_DIR$/src/app/api/schedules/[id]/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/api/schedules/route.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/app/schedule/page.tsx" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/lib/api/schedule.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/agency/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/agency/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/certification/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/certification/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/checklist/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/checklist/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/client/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/driver/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/driver/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/vehicle/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/vehicle/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/schedule/ProgramacionTab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/ProgramacionTab.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/schedule/page.jsx" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -89,7 +90,7 @@
       <workItem from="1746324627622" duration="909000" />
       <workItem from="1746325541196" duration="408000" />
       <workItem from="1746325954296" duration="28418000" />
-      <workItem from="1746734814994" duration="4640000" />
+      <workItem from="1746734814994" duration="14498000" />
     </task>
     <task id="LOCAL-00001" summary="crud vehicle almost complete">
       <option name="closed" value="true" />
@@ -99,7 +100,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746730352120</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="crud client almost complete">
+      <option name="closed" value="true" />
+      <created>1746743842080</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1746743842080</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -107,6 +116,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="crud vehicle almost complete" />
-    <option name="LAST_COMMIT_MESSAGE" value="crud vehicle almost complete" />
+    <MESSAGE value="crud client almost complete" />
+    <MESSAGE value="crud schedule almost ready" />
+    <option name="LAST_COMMIT_MESSAGE" value="crud schedule almost ready" />
   </component>
 </project>

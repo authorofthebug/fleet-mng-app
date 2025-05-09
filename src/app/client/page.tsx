@@ -13,7 +13,7 @@ import {
   XCircleIcon,
   PlusIcon,
   PencilSquareIcon,
-  TrashIcon
+
 } from '@heroicons/react/24/outline';
 
 // Modal component for the client form
@@ -261,7 +261,7 @@ export default function ClientPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
+  /*const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this client?')) {
       try {
         setError(null);
@@ -277,7 +277,7 @@ export default function ClientPage() {
         setError(errorMessage);
       }
     }
-  };
+  };*/
 
   const handleAdd = () => {
     setEditingClient(null);
@@ -516,7 +516,7 @@ export default function ClientPage() {
                 data={filteredClients}
                 columns={columns}
                 onEdit={handleEdit}
-                onDelete={handleDelete}
+                onDelete={()=>{}}
               />
             </div>
           </div>
