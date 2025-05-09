@@ -19,6 +19,7 @@ import { vehicleService, Vehicle } from "@/lib/api/vehicle";
 import Notification from "@/components/common/Notification";
 import DataTable from "@/components/common/DataTable";
 import Layout from '@/components/layout/Layout';
+import InputConSugerencias from '@/components/InputConSugerencias';
 
 // Modal component for the schedule form
 const ScheduleFormModal = ({
@@ -44,11 +45,16 @@ const ScheduleFormModal = ({
     const [loadingVehicles, setLoadingVehicles] = useState(false);
     const [vehicleError, setVehicleError] = useState<string | null>(null);
 
-    // Fetch clients and vehicles when the modal is shown
+    const [drivers, setDrivers] = useState<any[]>([]);
+    const [loadingDrivers, setLoadingDrivers] = useState(false);
+    const [driverError, setDriverError] = useState<string | null>(null);
+
+    // Fetch clients, vehicles, and drivers when the modal is shown
     useEffect(() => {
         if (show) {
             fetchClients();
             fetchVehicles();
+            fetchDrivers();
         }
     }, [show]);
 
@@ -77,6 +83,24 @@ const ScheduleFormModal = ({
             setVehicleError('Failed to load vehicles');
         } finally {
             setLoadingVehicles(false);
+        }
+    };
+
+    const fetchDrivers = async () => {
+        try {
+            setLoadingDrivers(true);
+            setDriverError(null);
+            const response = await fetch('/api/drivers');
+            if (!response.ok) {
+                throw new Error('Failed to load drivers');
+            }
+            const data = await response.json();
+            setDrivers(data);
+        } catch (error) {
+            console.error('Error loading drivers:', error);
+            setDriverError('Failed to load drivers');
+        } finally {
+            setLoadingDrivers(false);
         }
     };
 
@@ -147,29 +171,28 @@ const ScheduleFormModal = ({
                                             <option value="IN_PROGRESS">In Progress</option>
                                             <option value="COMPLETED">Completed</option>
                                             <option value="CANCELLED">Cancelled</option>
+                                            <option value="PROGRAMED">Programado</option>
+                                            <option value="ALMOST_ON_ARRIVAL">Llegada al punto</option>
+                                            <option value="STARTED">Inicio del servicio</option>
+                                            <option value="ON_CLIENT">Llegada al cliente</option>
+                                            <option value="BACK_FROM_CLIENT">Retorno del cliente</option>
                                         </select>
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Origin</label>
-                                        <input
-                                            type="text"
+                                        <InputConSugerencias
                                             value={formData.origin}
-                                            onChange={(e) => setFormData({ ...formData, origin: e.target.value })}
-                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
-                                            required
+                                            onChange={(value) => setFormData({ ...formData, origin: value })}
+                                            label="Origin"
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Destination</label>
-                                        <input
-                                            type="text"
+                                        <InputConSugerencias
                                             value={formData.destination}
-                                            onChange={(e) => setFormData({ ...formData, destination: e.target.value })}
-                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
-                                            required
+                                            onChange={(value) => setFormData({ ...formData, destination: value })}
+                                            label="Destination"
                                         />
                                     </div>
                                 </div>
@@ -197,7 +220,7 @@ const ScheduleFormModal = ({
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                                     <div className="flex flex-col">
                                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Client</label>
                                         <select
@@ -224,7 +247,15 @@ const ScheduleFormModal = ({
                                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</label>
                                         <select
                                             value={formData.vehicleId}
-                                            onChange={(e) => setFormData({ ...formData, vehicleId: e.target.value })}
+                                            onChange={(e) => {
+                                                const selectedVehicleId = e.target.value;
+                                                const selectedVehicle = vehicles.find(v => v.id === selectedVehicleId);
+                                                setFormData({
+                                                    ...formData,
+                                                    vehicleId: selectedVehicleId,
+                                                    plate: selectedVehicle ? selectedVehicle.licensePlate : ''
+                                                });
+                                            }}
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         >
@@ -243,12 +274,33 @@ const ScheduleFormModal = ({
                                         </select>
                                     </div>
                                     <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Driver</label>
+                                        <select
+                                            value={formData.driverId || ''}
+                                            onChange={(e) => setFormData({ ...formData, driverId: e.target.value })}
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                                        >
+                                            <option value="">Select Driver</option>
+                                            {loadingDrivers ? (
+                                                <option value="" disabled>Loading drivers...</option>
+                                            ) : driverError ? (
+                                                <option value="" disabled>Error loading drivers</option>
+                                            ) : (
+                                                drivers.map(driver => (
+                                                    <option key={driver.id} value={driver.id}>
+                                                        {driver.firstName} {driver.lastName}
+                                                    </option>
+                                                ))
+                                            )}
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col">
                                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Plate</label>
                                         <input
                                             type="text"
                                             value={formData.plate}
-                                            onChange={(e) => setFormData({ ...formData, plate: e.target.value })}
-                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                                            readOnly
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 cursor-not-allowed bg-gray-100"
                                             required
                                         />
                                     </div>
@@ -316,6 +368,7 @@ export default function ProgramacionTab() {
         updatedAt: "",
         clientId: "",
         vehicleId: "",
+        driverId: "",
         origin: "",
         plate: "",
         zone: "",
@@ -331,25 +384,38 @@ export default function ProgramacionTab() {
 
     const handleAdd = () => {
         setEditingSchedule(null);
+        // Set default values with current date/time for start and end times
+        const now = new Date();
+        const later = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
+        // Format for datetime-local input (YYYY-MM-DDThh:mm)
+        const formatDateForInput = (date: Date) => {
+            return date.toISOString().slice(0, 16);
+        };
+
         setFormData({
             id: "",
             description: "",
-            status: "PENDING",
-            createdAt: "",
-            updatedAt: "",
+            status: "PROGRAMED", // Valid status from the enum
+            createdAt: formatDateForInput(now),
+            updatedAt: formatDateForInput(now),
             clientId: "",
             vehicleId: "",
+            driverId: "",
             origin: "",
             plate: "",
             zone: "",
             destination: "",
-            startTime: "",
-            endTime: ""
+            startTime: formatDateForInput(now),
+            endTime: formatDateForInput(later)
         });
         setShowForm(true);
     };
 
     const [schedules, setSchedules] = useState<Schedule[]>([]);
+    const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+    const [clients, setClients] = useState<Client[]>([]);
+    const [drivers, setDrivers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -373,6 +439,7 @@ export default function ProgramacionTab() {
                     (schedule.origin && schedule.origin.toLowerCase().includes(searchLower)) ||
                     (schedule.destination && schedule.destination.toLowerCase().includes(searchLower)) ||
                     (schedule.clientId && schedule.clientId.toLowerCase().includes(searchLower)) ||
+                    (schedule.driverId && schedule.driverId.toLowerCase().includes(searchLower)) ||
                     (schedule.description && schedule.description.toLowerCase().includes(searchLower)) ||
                     (schedule.status && schedule.status.toLowerCase().includes(searchLower)) ||
                     (schedule.plate && schedule.plate.toLowerCase().includes(searchLower))
@@ -383,9 +450,22 @@ export default function ProgramacionTab() {
         return filtered;
     };
 
-    // Load schedules on component mount
+    // Load schedules, vehicles, clients, and drivers on component mount
     useEffect(() => {
-        loadSchedules();
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                await Promise.all([loadSchedules(), loadVehicles(), loadClients(), loadDrivers()]);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                setError('Failed to load data');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
     }, []);
 
     // Update filtered schedules when schedules, search text, or status filter changes
@@ -395,15 +475,53 @@ export default function ProgramacionTab() {
 
     const loadSchedules = async () => {
         try {
-            setLoading(true);
-            setError(null);
             const data = await scheduleService.getAll();
             setSchedules(data);
+            return data;
         } catch (error) {
             console.error('Error loading schedules:', error);
             setError('Failed to load schedules');
-        } finally {
-            setLoading(false);
+            return [];
+        }
+    };
+
+    const loadVehicles = async () => {
+        try {
+            const data = await vehicleService.getAll();
+            setVehicles(data);
+            return data;
+        } catch (error) {
+            console.error('Error loading vehicles:', error);
+            setError('Failed to load vehicles');
+            return [];
+        }
+    };
+
+    const loadClients = async () => {
+        try {
+            const data = await clientService.getAll();
+            setClients(data);
+            return data;
+        } catch (error) {
+            console.error('Error loading clients:', error);
+            setError('Failed to load clients');
+            return [];
+        }
+    };
+
+    const loadDrivers = async () => {
+        try {
+            const response = await fetch('/api/drivers');
+            if (!response.ok) {
+                throw new Error('Failed to load drivers');
+            }
+            const data = await response.json();
+            setDrivers(data);
+            return data;
+        } catch (error) {
+            console.error('Error loading drivers:', error);
+            setError('Failed to load drivers');
+            return [];
         }
     };
 
@@ -411,21 +529,64 @@ export default function ProgramacionTab() {
         e.preventDefault();
         try {
             setError(null);
+
+            // Validate required fields
+            const requiredFields = ['description', 'status', 'clientId', 'vehicleId', 'origin', 'plate', 'zone', 'destination', 'startTime', 'endTime'];
+            const missingFields = requiredFields.filter(field => !formData[field as keyof Schedule]);
+
+            if (missingFields.length > 0) {
+                throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
+            }
+
+            // Get current date for updatedAt if creating new schedule
+            const now = new Date();
+
+            // Ensure dates are in ISO format
+            const dataToSubmit = {
+                ...formData,
+                startTime: new Date(formData.startTime).toISOString(),
+                endTime: new Date(formData.endTime).toISOString(),
+                // Make sure createdAt is included and preserved when updating
+                createdAt: formData.createdAt || now.toISOString(),
+                // Always update the updatedAt field
+                updatedAt: now.toISOString()
+            };
+
             if (editingSchedule) {
                 const id = editingSchedule.id!;
-                console.log('Updating schedule with ID:', id, 'Data:', formData);
-                const updatedSchedule = await scheduleService.update(id, formData);
+                console.log('Updating schedule with ID:', id, 'Data:', dataToSubmit);
+
+                // For update, ensure we have all required fields from the API
+                const updateData = {
+                    description: dataToSubmit.description,
+                    status: dataToSubmit.status,
+                    createdAt: dataToSubmit.createdAt,
+                    updatedAt: dataToSubmit.updatedAt,
+                    clientId: dataToSubmit.clientId,
+                    vehicleId: dataToSubmit.vehicleId,
+                    driverId: dataToSubmit.driverId || "",
+                    origin: dataToSubmit.origin,
+                    plate: dataToSubmit.plate,
+                    zone: dataToSubmit.zone,
+                    destination: dataToSubmit.destination,
+                    startTime: dataToSubmit.startTime,
+                    endTime: dataToSubmit.endTime
+                };
+
+                const updatedSchedule = await scheduleService.update(id, updateData);
                 console.log('Schedule updated successfully:', updatedSchedule);
                 const updatedSchedules = schedules.map(schedule =>
                     schedule.id === id ? updatedSchedule : schedule
                 );
                 setSchedules(updatedSchedules);
             } else {
-                console.log('Creating new schedule with data:', formData);
-                const newSchedule = await scheduleService.create(formData);
+                console.log('Creating new schedule with data:', dataToSubmit);
+                const newSchedule = await scheduleService.create(dataToSubmit);
                 console.log('Schedule created successfully:', newSchedule);
                 setSchedules([...schedules, newSchedule]);
             }
+            // Refresh all data to update dashboard stats and tables
+            await Promise.all([loadSchedules(), loadVehicles(), loadClients(), loadDrivers()]);
             setShowForm(false);
         } catch (error) {
             console.error('Error saving schedule:', error);
@@ -439,6 +600,23 @@ export default function ProgramacionTab() {
 
     const handleEdit = (schedule: Schedule) => {
         setEditingSchedule(schedule);
+
+        // Format datetime strings for datetime-local input if needed
+        const formatDateForInput = (dateStr: string) => {
+            if (!dateStr) return '';
+            // If the date is already in the right format for datetime-local, return it
+            if (dateStr.length >= 16 && dateStr.includes('T')) {
+                return dateStr.slice(0, 16);
+            }
+            // Otherwise, convert to ISO and then format
+            try {
+                return new Date(dateStr).toISOString().slice(0, 16);
+            } catch (e) {
+                console.error('Error formatting date:', e);
+                return dateStr;
+            }
+        };
+
         setFormData({
             id: schedule.id || '',
             description: schedule.description || '',
@@ -447,12 +625,13 @@ export default function ProgramacionTab() {
             updatedAt: schedule.updatedAt || '',
             clientId: schedule.clientId || '',
             vehicleId: schedule.vehicleId || '',
+            driverId: schedule.driverId || '',
             origin: schedule.origin || '',
             plate: schedule.plate || '',
             zone: schedule.zone || '',
             destination: schedule.destination || '',
-            startTime: schedule.startTime || '',
-            endTime: schedule.endTime || ''
+            startTime: formatDateForInput(schedule.startTime) || '',
+            endTime: formatDateForInput(schedule.endTime) || ''
         });
         setShowForm(true);
     };
@@ -479,69 +658,72 @@ export default function ProgramacionTab() {
         setEditingSchedule(null);
     };
 
+    // Calculate dashboard stats based on actual vehicle data
     const dashboard = [
         {
             label: "Vehículos Disponibles",
             icon: TruckIcon,
-            value: 10,
+            value: vehicles.filter(v => v.status === 'AVAILABLE').length,
             color: "text-blue-700",
             bgColor: "bg-blue-100",
         },
         {
             label: "En Servicio",
             icon: Cog6ToothIcon,
-            value: 5,
+            value: vehicles.filter(v => v.status === 'IN_SERVICE' || v.status === 'ON_SERVICE').length,
             color: "text-green-600",
             bgColor: "bg-green-100",
         },
         {
             label: "En Mantenimiento",
             icon: WrenchScrewdriverIcon,
-            value: 3,
+            value: vehicles.filter(v => v.status === 'IN_MAINTENANCE' || v.status === 'ON_MAINTENANCE').length,
             color: "text-yellow-500",
             bgColor: "bg-yellow-100",
         },
         {
             label: "Siniestrados",
             icon: ExclamationTriangleIcon,
-            value: 7,
+            value: vehicles.filter(v => v.status === 'WITH_ISSUE' || v.status === 'CRASHED').length,
             color: "text-red-600",
             bgColor: "bg-red-100",
         },
     ];
+
+    // Calculate seguimiento stats based on actual schedule data
     const seguimiento = [
         {
             label: "Programado",
             icon: CalendarDaysIcon,
-            value: 12,
+            value: schedules.filter(s => s.status === 'PROGRAMED').length,
             color: "text-blue-700",
             bgColor: "bg-blue-100",
         },
         {
             label: "Llegada al Punto",
             icon: MapPinIcon,
-            value: 9,
+            value: schedules.filter(s => s.status === 'ALMOST_ON_ARRIVAL').length,
             color: "text-emerald-700",
             bgColor: "bg-emerald-100",
         },
         {
             label: "Inicio del Servicio",
             icon: PlayCircleIcon,
-            value: 7,
+            value: schedules.filter(s => s.status === 'STARTED').length,
             color: "text-yellow-600",
             bgColor: "bg-yellow-100",
         },
         {
             label: "Llegada al Cliente",
             icon: UserIcon,
-            value: 6,
+            value: schedules.filter(s => s.status === 'ON_CLIENT').length,
             color: "text-purple-700",
             bgColor: "bg-purple-100",
         },
         {
             label: "Retorno del Cliente",
             icon: ArrowUturnLeftIcon,
-            value: 4,
+            value: schedules.filter(s => s.status === 'BACK_FROM_CLIENT').length,
             color: "text-red-700",
             bgColor: "bg-red-100",
         },
@@ -613,7 +795,7 @@ export default function ProgramacionTab() {
                                 <input
                                     type="text"
                                     placeholder="Search schedules..."
-                                    className="border border-gray-300 rounded-md text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white w-64"
                                     value={searchText}
                                     onChange={(e) => {
                                         const newSearchText = e.target.value;
@@ -621,7 +803,7 @@ export default function ProgramacionTab() {
                                     }}
                                 />
                                 <select
-                                    className="border border-gray-300 rounded-md text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                     value={statusFilter}
                                     onChange={(e) => {
                                         const newStatusFilter = e.target.value;
@@ -634,6 +816,11 @@ export default function ProgramacionTab() {
                                     <option value="IN_PROGRESS">In Progress</option>
                                     <option value="COMPLETED">Completed</option>
                                     <option value="CANCELLED">Cancelled</option>
+                                    <option value="PROGRAMED">Programado</option>
+                                    <option value="ALMOST_ON_ARRIVAL">Llegada al punto</option>
+                                    <option value="STARTED">Inicio del servicio</option>
+                                    <option value="ON_CLIENT">Llegada al cliente</option>
+                                    <option value="BACK_FROM_CLIENT">Retorno del cliente</option>
                                 </select>
                             </div>
                         </div>
@@ -666,16 +853,46 @@ export default function ProgramacionTab() {
                         <DataTable
                             data={filteredSchedules}
                             columns={[
-                                { key: 'origin', label: 'Origin' },
+                                {
+                                    key: 'elapsed',
+                                    label: 'Elapsed',
+                                    render: (schedule: Schedule) => {
+                                        // Calculate time difference between endTime and startTime
+                                        const start = new Date(schedule.startTime);
+                                        const end = new Date(schedule.endTime);
+                                        const diffMs = end.getTime() - start.getTime();
+
+                                        // Convert to hours and minutes
+                                        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+                                        const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+                                        // Format as HH:mm
+                                        return (
+                                            <span>
+                                                {diffHours.toString().padStart(2, '0')}:{diffMinutes.toString().padStart(2, '0')}
+                                            </span>
+                                        );
+                                    }
+                                },
+                                {
+                                    key: 'clientId',
+                                    label: 'Client',
+                                    render: (schedule: Schedule) => {
+                                        // Find the client by ID
+                                        const client = clients.find(c => c.id === schedule.clientId);
+                                        return <span>{client ? client.name : schedule.clientId}</span>;
+                                    }
+                                },
                                 { key: 'destination', label: 'Destination' },
                                 { key: 'plate', label: 'Plate' },
-                                { key: 'zone', label: 'Zone' },
                                 {
-                                    key: 'startTime',
-                                    label: 'Start Time',
-                                    render: (schedule: Schedule) => (
-                                        <span>{new Date(schedule.startTime).toLocaleString()}</span>
-                                    )
+                                    key: 'driverId',
+                                    label: 'Driver',
+                                    render: (schedule: Schedule) => {
+                                        // Find the driver by ID
+                                        const driver = drivers.find(d => d.id === schedule.driverId);
+                                        return <span>{driver ? `${driver.firstName} ${driver.lastName}` : (schedule.driverId || '-')}</span>;
+                                    }
                                 },
                                 {
                                     key: 'endTime',
@@ -684,14 +901,14 @@ export default function ProgramacionTab() {
                                         <span>{new Date(schedule.endTime).toLocaleString()}</span>
                                     )
                                 },
-                                { key: 'clientId', label: 'Client ID' },
-                                { key: 'description', label: 'Description' },
+                                { key: 'zone', label: 'Area' },
                                 {
                                     key: 'status',
                                     label: 'Status',
                                     render: (schedule: Schedule) => {
                                         let bgColor = 'bg-gray-100';
                                         let textColor = 'text-gray-600';
+                                        let displayStatus = schedule.status;
 
                                         switch(schedule.status) {
                                             case 'PENDING':
@@ -714,11 +931,36 @@ export default function ProgramacionTab() {
                                                 bgColor = 'bg-red-100';
                                                 textColor = 'text-red-600';
                                                 break;
+                                            case 'PROGRAMED':
+                                                bgColor = 'bg-blue-100';
+                                                textColor = 'text-blue-600';
+                                                displayStatus = 'Programado';
+                                                break;
+                                            case 'ALMOST_ON_ARRIVAL':
+                                                bgColor = 'bg-emerald-100';
+                                                textColor = 'text-emerald-600';
+                                                displayStatus = 'Llegada al punto';
+                                                break;
+                                            case 'STARTED':
+                                                bgColor = 'bg-yellow-100';
+                                                textColor = 'text-yellow-600';
+                                                displayStatus = 'Inicio del servicio';
+                                                break;
+                                            case 'ON_CLIENT':
+                                                bgColor = 'bg-purple-100';
+                                                textColor = 'text-purple-600';
+                                                displayStatus = 'Llegada al cliente';
+                                                break;
+                                            case 'BACK_FROM_CLIENT':
+                                                bgColor = 'bg-red-100';
+                                                textColor = 'text-red-600';
+                                                displayStatus = 'Retorno del cliente';
+                                                break;
                                         }
 
                                         return (
                                             <span className={`px-2 py-1 rounded-full text-xs font-medium ${bgColor} ${textColor}`}>
-                                                {schedule.status}
+                                                {displayStatus}
                                             </span>
                                         );
                                     }

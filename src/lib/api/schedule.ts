@@ -3,11 +3,12 @@ import { get, post, put, del } from './base';
 export interface Schedule {
   id: string;
   description: string;
-  status: string;
+  status: 'PENDING' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'PROGRAMED' | 'ALMOST_ON_ARRIVAL' | 'STARTED' | 'ON_CLIENT' | 'BACK_FROM_CLIENT' | string;
   createdAt: string;
   updatedAt: string;
   clientId: string;
   vehicleId: string;
+  driverId?: string;
   origin: string;
   plate: string;
   zone: string;
@@ -76,7 +77,20 @@ const scheduleService = {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to create schedule');
+        const errorText = await response.text();
+        let errorMessage = 'Failed to create schedule';
+
+        try {
+          // Try to parse as JSON
+          const errorData = JSON.parse(errorText);
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (e) {
+          // If not JSON, use the text directly
+          if (errorText) errorMessage = errorText;
+        }
+
+        console.error('API error response:', errorText);
+        throw new Error(errorMessage);
       }
 
       return await response.json();
@@ -85,7 +99,7 @@ const scheduleService = {
       throw error;
     }
   },
-  update: async (id: string, data: Partial<Omit<Schedule, 'id' | 'createdAt' | 'updatedAt'>>) => {
+  update: async (id: string, data: Partial<Schedule>) => {
     try {
       // Use the Next.js API route instead of directly accessing the backend
       const response = await fetch(`/api/schedules/${id}`, {

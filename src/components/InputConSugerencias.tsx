@@ -76,7 +76,7 @@ const InputConSugerencias: React.FC<Props> = ({ value, onChange, label }) => {
 
     return (
         <div className="flex flex-col w-full relative" ref={inputRef}>
-            <label className="text-xs font-semibold text-blue-700">{label}</label>
+            <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{label}</label>
             <input
                 type="text"
                 value={value}
@@ -84,11 +84,11 @@ const InputConSugerencias: React.FC<Props> = ({ value, onChange, label }) => {
                     onChange(e.target.value);
                     setShowSuggestions(true);
                 }}
-                className="border border-blue-200 rounded px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white w-full"
                 onFocus={() => setShowSuggestions(true)}
             />
             {showSuggestions && sugerencias.length > 0 && (
-                <ul className="absolute z-10 top-full left-0  bg-white border border-gray-300 rounded mt-1 w-full max-h-48 overflow-y-auto shadow-lg">
+                <ul className="absolute z-10 top-full left-0 bg-white border border-gray-300 rounded mt-1 w-full max-h-48 overflow-y-auto shadow-lg">
                     {sugerencias.map((sug, i) => (
                         <li
                             key={i}
@@ -96,7 +96,7 @@ const InputConSugerencias: React.FC<Props> = ({ value, onChange, label }) => {
                                 onChange(sug.label);
                                 setShowSuggestions(false);
                             }}
-                            className="px-3 py-2 hover:bg-blue-100 cursor-pointer text-sm"
+                            className="px-3 py-2 hover:bg-blue-100 cursor-pointer text-gray-700 text-sm"
                         >
                             {sug.label}
                         </li>

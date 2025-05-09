@@ -7,7 +7,7 @@ export interface Vehicle {
   model: string;
   year: string | number;
   color: string;
-  status: 'AVAILABLE' | 'IN_SERVICE' | 'IN_MAINTENANCE' | 'WITH_ISSUE' | 'NEW' | 'active' | 'maintenance' | 'inactive';
+  status: 'AVAILABLE' | 'IN_SERVICE' | 'ON_SERVICE' | 'IN_MAINTENANCE' | 'ON_MAINTENANCE' | 'WITH_ISSUE' | 'CRASHED' | 'NEW' | 'active' | 'maintenance' | 'inactive';
   notes: string;
   // Additional fields that might be in the API response
   plateNumber?: string;

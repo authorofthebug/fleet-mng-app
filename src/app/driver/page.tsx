@@ -13,11 +13,12 @@ export default function DriverPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState<Omit<Driver, 'id'>>({
-    name: '',
+    firstName: '',
+    lastName: '',
     licenseNumber: '',
     phone: '',
     email: '',
-    status: 'active'
+    status: 'ACTIVE'
   });
 
   useEffect(() => {
@@ -41,7 +42,8 @@ export default function DriverPage() {
   const handleEdit = (driver: Driver) => {
     setEditingDriver(driver);
     setFormData({
-      name: driver.name,
+      firstName: driver.firstName,
+      lastName: driver.lastName,
       licenseNumber: driver.licenseNumber,
       phone: driver.phone,
       email: driver.email,
@@ -66,11 +68,12 @@ export default function DriverPage() {
   const handleAdd = () => {
     setEditingDriver(null);
     setFormData({
-      name: '',
+      firstName: '',
+      lastName: '',
       licenseNumber: '',
       phone: '',
       email: '',
-      status: 'active'
+      status: 'ACTIVE'
     });
     setShowForm(true);
   };
@@ -100,7 +103,13 @@ export default function DriverPage() {
   };
 
   const columns = [
-    { key: 'name', label: 'Name' },
+    {
+      key: 'name',
+      label: 'Name',
+      render: (driver: Driver) => (
+        <span>{driver.firstName} {driver.lastName}</span>
+      )
+    },
     { key: 'licenseNumber', label: 'License Number' },
     { key: 'phone', label: 'Phone' },
     { key: 'email', label: 'Email' },
@@ -109,8 +118,8 @@ export default function DriverPage() {
       label: 'Status',
       render: (driver: Driver) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          driver.status === 'active' ? 'bg-green-100 text-green-700' :
-          driver.status === 'inactive' ? 'bg-red-100 text-red-700' :
+          driver.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
+          driver.status === 'INACTIVE' ? 'bg-red-100 text-red-700' :
           'bg-yellow-100 text-yellow-500'
         }`}>
           {driver.status.charAt(0).toUpperCase() + driver.status.slice(1)}
@@ -147,11 +156,21 @@ export default function DriverPage() {
             </h2>
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Name</label>
+                <label className="block text-sm font-medium text-gray-700">First Name</label>
                 <input
                   type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                <input
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   required
                 />
@@ -193,9 +212,8 @@ export default function DriverPage() {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as Driver['status'] })}
                   className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                 >
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                  <option value="on_leave">On Leave</option>
+                  <option value="ACTIVE">Active</option>
+                  <option value="INACTIVE">Inactive</option>
                 </select>
               </div>
               <div className="flex justify-end space-x-3">
