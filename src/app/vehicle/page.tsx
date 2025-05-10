@@ -13,7 +13,7 @@ import {
   ExclamationTriangleIcon,
   PlusIcon,
   PencilSquareIcon,
-  TrashIcon
+  //TrashIcon
 } from '@heroicons/react/24/outline';
 
 // Modal component for the vehicle form
@@ -456,9 +456,6 @@ export default function VehiclePage() {
 
         {/* Vehicle Inventory Section */}
         <div className="w-full bg-white/90 rounded-xl shadow p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800">Vehicle Inventory</h3>
-          </div>
 
           {/* Vehicle form modal */}
           <VehicleFormModal
@@ -472,13 +469,15 @@ export default function VehiclePage() {
 
           {/* Inventory content */}
           <div className="relative">
-            <div className="mb-4 flex justify-between items-center">
-              <div className="flex space-x-2">
-                <div className="relative">
+              <div className="mb-4 flex justify-between items-center">
+
+
+
+                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
                   <input
                     type="text"
                     placeholder="Search vehicles..."
-                    className="border border-gray-300 rounded-md text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
+                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white w-64"
                     value={searchText}
                     onChange={(e) => {
                       const newSearchText = e.target.value;
@@ -486,48 +485,48 @@ export default function VehiclePage() {
                       filterVehicles(newSearchText, statusFilter);
                     }}
                   />
+                  <select
+                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                    value={statusFilter}
+                    onChange={(e) => {
+                      const newStatusFilter = e.target.value;
+                      setStatusFilter(newStatusFilter);
+                      filterVehicles(searchText, newStatusFilter);
+                    }}
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="AVAILABLE" className="text-blue-600">Available</option>
+                    <option value="IN_SERVICE" className="text-green-600">In Service</option>
+                    <option value="IN_MAINTENANCE" className="text-yellow-500">In Maintenance</option>
+                    <option value="WITH_ISSUE" className="text-red-600">With Issues</option>
+                    <option value="NEW" className="text-blue-600">New</option>
+                  </select>
                 </div>
-                <select
-                  className="border border-gray-300 rounded-md text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={statusFilter}
-                  onChange={(e) => {
-                    const newStatusFilter = e.target.value;
-                    setStatusFilter(newStatusFilter);
-                    filterVehicles(searchText, newStatusFilter);
-                  }}
+                <button
+                    onClick={handleAdd}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
                 >
-                  <option value="">All Statuses</option>
-                  <option value="AVAILABLE">Available</option>
-                  <option value="IN_SERVICE">In Service</option>
-                  <option value="IN_MAINTENANCE">In Maintenance</option>
-                  <option value="WITH_ISSUE">With Issues</option>
-                  <option value="NEW">New</option>
-                </select>
+                  <PlusIcon className="h-5 w-5 mr-2" />
+                  Add Vehicle
+                </button>
               </div>
-              <button
-                onClick={handleAdd}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
-              >
-                <PlusIcon className="h-5 w-5 mr-2" />
-                Add Vehicle
-              </button>
-            </div>
-
-            <div className="relative">
-              {loading && (
-                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                </div>
-              )}
-              <DataTable
-                data={filteredVehicles}
-                columns={columns}
-                onEdit={handleEdit}
-                onDelete={handleDelete}
-              />
-            </div>
           </div>
         </div>
+
+        <div className="relative">
+          {loading && (
+              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              </div>
+          )}
+          <DataTable
+              data={filteredVehicles}
+              columns={columns}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+          />
+        </div>
+
       </div>
     </Layout>
   );

@@ -4,18 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aacdc023-e3cc-4ddc-803e-7f0226c9ddae" name="Changes" comment="crud schedule almost ready">
-      <change afterPath="$PROJECT_DIR$/src/app/api/drivers/[id]/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/drivers/route.ts" afterDir="false" />
+    <list default="true" id="aacdc023-e3cc-4ddc-803e-7f0226c9ddae" name="Changes" comment="first deliverable ready">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/schedules/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/schedules/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/schedules/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/schedules/route.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/client/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/driver/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/driver/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/schedule/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/InputConSugerencias.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/InputConSugerencias.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/driver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/driver.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/schedule.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/schedule.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/vehicle.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/vehicle.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/globals.css" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/globals.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/login/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app/vehicle/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/vehicle/page.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/layout/Breadcumb.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/layout/Breadcumb.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/layout/Layout.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/layout/Layout.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/layout/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/layout/Sidebar.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/lib/auth.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/auth.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -51,6 +51,7 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;npm.Next.js: server-side.executor&quot;: &quot;Debug&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;MTThemeSelectorConfigurable&quot;,
     &quot;ts.external.directory.path&quot;: &quot;/Users/wilbert/Documents/Desktop/Qowin/ControlV/ui/fleet-mng-app/node_modules/typescript/lib&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
@@ -93,7 +94,12 @@
       <workItem from="1746324627622" duration="909000" />
       <workItem from="1746325541196" duration="408000" />
       <workItem from="1746325954296" duration="28418000" />
-      <workItem from="1746734814994" duration="22855000" />
+      <workItem from="1746734814994" duration="23031000" />
+      <workItem from="1746800754351" duration="901000" />
+      <workItem from="1746853955195" duration="23000" />
+      <workItem from="1746856249453" duration="11502000" />
+      <workItem from="1746901651001" duration="476000" />
+      <workItem from="1746902206952" duration="4159000" />
     </task>
     <task id="LOCAL-00001" summary="crud vehicle almost complete">
       <option name="closed" value="true" />
@@ -119,7 +125,15 @@
       <option name="project" value="LOCAL" />
       <updated>1746766708632</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="first deliverable ready">
+      <option name="closed" value="true" />
+      <created>1746779736275</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1746779736275</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -129,6 +143,7 @@
     <MESSAGE value="crud vehicle almost complete" />
     <MESSAGE value="crud client almost complete" />
     <MESSAGE value="crud schedule almost ready" />
-    <option name="LAST_COMMIT_MESSAGE" value="crud schedule almost ready" />
+    <MESSAGE value="first deliverable ready" />
+    <option name="LAST_COMMIT_MESSAGE" value="first deliverable ready" />
   </component>
 </project>

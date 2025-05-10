@@ -454,9 +454,6 @@ export default function ClientPage() {
 
         {/* Client Inventory Section */}
         <div className="w-full bg-white/90 rounded-xl shadow p-6">
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-800">Client Inventory</h3>
-          </div>
 
           {/* Client form modal */}
           <ClientFormModal
@@ -476,20 +473,21 @@ export default function ClientPage() {
             />
           )}
 
-          <div className="space-y-4">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0">
-              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
+          {/* Inventory content */}
+          <div className="relative">
+            <div className="mb-4 flex justify-between items-center">
+              <div className="flex space-x-2">
                 <input
                   type="text"
                   placeholder="Search clients..."
                   value={searchText}
                   onChange={handleSearch}
-                  className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white w-64"
                 />
                 <select
                   value={statusFilter}
                   onChange={handleStatusFilter}
-                  className="border border-gray-300 rounded-md text-sm px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                 >
                   <option value="">All Statuses</option>
                   <option value="ACTIVE" className="text-green-600">Active</option>
@@ -499,27 +497,38 @@ export default function ClientPage() {
               </div>
               <button
                 onClick={handleAdd}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
+                className="group relative px-6 py-3 overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-medium shadow-xl transition-all duration-300 hover:shadow-indigo-500/30 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:translate-y-1"
               >
-                <PlusIcon className="h-5 w-5 mr-2" />
-                Add Client
+                {/* Animated background effect */}
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-500 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
+                
+                {/* Shine effect */}
+                <span className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
+                
+                {/* Button content */}
+                <span className="relative flex items-center justify-center">
+                  <span className="flex items-center justify-center bg-white/30 rounded-full p-1.5 mr-2 backdrop-blur-sm transition-transform duration-300 group-hover:rotate-180 group-hover:scale-110">
+                    <PlusIcon className="h-4 w-4 text-white" />
+                  </span>
+                  <span className="font-semibold tracking-wide">Add Client</span>
+                </span>
               </button>
             </div>
-
-            <div className="relative">
-              {loading && (
-                <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                </div>
-              )}
-              <DataTable
-                data={filteredClients}
-                columns={columns}
-                onEdit={handleEdit}
-                onDelete={()=>{}}
-              />
-            </div>
           </div>
+
+        </div>
+        <div className="relative">
+          {loading && (
+              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+              </div>
+          )}
+          <DataTable
+              data={filteredClients}
+              columns={columns}
+              onEdit={handleEdit}
+              onDelete={()=>{}}
+          />
         </div>
       </div>
     </Layout>

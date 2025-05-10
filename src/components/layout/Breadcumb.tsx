@@ -1,6 +1,6 @@
-"use client";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/solid';
 
 export default function Breadcrumb() {
     const pathname = usePathname();
@@ -9,31 +9,48 @@ export default function Breadcrumb() {
     const friendlyNames: Record<string, string> = {
         schedule: "Programación",
         agency: "Agencias",
-        // ...agrega más si quieres
+        client: "Clients",
+        driver: "Drivers",
+        vehicle: "Vehicles",
+        // Add more as needed
     };
 
     return (
-        <nav className="flex items-center space-x-2 text-sm text-gray-500">
-            <Link href="/" className="hover:underline text-blue-700 font-semibold">
-                Inicio
-            </Link>
-            {segments.map((seg, idx) => (
-                <span key={idx} className="flex items-center">
-          <span className="mx-1 text-gray-400">/</span>
-                    {idx === segments.length - 1 ? (
-                        <span className="text-gray-700 font-semibold">
-              {friendlyNames[seg] || seg.charAt(0).toUpperCase() + seg.slice(1)}
-            </span>
-                    ) : (
-                        <Link
-                            href={"/" + segments.slice(0, idx + 1).join("/")}
-                            className="hover:underline text-blue-700"
-                        >
-                            {friendlyNames[seg] || seg.charAt(0).toUpperCase() + seg.slice(1)}
-                        </Link>
-                    )}
-        </span>
-            ))}
+        <nav className="flex pl-0" aria-label="Breadcrumb">
+            <ol className="inline-flex items-center space-x-1 md:space-x-2">
+                <li className="inline-flex items-center">
+                    <Link 
+                        href="/" 
+                        className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
+                    >
+                        <HomeIcon className="w-4 h-4 mr-2" />
+                        Home
+                    </Link>
+                </li>
+                
+                {segments.map((segment, index) => {
+                    const href = `/${segments.slice(0, index + 1).join("/")}`;
+                    const isLast = index === segments.length - 1;
+                    
+                    return (
+                        <li key={segment} className="flex items-center">
+                            <ChevronRightIcon className="w-5 h-5 text-gray-400" />
+                            {isLast ? (
+                                <span className="ml-1 text-sm font-medium text-blue-600 md:ml-2">
+                                    {friendlyNames[segment] || segment.charAt(0).toUpperCase() + segment.slice(1)}
+                                </span>
+                            ) : (
+                                <Link 
+                                    href={href}
+                                    className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2"
+                                >
+                                    {friendlyNames[segment] || segment.charAt(0).toUpperCase() + segment.slice(1)}
+                                </Link>
+                            )}
+                        </li>
+                    );
+                })}
+            </ol>
         </nav>
     );
 }
