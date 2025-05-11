@@ -356,6 +356,14 @@ const ScheduleFormModal = ({
 export default function ProgramacionTab() {
     // Use the sidebar width hook to set the CSS variable
     useSidebarWidth();
+    const [currentTime, setCurrentTime] = useState(new Date());
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, []);
 
     // Form state management
     const [showForm, setShowForm] = useState(false);
@@ -381,6 +389,10 @@ export default function ProgramacionTab() {
     const [searchText, setSearchText] = useState<string>('');
     const [statusFilter, setStatusFilter] = useState<string>('');
     const [filteredSchedules, setFilteredSchedules] = useState<Schedule[]>([]);
+    const [initialSortConfig] = useState({
+        key: 'startTime',
+        direction: 'desc' as 'asc' | 'desc'
+    });
 
     const handleAdd = () => {
         setEditingSchedule(null);
@@ -739,7 +751,17 @@ export default function ProgramacionTab() {
                     <div className="mb-6">
 
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            <h4 className="text-md font-medium text-gray-700 mb-3">En Base</h4>
+                            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+                                <div className="text-3xl font-mono font-bold flex items-center">
+                                    {currentTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                    <span className="ml-1 text-blue-300 animate-pulse">
+                                        :{currentTime.getSeconds().toString().padStart(2, '0')}
+                                    </span>
+                                </div>
+                                <div className="text-blue-200">
+                                    {currentTime.toLocaleDateString('es-ES', { weekday: 'long', month: 'long', day: 'numeric' })}
+                                </div>
+                            </div>
                             {dashboard.map((stat) => (
                                 <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                                     <div className="flex items-center">
@@ -758,7 +780,6 @@ export default function ProgramacionTab() {
 
                     {/* Dashboard Stats - En Ruta */}
                     <div>
-                        <h4 className="text-md font-medium text-gray-700 mb-3">En Ruta</h4>
                         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                             {seguimiento.map((stat) => (
                                 <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -788,51 +809,6 @@ export default function ProgramacionTab() {
                 />
 
                 {/* Schedule header with add button */}
-                <div className="border-b mb-6">
-                    <div className="flex justify-between items-center mb-4">
-                        <div className="flex justify-between items-center">
-                            <div className="flex space-x-4">
-                                <input
-                                    type="text"
-                                    placeholder="Search schedules..."
-                                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white w-64"
-                                    value={searchText}
-                                    onChange={(e) => {
-                                        const newSearchText = e.target.value;
-                                        setSearchText(newSearchText);
-                                    }}
-                                />
-                                <select
-                                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
-                                    value={statusFilter}
-                                    onChange={(e) => {
-                                        const newStatusFilter = e.target.value;
-                                        setStatusFilter(newStatusFilter);
-                                    }}
-                                >
-                                    <option value="">All Statuses</option>
-                                    <option value="PENDING">Pending</option>
-                                    <option value="CONFIRMED">Confirmed</option>
-                                    <option value="IN_PROGRESS">In Progress</option>
-                                    <option value="COMPLETED">Completed</option>
-                                    <option value="CANCELLED">Cancelled</option>
-                                    <option value="PROGRAMED">Programado</option>
-                                    <option value="ALMOST_ON_ARRIVAL">Llegada al punto</option>
-                                    <option value="STARTED">Inicio del servicio</option>
-                                    <option value="ON_CLIENT">Llegada al cliente</option>
-                                    <option value="BACK_FROM_CLIENT">Retorno del cliente</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button
-                            onClick={handleAdd}
-                            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
-                        >
-                            <PlusIcon className="h-5 w-5 mr-2" />
-                            Add Schedule
-                        </button>
-                    </div>
-                </div>
 
                 {/* Error notification */}
                 {error && (
@@ -854,25 +830,11 @@ export default function ProgramacionTab() {
                             data={filteredSchedules}
                             columns={[
                                 {
-                                    key: 'elapsed',
-                                    label: 'Elapsed',
-                                    render: (schedule: Schedule) => {
-                                        // Calculate time difference between endTime and startTime
-                                        const start = new Date(schedule.startTime);
-                                        const end = new Date(schedule.endTime);
-                                        const diffMs = end.getTime() - start.getTime();
-
-                                        // Convert to hours and minutes
-                                        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-                                        const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-
-                                        // Format as HH:mm
-                                        return (
-                                            <span>
-                                                {diffHours.toString().padStart(2, '0')}:{diffMinutes.toString().padStart(2, '0')}
-                                            </span>
-                                        );
-                                    }
+                                    key: 'startTime',
+                                    label: 'Departure',
+                                    render: (schedule: Schedule) => (
+                                        <span>{new Date(schedule.startTime).toLocaleDateString('en-GB')}</span>
+                                    )
                                 },
                                 {
                                     key: 'clientId',
@@ -898,7 +860,7 @@ export default function ProgramacionTab() {
                                     key: 'endTime',
                                     label: 'End Time',
                                     render: (schedule: Schedule) => (
-                                        <span>{new Date(schedule.endTime).toLocaleString()}</span>
+                                        <span>{new Date(schedule.endTime).toLocaleDateString('en-GB')}</span>
                                     )
                                 },
                                 { key: 'zone', label: 'Area' },
@@ -969,11 +931,31 @@ export default function ProgramacionTab() {
                             onEdit={handleEdit}
                             onDelete={()=>{}}
                             loading={loading}
+                            initialSortConfig={initialSortConfig}
                         />
                     )}
                 </div>
             </div>
+            
+            {/* Floating Add Button */}
+            <button
+                onClick={handleAdd}
+                className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
+            >
+                {/* Animated background effect */}
+                <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
+                
+                {/* Shine effect */}
+                <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
+                
+                {/* Button content */}
+                <PlusIcon className="h-6 w-6 text-white relative z-10" />
+                
+                {/* Tooltip on hover */}
+                <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                    Add Schedule
+                </span>
+            </button>
         </Layout>
-
     );
 }

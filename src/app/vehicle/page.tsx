@@ -102,7 +102,7 @@ const VehicleFormModal = ({
                   <div className="flex flex-col">
                     <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Year</label>
                     <input
-                      type="text"
+                      type="date"
                       value={formData.year}
                       onChange={(e) => setFormData({ ...formData, year: e.target.value })}
                       className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
@@ -195,7 +195,7 @@ export default function VehiclePage() {
     brand: '',
     licensePlate: '',
     model: '',
-    year: new Date().getFullYear().toString(),
+    year: new Date().toISOString().split('T')[0], // Format as YYYY-MM-DD
     color: '',
     notes: '',
     status: 'AVAILABLE',
@@ -266,7 +266,7 @@ export default function VehiclePage() {
       brand: 'Tesla',
       licensePlate: 'JKL012',
       model: 'Model 3',
-      year: '2024',
+      year: new Date().toISOString().split('T')[0], // Format as YYYY-MM-DD
       color: 'Red',
       notes: 'Just added to fleet, pending first inspection',
       status: 'NEW'
@@ -362,7 +362,22 @@ export default function VehiclePage() {
       render: (vehicle: Vehicle) => vehicle.make || vehicle.brand
     },
     { key: 'model', label: 'Model' },
-    { key: 'year', label: 'Year' },
+    { 
+      key: 'year', 
+      label: 'Year',
+      render: (vehicle: Vehicle) => {
+        // If it's a date format, display just the year
+        if (vehicle.year && typeof vehicle.year === 'string' && vehicle.year.includes('-')) {
+          const date = new Date(vehicle.year);
+          // Format as DD/MM/YYYY if it's a full date
+          if (!isNaN(date.getTime())) {
+            return date.toLocaleDateString('en-GB'); // en-GB uses DD/MM/YYYY format
+          }
+        }
+        // Otherwise return as is
+        return vehicle.year;
+      }
+    },
     { key: 'color', label: 'Color' },
     {
       key: 'status',
@@ -455,65 +470,20 @@ export default function VehiclePage() {
         </div>
 
         {/* Vehicle Inventory Section */}
-        <div className="w-full bg-white/90 rounded-xl shadow p-6">
 
+        <div className="relative">
           {/* Vehicle form modal */}
           <VehicleFormModal
-            show={showForm}
-            onClose={handleFormCancel}
-            onSubmit={handleFormSubmit}
-            formData={formData}
-            setFormData={setFormData}
-            editingVehicle={editingVehicle}
+              show={showForm}
+              onClose={handleFormCancel}
+              onSubmit={handleFormSubmit}
+              formData={formData}
+              setFormData={setFormData}
+              editingVehicle={editingVehicle}
           />
 
           {/* Inventory content */}
-          <div className="relative">
-              <div className="mb-4 flex justify-between items-center">
 
-
-
-                <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full md:w-auto">
-                  <input
-                    type="text"
-                    placeholder="Search vehicles..."
-                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white w-64"
-                    value={searchText}
-                    onChange={(e) => {
-                      const newSearchText = e.target.value;
-                      setSearchText(newSearchText);
-                      filterVehicles(newSearchText, statusFilter);
-                    }}
-                  />
-                  <select
-                    className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
-                    value={statusFilter}
-                    onChange={(e) => {
-                      const newStatusFilter = e.target.value;
-                      setStatusFilter(newStatusFilter);
-                      filterVehicles(searchText, newStatusFilter);
-                    }}
-                  >
-                    <option value="">All Statuses</option>
-                    <option value="AVAILABLE" className="text-blue-600">Available</option>
-                    <option value="IN_SERVICE" className="text-green-600">In Service</option>
-                    <option value="IN_MAINTENANCE" className="text-yellow-500">In Maintenance</option>
-                    <option value="WITH_ISSUE" className="text-red-600">With Issues</option>
-                    <option value="NEW" className="text-blue-600">New</option>
-                  </select>
-                </div>
-                <button
-                    onClick={handleAdd}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
-                >
-                  <PlusIcon className="h-5 w-5 mr-2" />
-                  Add Vehicle
-                </button>
-              </div>
-          </div>
-        </div>
-
-        <div className="relative">
           {loading && (
               <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -526,7 +496,26 @@ export default function VehiclePage() {
               onDelete={handleDelete}
           />
         </div>
-
+        
+        {/* Floating Add Button */}
+        <button
+          onClick={handleAdd}
+          className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
+        >
+          {/* Animated background effect */}
+          <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
+          
+          {/* Shine effect */}
+          <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
+          
+          {/* Button content */}
+          <PlusIcon className="h-6 w-6 text-white relative z-10" />
+          
+          {/* Tooltip on hover */}
+          <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+            Add Vehicle
+          </span>
+        </button>
       </div>
     </Layout>
   );

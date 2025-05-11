@@ -5,7 +5,8 @@ import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
 import { driverService, Driver } from '@/lib/api/driver';
-import {UserIcon, UserCircleIcon, PlusIcon, PencilSquareIcon} from '@heroicons/react/24/outline';
+import { UserIcon, UserCircleIcon, PlusIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { useSidebarWidth } from '@/hooks/useSidebarWidth';
 
 // Modal component for the driver form
 const DriverFormModal = ({
@@ -27,14 +28,18 @@ const DriverFormModal = ({
 
   return (
     <>
-      {/* Overlay */}
+      {/* Overlay that covers only the main content area */}
       <div
         className="fixed inset-0 bg-gray-600 bg-opacity-50 z-40"
         onClick={onClose}
+        style={{ left: 'var(--sidebar-width, 16rem)' }}
       ></div>
 
-      {/* Modal container */}
-      <div className="fixed inset-0 z-50 overflow-y-auto">
+      {/* Modal container positioned in the main content area */}
+      <div
+        className="fixed inset-0 z-50 overflow-y-auto"
+        style={{ left: 'var(--sidebar-width, 16rem)' }}
+      >
         <div className="flex items-center justify-center min-h-screen p-4">
           <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
@@ -50,74 +55,102 @@ const DriverFormModal = ({
                 </svg>
               </button>
             </div>
+
             <div className="p-6">
-              <form onSubmit={onSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">First Name</label>
-                  <input
-                    type="text"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
+              <form onSubmit={onSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="flex flex-col">
+                    <label htmlFor="firstName" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      id="firstName"
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="lastName" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      id="lastName"
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="licenseNumber" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      License Number
+                    </label>
+                    <input
+                      type="text"
+                      id="licenseNumber"
+                      value={formData.licenseNumber}
+                      onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="phone" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Phone
+                    </label>
+                    <input
+                      type="tel"
+                      id="phone"
+                      value={formData.phone}
+                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="email" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <label htmlFor="status" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </label>
+                    <select
+                      id="status"
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value as Driver['status'] })}
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      required
+                    >
+                      <option value="ACTIVE" className="text-green-600">Active</option>
+                      <option value="INACTIVE" className="text-red-600">Inactive</option>
+                    </select>
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Last Name</label>
-                  <input
-                    type="text"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">License Number</label>
-                  <input
-                    type="text"
-                    value={formData.licenseNumber}
-                    onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Phone</label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Email</label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Status</label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value as Driver['status'] })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  >
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
-                  </select>
-                </div>
-                <div className="flex justify-end space-x-3 pt-4">
+
+                <div className="flex justify-end space-x-3 pt-4 border-t">
                   <button
                     type="button"
                     onClick={onClose}
-                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                    className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center"
                   >
                     Cancel
                   </button>
@@ -148,6 +181,9 @@ const DriverFormModal = ({
 };
 
 export default function DriverPage() {
+  // Use the sidebar width hook to set the CSS variable
+  useSidebarWidth();
+  
   const [drivers, setDrivers] = useState<Driver[]>([]);
   const [showForm, setShowForm] = useState(false);
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
@@ -346,38 +382,6 @@ export default function DriverPage() {
           ))}
         </div>
 
-        <div className="w-full bg-white/90 rounded-xl shadow p-6">
-          <div className="relative">
-            <div className="mb-4 flex justify-between items-center">
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  placeholder="Search drivers..."
-                  className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white w-64"
-                  value={searchText}
-                  onChange={(e) => setSearchText(e.target.value)}
-                />
-                <select
-                  className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                  <option value="">All Statuses</option>
-                  <option value="ACTIVE" className="text-green-600">Active</option>
-                  <option value="INACTIVE" className="text-red-600">Inactive</option>
-                </select>
-              </div>
-              <button
-                onClick={handleAdd}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center"
-              >
-                <PlusIcon className="h-5 w-5 mr-2" />
-                Add Driver
-              </button>
-            </div>
-          </div>
-        </div>
-
         {error && (
           <Notification
             message={error}
@@ -409,6 +413,26 @@ export default function DriverPage() {
             onDelete={handleDelete}
           />
         </div>
+        
+        {/* Floating Add Button */}
+        <button
+          onClick={handleAdd}
+          className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
+        >
+          {/* Animated background effect */}
+          <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
+          
+          {/* Shine effect */}
+          <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
+          
+          {/* Button content */}
+          <PlusIcon className="h-6 w-6 text-white relative z-10" />
+          
+          {/* Tooltip on hover */}
+          <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+            Add Driver
+          </span>
+        </button>
       </div>
     </Layout>
   );

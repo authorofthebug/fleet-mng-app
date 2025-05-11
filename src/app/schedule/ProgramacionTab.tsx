@@ -465,7 +465,14 @@ export default function ProgramacionTab() {
 
                 {/* Dashboard Stats - En Base */}
                 <div className="mb-6">
-                    <h4 className="text-md font-medium text-gray-700 mb-3">En Base</h4>
+                    <div className="text-right">
+                        <div className="text-3xl font-mono font-bold">
+                            {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                        <div className="text-blue-200">
+                            {currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}
+                        </div>
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         {dashboard.map((stat) => (
                             <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
@@ -485,7 +492,6 @@ export default function ProgramacionTab() {
 
                 {/* Dashboard Stats - En Ruta */}
                 <div>
-                    <h4 className="text-md font-medium text-gray-700 mb-3">En Ruta</h4>
                     <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
                         {seguimiento.map((stat) => (
                             <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">

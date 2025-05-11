@@ -453,71 +453,26 @@ export default function ClientPage() {
         </div>
 
         {/* Client Inventory Section */}
-        <div className="w-full bg-white/90 rounded-xl shadow p-6">
 
+        <div className="relative">
           {/* Client form modal */}
           <ClientFormModal
-            show={showForm}
-            onClose={handleFormCancel}
-            onSubmit={handleFormSubmit}
-            formData={formData}
-            setFormData={setFormData}
-            editingClient={editingClient}
+              show={showForm}
+              onClose={handleFormCancel}
+              onSubmit={handleFormSubmit}
+              formData={formData}
+              setFormData={setFormData}
+              editingClient={editingClient}
           />
 
           {error && (
-            <Notification
-              type="error"
-              message={error}
-              onClose={() => setError(null)}
-            />
+              <Notification
+                  type="error"
+                  message={error}
+                  onClose={() => setError(null)}
+              />
           )}
 
-          {/* Inventory content */}
-          <div className="relative">
-            <div className="mb-4 flex justify-between items-center">
-              <div className="flex space-x-2">
-                <input
-                  type="text"
-                  placeholder="Search clients..."
-                  value={searchText}
-                  onChange={handleSearch}
-                  className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white w-64"
-                />
-                <select
-                  value={statusFilter}
-                  onChange={handleStatusFilter}
-                  className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
-                >
-                  <option value="">All Statuses</option>
-                  <option value="ACTIVE" className="text-green-600">Active</option>
-                  <option value="PENDING" className="text-yellow-500">Pending</option>
-                  <option value="INACTIVE" className="text-red-600">Inactive</option>
-                </select>
-              </div>
-              <button
-                onClick={handleAdd}
-                className="group relative px-6 py-3 overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 via-indigo-500 to-purple-600 text-white font-medium shadow-xl transition-all duration-300 hover:shadow-indigo-500/30 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 active:translate-y-1"
-              >
-                {/* Animated background effect */}
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-500 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
-                
-                {/* Shine effect */}
-                <span className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
-                
-                {/* Button content */}
-                <span className="relative flex items-center justify-center">
-                  <span className="flex items-center justify-center bg-white/30 rounded-full p-1.5 mr-2 backdrop-blur-sm transition-transform duration-300 group-hover:rotate-180 group-hover:scale-110">
-                    <PlusIcon className="h-4 w-4 text-white" />
-                  </span>
-                  <span className="font-semibold tracking-wide">Add Client</span>
-                </span>
-              </button>
-            </div>
-          </div>
-
-        </div>
-        <div className="relative">
           {loading && (
               <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
@@ -530,6 +485,26 @@ export default function ClientPage() {
               onDelete={()=>{}}
           />
         </div>
+        
+        {/* Floating Add Button */}
+        <button
+          onClick={handleAdd}
+          className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
+        >
+          {/* Animated background effect */}
+          <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
+          
+          {/* Shine effect */}
+          <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
+          
+          {/* Button content */}
+          <PlusIcon className="h-6 w-6 text-white relative z-10" />
+          
+          {/* Tooltip on hover */}
+          <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+            Add Client
+          </span>
+        </button>
       </div>
     </Layout>
   );
