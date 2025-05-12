@@ -19,12 +19,22 @@ const defaultHeaders = {
 async function handleResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
     let errorData;
+    let responseText = '';
+    
+    // First try to get the response text
     try {
-      errorData = await response.json();
+      responseText = await response.text();
+    } catch (e) {
+      responseText = 'Could not read response text';
+    }
+    
+    // Then try to parse it as JSON
+    try {
+      errorData = responseText ? JSON.parse(responseText) : null;
     } catch (parseError) {
       console.error('Error parsing error response:', parseError);
       errorData = {
-        message: 'An error occurred',
+        message: responseText || 'An error occurred',
         details: response.statusText,
         status: response.status,
         statusText: response.statusText,
@@ -32,31 +42,26 @@ async function handleResponse<T>(response: Response): Promise<T> {
       };
     }
 
-    console.error('API Error Response:', {
+    const errorInfo = {
       status: response.status,
       statusText: response.statusText,
       url: response.url,
       error: errorData,
-      headers: Object.fromEntries(response.headers.entries())
-    });
+      headers: Object.fromEntries(response.headers.entries()),
+      responseText
+    };
 
-    // If the error response is empty or missing a message, provide more context
-    if (!errorData || Object.keys(errorData).length === 0 || !errorData.message) {
-      errorData = {
-        message: `Server returned ${response.status} ${response.statusText}`,
-        details: 'The server responded with an empty error object',
-        status: response.status,
-        statusText: response.statusText,
-        url: response.url,
-        headers: Object.fromEntries(response.headers.entries())
-      };
-    }
+    console.error('API Error Response:', errorInfo);
 
-    throw new ApiError(response.status, errorData.message || 'An error occurred');
+    throw new ApiError(response.status, errorData?.message || `Server returned ${response.status} ${response.statusText}`);
   }
 
   try {
-    const data = await response.json();
+    const text = await response.text();
+    if (!text) {
+      return {} as T;
+    }
+    const data = JSON.parse(text);
     return data;
   } catch (parseError) {
     console.error('Error parsing response:', parseError, {
@@ -71,44 +76,34 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
 export async function get<T>(endpoint: string): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
-  console.log('Fetching:', url, {
-    method: 'GET',
-    headers: defaultHeaders,
-    // Removed credentials and mode to avoid CORS issues
-    // credentials: 'include',
-    // mode: 'cors'
-  });
+  console.log('Fetching:', url);
 
   try {
-    console.log('Making fetch request to:', url);
     const response = await fetch(url, {
       method: 'GET',
       headers: defaultHeaders,
-      // Removed credentials and mode to avoid CORS issues
-      // credentials: 'include',
-      // mode: 'cors'
     });
 
-    console.log('Response status:', response.status, {
+    console.log('Response received:', {
+      status: response.status,
       url: response.url,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries())
+      statusText: response.statusText
     });
 
     return handleResponse<T>(response);
   } catch (error) {
-    console.error('Fetch error:', {
-      error,
+    console.error('Network error during fetch:', {
+      error: error instanceof Error ? error.message : String(error),
       url,
       endpoint,
       baseUrl: API_BASE_URL
     });
 
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new ApiError(0, 'Unable to connect to the server. Please check if the server is running and CORS is properly configured.');
+      throw new ApiError(0, 'Unable to connect to the server. Please check if the server is running and accessible.');
     }
     if (error instanceof Error) {
-      throw new ApiError(0, `Failed to connect to the server: ${error.message}`);
+      throw new ApiError(0, `Network error: ${error.message}`);
     }
     throw error;
   }
