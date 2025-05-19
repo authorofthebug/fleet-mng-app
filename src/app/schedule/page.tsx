@@ -91,7 +91,7 @@ const ScheduleFormModal = ({
         try {
             setLoadingDrivers(true);
             setDriverError(null);
-            const response = await fetch('/api/drivers');
+            const response = await fetch('/api/driver');
             if (!response.ok) {
                 throw new Error('Failed to load drivers');
             }
