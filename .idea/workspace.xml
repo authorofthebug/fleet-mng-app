@@ -4,46 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aacdc023-e3cc-4ddc-803e-7f0226c9ddae" name="Changes" comment="refactoring">
-      <change afterPath="$PROJECT_DIR$/src/app/api/driver/[id]/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/app/api/driver/route.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/lib/config.ts" afterDir="false" />
+    <list default="true" id="aacdc023-e3cc-4ddc-803e-7f0226c9ddae" name="Changes" comment="integration with aws lambda">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/next.config.ts" beforeDir="false" afterPath="$PROJECT_DIR$/next.config.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/public/mock-server.js" beforeDir="false" afterPath="$PROJECT_DIR$/public/mock-server.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api-test/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api-test/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/clients/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/client/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/clients/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/client/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/companies/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/companies/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/drivers/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/drivers/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/drivers/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/drivers/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/generic-types/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/generic-type/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/generic-types/by-category/[category]/[status]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/generic-type/by-category/[category]/[status]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/generic-types/id/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/generic-type/id/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/generic-types/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/generic-type/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/schedules/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/schedule/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/schedules/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/schedule/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/vehicles/[id]/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/vehicle/[id]/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/api/vehicles/route.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/api/vehicle/route.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/driver/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/driver/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/generic-types/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/generic-types/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/login/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/login/page.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/register-vehicle/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/register-vehicle/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/schedule/ProgramacionTab.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/ProgramacionTab.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/schedule/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/vehicle/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/vehicle/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ApiDiagnostic.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ApiDiagnostic.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/layout/Sidebar.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/layout/Sidebar.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/base.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/base.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/client.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/client.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/driver.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/driver.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/parameter.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/parameter.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/schedule.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/schedule.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/api/vehicle.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/api/vehicle.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/lib/mock/certifications.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/lib/mock/certifications.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/middleware.ts" beforeDir="false" afterPath="$PROJECT_DIR$/src/middleware.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -78,7 +41,7 @@
     "node.js.selected.package.eslint": "(autodetect)",
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "npm.Next.js: server-side.executor": "Debug",
+    "npm.Next.js: server-side.executor": "Run",
     "settings.editor.selected.configurable": "MTThemeSelectorConfigurable",
     "ts.external.directory.path": "/Users/wilbert/Documents/Desktop/Qowin/ControlV/ui/fleet-mng-app/node_modules/typescript/lib",
     "vue.rearranger.settings.migration": "true"
@@ -130,7 +93,7 @@
       <workItem from="1746901651001" duration="476000" />
       <workItem from="1746902206952" duration="24171000" />
       <workItem from="1747502079899" duration="547000" />
-      <workItem from="1747588631867" duration="23150000" />
+      <workItem from="1747588631867" duration="25335000" />
     </task>
     <task id="LOCAL-00001" summary="crud vehicle almost complete">
       <option name="closed" value="true" />
@@ -188,7 +151,15 @@
       <option name="project" value="LOCAL" />
       <updated>1747008021408</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="integration with aws lambda">
+      <option name="closed" value="true" />
+      <created>1747626987691</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1747626987691</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -202,6 +173,7 @@
     <MESSAGE value="almost ready to deploy on amplify" />
     <MESSAGE value="before add configuration module" />
     <MESSAGE value="refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="refactoring" />
+    <MESSAGE value="integration with aws lambda" />
+    <option name="LAST_COMMIT_MESSAGE" value="integration with aws lambda" />
   </component>
 </project>

@@ -12,33 +12,64 @@ import {
   BellAlertIcon,
   ArrowTrendingUpIcon
 } from '@heroicons/react/24/outline';
+import {vehicleService} from "@/lib/api/vehicle";
+import {driverService} from "@/lib/api/driver";
+import {scheduleService} from "@/lib/api/schedule";
+import {clientService} from "@/lib/api/client";
+
+
+
+const availableVehicles = async ()=>{
+
+  const response = await vehicleService.getAll();
+  return response.filter(v => v.status === 'ACTIVE' || v.status === 'active').length;
+};
+const availableDrivers = async ()=>{
+  const response = await driverService.getAll();
+  return response.filter(d => d.status === 'ACTIVE').length;
+};
+const scheduledTrips = async ()=>{
+  const response = await scheduleService.getAll();
+  return response.filter(s => s.status === 'PROGRAMED').length;
+};
+const activeClients = async ()=>{
+  const response = await clientService.getAll();
+  return response.filter(c => c.status === 'ACTIVE').length;
+};
+
+ const [vehicles, drivers, schedules, clients] = await Promise.all([
+  availableVehicles(),
+  availableDrivers(),
+  scheduledTrips(),
+  activeClients(),
+]);
 
 // Dashboard stats with animated counters
 const dashboardStats = [
   { 
     label: "Active Vehicles", 
-    value: 24, 
+    value: vehicles,
     color: "text-blue-600", 
     bgColor: "from-blue-50 to-blue-100",
     icon: TruckIcon 
   },
   { 
     label: "Available Drivers", 
-    value: 18, 
+    value: drivers,
     color: "text-emerald-600", 
     bgColor: "from-emerald-50 to-emerald-100",
     icon: UserIcon 
   },
   { 
     label: "Scheduled Trips", 
-    value: 12, 
+    value: schedules,
     color: "text-violet-600", 
     bgColor: "from-violet-50 to-violet-100",
     icon: CalendarDaysIcon 
   },
   { 
     label: "Active Clients", 
-    value: 8, 
+    value: clients,
     color: "text-amber-600", 
     bgColor: "from-amber-50 to-amber-100",
     icon: UserGroupIcon 

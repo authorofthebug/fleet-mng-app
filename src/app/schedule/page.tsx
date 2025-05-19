@@ -673,7 +673,7 @@ export default function ProgramacionTab() {
         {
             label: "Vehículos Disponibles",
             icon: TruckIcon,
-            value: vehicles.filter(v => v.status === 'AVAILABLE').length,
+            value: vehicles.filter(v => v.status === 'ACTIVE').length,
             color: "text-blue-700",
             bgColor: "bg-blue-100",
         },

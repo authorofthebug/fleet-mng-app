@@ -198,7 +198,7 @@ export default function VehiclePage() {
     year: new Date().toISOString().split('T')[0], // Format as YYYY-MM-DD
     color: '',
     notes: '',
-    status: 'AVAILABLE',
+    status: 'ACTIVE',
     plateNumber: '',
     make: ''
   });
@@ -414,7 +414,7 @@ export default function VehiclePage() {
     {
       label: "Available Vehicles",
       icon: TruckIcon,
-      value: filteredVehicles.filter(v => v.status === 'AVAILABLE' || v.status === 'active').length,
+      value: filteredVehicles.filter(v => v.status === 'ACTIVE' || v.status === 'active').length,
       color: "text-blue-700",
       bgColor: "bg-blue-100",
     },
