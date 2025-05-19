@@ -1,8 +1,4 @@
-// When running in the browser, we want to use relative URLs
-const API_BASE_URL = typeof window !== 'undefined' ? '' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8385');
-
-// Log the API base URL for debugging
-console.log('API Base URL:', API_BASE_URL);
+import { API_SERVER_URL } from '../config';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -25,7 +21,7 @@ async function handleResponse<T>(response: Response): Promise<T> {
     try {
       responseText = await response.text();
     } catch (e) {
-      responseText = 'Could not read response text';
+      responseText = e instanceof Error ? e.message : 'Could not read response text';
     }
     
     // Then try to parse it as JSON
@@ -75,7 +71,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export async function get<T>(endpoint: string): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
+  // Use a relative URL that will be handled by Next.js API routes
+  const url = `/api${endpoint}`;
   console.log('Fetching:', url);
 
   try {
@@ -96,7 +93,7 @@ export async function get<T>(endpoint: string): Promise<T> {
       error: error instanceof Error ? error.message : String(error),
       url,
       endpoint,
-      baseUrl: API_BASE_URL
+      baseUrl: API_SERVER_URL
     });
 
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
@@ -110,7 +107,7 @@ export async function get<T>(endpoint: string): Promise<T> {
 }
 
 export async function post<T>(endpoint: string, data: unknown): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${API_SERVER_URL}${endpoint}`;
   console.log('Posting to:', url, data);
 
   try {
@@ -118,9 +115,8 @@ export async function post<T>(endpoint: string, data: unknown): Promise<T> {
     const response = await fetch(url, {
       method: 'POST',
       headers: defaultHeaders,
-      // Removed credentials and mode to avoid CORS issues
-      // credentials: 'include',
-      // mode: 'cors',
+      credentials: 'include',
+      mode: 'cors',
       body: JSON.stringify(data)
     });
 
@@ -135,7 +131,7 @@ export async function post<T>(endpoint: string, data: unknown): Promise<T> {
       error,
       url,
       endpoint,
-      baseUrl: API_BASE_URL,
+      baseUrl: API_SERVER_URL,
       data
     });
 
@@ -150,7 +146,7 @@ export async function post<T>(endpoint: string, data: unknown): Promise<T> {
 }
 
 export async function put<T>(endpoint: string, data: unknown): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${API_SERVER_URL}${endpoint}`;
   console.log('Putting to:', url, data);
 
   try {
@@ -175,7 +171,7 @@ export async function put<T>(endpoint: string, data: unknown): Promise<T> {
       error,
       url,
       endpoint,
-      baseUrl: API_BASE_URL,
+      baseUrl: API_SERVER_URL,
       data
     });
 
@@ -190,7 +186,7 @@ export async function put<T>(endpoint: string, data: unknown): Promise<T> {
 }
 
 export async function del<T>(endpoint: string): Promise<T> {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const url = `${API_SERVER_URL}${endpoint}`;
   console.log('Deleting:', url);
 
   try {
@@ -214,7 +210,7 @@ export async function del<T>(endpoint: string): Promise<T> {
       error,
       url,
       endpoint,
-      baseUrl: API_BASE_URL
+      baseUrl: API_SERVER_URL
     });
 
     if (error instanceof TypeError && error.message === 'Failed to fetch') {

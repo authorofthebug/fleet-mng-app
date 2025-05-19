@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import {API_SERVER_URL} from "@/lib/config";
 
-// GET /api/generic-types
-export async function GET(request: NextRequest) {
+// GET /api/generic-type
+export async function GET() {
   try {
-    const response = await fetch('http://0.0.0.0:8385/api/generic-types', {
+    const response = await fetch(`${API_SERVER_URL}/generic-type`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -26,12 +27,12 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/generic-types - Create a new parameter
+// POST /api/generic-type - Create a new parameter
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
-    const response = await fetch('http://0.0.0.0:8385/api/generic-types', {
+    const response = await fetch(`${API_SERVER_URL}/generic-type`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

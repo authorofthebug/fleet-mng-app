@@ -48,13 +48,13 @@ const ScheduleFormModal = ({
     const handleFechaIda = (e: ChangeEvent<HTMLInputElement>) => {
         const newStartDate = e.target.value;
         setFormData(prev => ({ ...prev, startDate: newStartDate }));
-        calcularDias(newStartDate, formData.endDate);
+        calcularDias(newStartDate, formData.endDate || "");
     };
 
     const handleFechaVuelta = (e: ChangeEvent<HTMLInputElement>) => {
         const newEndDate = e.target.value;
         setFormData(prev => ({ ...prev, endDate: newEndDate }));
-        calcularDias(formData.startDate, newEndDate);
+        calcularDias(formData.startDate || "", newEndDate);
     };
 
     return (
@@ -222,22 +222,37 @@ const ScheduleFormModal = ({
 export default function ProgramacionTab() {
     // Use the sidebar width hook to set the CSS variable
     useSidebarWidth();
+    
+    // Add current time state
+    const [currentTime, setCurrentTime] = useState(new Date());
+    
+    // Update time every second
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 1000);
+        
+        return () => clearInterval(timer);
+    }, []);
 
     // Form state management
     const [showForm, setShowForm] = useState(false);
     const [editingSchedule, setEditingSchedule] = useState<Schedule | null>(null);
     const [formData, setFormData] = useState<Schedule>({
-        origin: "",
-        destination: "",
-        startDate: "",
-        endDate: "",
-        days: 0,
-        client: "",
-        serviceType: "",
-        condition: "",
         id: "",
+        description: "",
+        status: "PROGRAMED",
         createdAt: "",
-        updatedAt: ""
+        updatedAt: "",
+        clientId: "",
+        vehicleId: "",
+        driverId: "",
+        origin: "",
+        plate: "",
+        zone: "",
+        destination: "",
+        startTime: "",
+        endTime: ""
     });
 
     // Filter state management
@@ -247,18 +262,30 @@ export default function ProgramacionTab() {
 
     const handleAdd = () => {
         setEditingSchedule(null);
+        // Set default values with current date/time for start and end times
+        const now = new Date();
+        const later = new Date(now.getTime() + 2 * 60 * 60 * 1000); // 2 hours later
+
+        // Format for datetime-local input (YYYY-MM-DDThh:mm)
+        const formatDateForInput = (date: Date) => {
+            return date.toISOString().slice(0, 16);
+        };
+
         setFormData({
-            origin: "",
-            destination: "",
-            startDate: "",
-            endDate: "",
-            days: 0,
-            client: "",
-            serviceType: "",
-            condition: "",
             id: "",
+            description: "",
+            status: "PROGRAMED", // Valid status from the enum
             createdAt: "",
-            updatedAt: ""
+            updatedAt: "",
+            clientId: "",
+            vehicleId: "",
+            driverId: "",
+            origin: "",
+            plate: "",
+            zone: "",
+            destination: "",
+            startTime: formatDateForInput(now),
+            endTime: formatDateForInput(later)
         });
         setShowForm(true);
     };
@@ -267,14 +294,14 @@ export default function ProgramacionTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Filter schedules based on search text and status
+    // Filter schedule based on search text and status
     const filterSchedules = (text: string, status: string, schedulesToFilter = schedules) => {
         let filtered = [...schedulesToFilter];
 
         // Filter by status if selected
         if (status) {
             filtered = filtered.filter(schedule =>
-                schedule.condition === status
+                schedule.status === status
             );
         }
 
@@ -286,9 +313,8 @@ export default function ProgramacionTab() {
                 return (
                     (schedule.origin && schedule.origin.toLowerCase().includes(searchLower)) ||
                     (schedule.destination && schedule.destination.toLowerCase().includes(searchLower)) ||
-                    (schedule.client && schedule.client.toLowerCase().includes(searchLower)) ||
-                    (schedule.serviceType && schedule.serviceType.toLowerCase().includes(searchLower)) ||
-                    (schedule.condition && schedule.condition.toLowerCase().includes(searchLower))
+                    (schedule.description && schedule.description.toLowerCase().includes(searchLower)) ||
+                    (schedule.plate && schedule.plate.toLowerCase().includes(searchLower))
                 );
             });
         }
@@ -296,12 +322,12 @@ export default function ProgramacionTab() {
         return filtered;
     };
 
-    // Load schedules on component mount
+    // Load schedule on component mount
     useEffect(() => {
         loadSchedules();
     }, []);
 
-    // Update filtered schedules when schedules, search text, or status filter changes
+    // Update filtered schedule when schedule, search text, or status filter changes
     useEffect(() => {
         setFilteredSchedules(filterSchedules(searchText, statusFilter));
     }, [schedules, searchText, statusFilter]);
@@ -313,8 +339,8 @@ export default function ProgramacionTab() {
             const data = await scheduleService.getAll();
             setSchedules(data);
         } catch (error) {
-            console.error('Error loading schedules:', error);
-            setError('Failed to load schedules');
+            console.error('Error loading schedule:', error);
+            setError('Failed to load schedule');
         } finally {
             setLoading(false);
         }
@@ -353,17 +379,20 @@ export default function ProgramacionTab() {
     const handleEdit = (schedule: Schedule) => {
         setEditingSchedule(schedule);
         setFormData({
-            origin: schedule.origin || '',
-            destination: schedule.destination || '',
-            startDate: schedule.startDate || '',
-            endDate: schedule.endDate || '',
-            days: schedule.days || 0,
-            client: schedule.client || '',
-            serviceType: schedule.serviceType || '',
-            condition: schedule.condition || '',
             id: schedule.id || '',
+            description: schedule.description || '',
+            status: schedule.status || '',
             createdAt: schedule.createdAt || '',
-            updatedAt: schedule.updatedAt || ''
+            updatedAt: schedule.updatedAt || '',
+            clientId: schedule.clientId || '',
+            vehicleId: schedule.vehicleId || '',
+            driverId: schedule.driverId || '',
+            origin: schedule.origin || '',
+            plate: schedule.plate || '',
+            zone: schedule.zone || '',
+            destination: schedule.destination || '',
+            startTime: schedule.startTime || '',
+            endTime: schedule.endTime || ''
         });
         setShowForm(true);
     };
@@ -373,7 +402,7 @@ export default function ProgramacionTab() {
             try {
                 setError(null);
                 await scheduleService.delete(id);
-                setSchedules(schedules.filter(schedule => schedule.id !== id));
+                setSchedules(schedule.filter(schedule => schedule.id !== id));
             } catch (error) {
                 console.error('Error deleting schedule:', error);
                 let errorMessage = 'Failed to delete schedule';
@@ -543,9 +572,12 @@ export default function ProgramacionTab() {
                                     setStatusFilter(newStatusFilter);
                                 }}
                             >
-                                <option value="">All Conditions</option>
-                                <option value="Servicio con pasajeros">Servicio con pasajeros</option>
-                                <option value="Servicio sin pasajeros">Servicio sin pasajeros</option>
+                                <option value="">All Statuses</option>
+                                <option value="PROGRAMED">Programed</option>
+                                <option value="ALMOST_ON_ARRIVAL">Almost on Arrival</option>
+                                <option value="STARTED">Started</option>
+                                <option value="ON_CLIENT">On Client</option>
+                                <option value="BACK_FROM_CLIENT">Back from Client</option>
                             </select>
                         </div>
                     </div>
@@ -581,27 +613,30 @@ export default function ProgramacionTab() {
                             { key: 'origin', label: 'Origin' },
                             { key: 'destination', label: 'Destination' },
                             {
-                                key: 'startDate',
+                                key: 'startTime',
                                 label: 'From',
                                 render: (schedule: Schedule) => (
-                                    <span>{new Date(schedule.startDate).toLocaleDateString()}</span>
+                                    <span>{new Date(schedule.startTime).toLocaleDateString()}</span>
                                 )
                             },
                             {
-                                key: 'endDate',
+                                key: 'endTime',
                                 label: 'To',
                                 render: (schedule: Schedule) => (
-                                    <span>{new Date(schedule.endDate).toLocaleDateString()}</span>
+                                    <span>{new Date(schedule.endTime).toLocaleDateString()}</span>
                                 )
                             },
-                            { key: 'client', label: 'Client' },
-                            { key: 'serviceType', label: 'Service Type' },
+                            { key: 'description', label: 'Description' },
                             {
-                                key: 'condition',
-                                label: 'Condition',
+                                key: 'status',
+                                label: 'Status',
                                 render: (schedule: Schedule) => (
-                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${schedule.condition === 'Servicio con pasajeros' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}`}>
-                                        {schedule.condition}
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                        schedule.status === 'PROGRAMED' ? 'bg-blue-100 text-blue-600' : 
+                                        schedule.status === 'ON_CLIENT' ? 'bg-green-100 text-green-600' : 
+                                        'bg-yellow-100 text-yellow-600'
+                                    }`}>
+                                        {schedule.status}
                                     </span>
                                 )
                             }

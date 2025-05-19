@@ -3,27 +3,16 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { 
-  BuildingOffice2Icon, 
-  BellAlertIcon, 
-  ClipboardDocumentCheckIcon,
-  ClipboardDocumentListIcon,
+import {
   UserGroupIcon,
-  BuildingLibraryIcon,
-  DocumentTextIcon,
   UserIcon,
-  BriefcaseIcon,
-  ShieldCheckIcon,
-  WrenchScrewdriverIcon,
   DocumentIcon,
-  UserCircleIcon,
-  KeyIcon,
-  CurrencyDollarIcon,
   CalendarDaysIcon,
   TruckIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/24/outline';
+import { useSidebarWidth } from '@/hooks/useSidebarWidth';
 
 const menuItems = [
   //{ name: 'Agency', href: '/agency', icon: BuildingOffice2Icon },
@@ -35,7 +24,7 @@ const menuItems = [
   //{ name: 'Contract', href: '/contract', icon: DocumentTextIcon },
   { name: 'Driver', href: '/driver', icon: UserIcon },
   //{ name: 'Employee', href: '/employee', icon: BriefcaseIcon },
-  { name: 'Generic Types', href: '/generic-types', icon: DocumentIcon },
+  { name: 'Generic Types', href: '/generic-type', icon: DocumentIcon },
   //{ name: 'Insurance', href: '/insurance', icon: ShieldCheckIcon },
   //{ name: 'Maintenance', href: '/maintenance', icon: WrenchScrewdriverIcon },
   //{ name: 'Permit', href: '/permit', icon: DocumentIcon },
@@ -51,7 +40,7 @@ export default function Sidebar() {
   const pathname = usePathname();
   
   // Add useSidebarWidth hook to update CSS variable
-  const { useSidebarWidth } = require('@/hooks/useSidebarWidth');
+
   useSidebarWidth();
 
   return (

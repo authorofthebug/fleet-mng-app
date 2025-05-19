@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { CognitoJwtVerifier } from 'aws-jwt-verify';
+import {API_SERVER_URL} from "@/lib/config";
 
-// Initialize the JWT verifier
-const verifier = CognitoJwtVerifier.create({
-  userPoolId: process.env.NEXT_PUBLIC_COGNITO_USER_POOL_ID || '',
-  tokenUse: 'id',
-  clientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || '',
-});
+
 
 // Middleware to verify JWT token
-async function verifyToken(request: NextRequest) {
+/*async function verifyToken(request: NextRequest) {
   try {
     const token = request.headers.get('Authorization')?.replace('Bearer ', '');
     if (!token) {
@@ -23,13 +18,13 @@ async function verifyToken(request: NextRequest) {
     console.log(err);
     return null;
   }
-}
+}*/
 
-// GET /api/vehicles - Get all vehicles
-export async function GET(request: NextRequest) {
+// GET /api/vehicle - Get all vehicle
+export async function GET() {
   try {
-    console.log('API route: Fetching vehicles from backend');
-    const response = await fetch('http://localhost:8385/api/vehicles', {
+    console.log('API route: Fetching vehicle from backend');
+    const response = await fetch(`${API_SERVER_URL}/vehicle`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -45,24 +40,24 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('API route: Successfully fetched vehicles data');
+    console.log('API route: Successfully fetched vehicle data');
     return NextResponse.json(data);
   } catch (error) {
-    console.error('API route: Error fetching vehicles:', error);
+    console.error('API route: Error fetching vehicle:', error);
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to fetch vehicles' },
+      { error: error instanceof Error ? error.message : 'Failed to fetch vehicle' },
       { status: 500 }
     );
   }
 }
 
-// POST /api/vehicles - Create a new vehicle
+// POST /api/vehicle - Create a new vehicle
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     console.log('API route: Creating vehicle with data:', body);
 
-    const response = await fetch('http://localhost:8385/api/vehicles', {
+    const response = await fetch(`${API_SERVER_URL}/vehicle`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -78,9 +73,7 @@ export async function POST(request: NextRequest) {
         const errorData = await response.json();
         errorMessage = errorData.error || errorMessage;
       } catch (parseError) {
-        const errorText = await response.text();
-        console.error('API route: Error response from backend (not JSON):', errorText);
-        errorMessage = `${errorMessage}: ${response.status} ${response.statusText}`;
+        console.error('API route: Error response from backend (not JSON):', parseError);
       }
       throw new Error(errorMessage);
     }

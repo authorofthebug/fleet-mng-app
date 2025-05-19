@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import {API_SERVER_URL} from "@/lib/config";
 
-// GET /api/schedules - Get all schedules
-export async function GET(request: NextRequest) {
+// GET /api/schedule - Get all schedule
+export async function GET() {
   try {
-    const response = await fetch('http://0.0.0.0:8385/api/schedules', {
+    const response = await fetch(`${API_SERVER_URL}/schedule`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -12,21 +13,21 @@ export async function GET(request: NextRequest) {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch schedules');
+      throw new Error('Failed to fetch schedule');
     }
 
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error fetching schedules:', error);
+    console.error('Error fetching schedule:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch schedules' },
+      { error: 'Failed to fetch schedule' },
       { status: 500 }
     );
   }
 }
 
-// POST /api/schedules - Create a new schedule
+// POST /api/schedule - Create a new schedule
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
@@ -52,7 +53,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch('http://0.0.0.0:8385/api/schedules', {
+    const response = await fetch(`${API_SERVER_URL}/schedule`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -69,8 +70,7 @@ export async function POST(request: NextRequest) {
         const errorData = JSON.parse(errorText);
         errorMessage = errorData.error || errorData.message || errorMessage;
       } catch (e) {
-        // If not JSON, use the text directly
-        if (errorText) errorMessage = errorText;
+        console.error('Error parsing error response:', e);
       }
 
       console.error('Backend error response:', errorText);

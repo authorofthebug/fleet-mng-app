@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// GET /api/vehicles/[id] - Get a vehicle by ID
+import { API_SERVER_URL } from '@/lib/config';
+
+// GET /api/vehicle/[id] - Get a vehicle by ID
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -9,7 +11,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const response = await fetch(`http://localhost:8385/api/vehicles/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/vehicle/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -37,7 +39,7 @@ export async function GET(
   }
 }
 
-// PUT /api/vehicles/[id] - Update a vehicle
+// PUT /api/vehicle/[id] - Update a vehicle
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -48,7 +50,7 @@ export async function PUT(
 
     console.log(`Updating vehicle with ID: ${id}`, body);
 
-    const response = await fetch(`http://localhost:8385/api/vehicles/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/vehicle/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -78,7 +80,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/vehicles/[id] - Delete a vehicle
+// DELETE /api/vehicle/[id] - Delete a vehicle
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -86,7 +88,7 @@ export async function DELETE(
   try {
     const { id } = params;
 
-    const response = await fetch(`http://localhost:8385/api/vehicles/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/vehicle/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

@@ -14,13 +14,13 @@ export interface Driver {
 }
 
 export const driverService = {
-  getAll: () => get<Driver[]>('/api/drivers'),
+  getAll: () => get<Driver[]>('/driver'),
 
-  getById: (id: string) => get<Driver>(`/api/drivers/${id}`),
+  getById: (id: string) => get<Driver>(`/driver/${id}`),
 
-  create: (data: Omit<Driver, 'id'>) => post<Driver>('/api/drivers', data),
+  create: (data: Omit<Driver, 'id'>) => post<Driver>('/driver', data),
 
-  update: (id: string, data: Omit<Driver, 'id'>) => put<Driver>(`/api/drivers/${id}`, data),
+  update: (id: string, data: Omit<Driver, 'id'>) => put<Driver>(`/driver/${id}`, data),
 
-  delete: (id: string) => del(`/api/drivers/${id}`),
+  delete: (id: string) => del(`/driver/${id}`),
 };

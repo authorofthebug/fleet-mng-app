@@ -198,8 +198,8 @@ export default function DriverPage() {
     status: 'ACTIVE'
   });
   // Add search and filter state
-  const [searchText, setSearchText] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [searchText] = useState<string>('');
+  const [statusFilter] = useState<string>('');
   const [filteredDrivers, setFilteredDrivers] = useState<Driver[]>([]);
 
   useEffect(() => {
@@ -263,6 +263,7 @@ export default function DriverPage() {
     });
     setShowForm(true);
   };
+  /*
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this driver?')) {
       try {
@@ -274,7 +275,7 @@ export default function DriverPage() {
         setError(error instanceof Error ? error.message : 'Failed to delete driver');
       }
     }
-  };
+  };*/
 
   const handleAdd = () => {
     setEditingDriver(null);
@@ -410,7 +411,7 @@ export default function DriverPage() {
             data={filteredDrivers}
             columns={columns}
             onEdit={handleEdit}
-            onDelete={handleDelete}
+            onDelete={()=>{}}
           />
         </div>
         

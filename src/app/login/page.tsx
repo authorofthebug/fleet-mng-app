@@ -133,7 +133,7 @@ export default function LoginPage() {
           
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl animate-fade-in-delay-2 hover:bg-white/20 transition-all duration-300">
             <h3 className="text-xl font-semibold text-white mb-2">Real-time Tracking</h3>
-            <p className="text-blue-100">Monitor your fleet's performance and location in real-time</p>
+            <p className="text-blue-100">Monitor your fleet&rsquo;s performance and location in real-time</p>
           </div>
         </div>
       </div>
@@ -267,7 +267,7 @@ export default function LoginPage() {
           
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{' '}
+              Don&rsquo;t have an account?{' '}
               <Link href="#" className="font-medium text-blue-600 hover:text-blue-500">
                 Contact your administrator
               </Link>

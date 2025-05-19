@@ -11,7 +11,7 @@ export const certifications: Certification[] = [
   {
     id: 1,
     name: 'Commercial Driver\'s License',
-    description: 'License to operate commercial vehicles',
+    description: 'License to operate commercial vehicle',
     expiryDate: new Date(Date.now() + 86400000 * 365).toISOString(),
     status: 'active',
     employeeId: 1

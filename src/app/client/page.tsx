@@ -210,8 +210,8 @@ export default function ClientPage() {
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchText, setSearchText] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [searchText] = useState<string>('');
+  const [statusFilter] = useState<string>('');
   const [formData, setFormData] = useState<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>({
     name: '',
     email: '',
@@ -230,14 +230,14 @@ export default function ClientPage() {
     try {
       setLoading(true);
       setError(null);
-      console.log('Attempting to load clients...');
+      console.log('Attempting to load client...');
       const data = await clientService.getAll();
       console.log('Clients loaded successfully:', data);
       setClients(data);
       setFilteredClients(data);
     } catch (error) {
-      console.error('Error loading clients:', error);
-      let errorMessage = 'Failed to load clients';
+      console.error('Error loading client:', error);
+      let errorMessage = 'Failed to load client';
       if (error instanceof Error) {
         errorMessage = `${error.name}: ${error.message}`;
       }
@@ -266,7 +266,7 @@ export default function ClientPage() {
       try {
         setError(null);
         await clientService.delete(id);
-        setClients(clients.filter(client => client.id !== id));
+        setClients(client.filter(client => client.id !== id));
         setFilteredClients(filteredClients.filter(client => client.id !== id));
       } catch (error) {
         console.error('Error deleting client:', error);
@@ -335,7 +335,7 @@ export default function ClientPage() {
     setEditingClient(null);
   };
 
-  // Function to filter clients based on search text and status
+  // Function to filter client based on search text and status
   const filterClients = (text: string, status: string, clientsToFilter = clients) => {
     let filtered = [...clientsToFilter];
 
@@ -361,7 +361,7 @@ export default function ClientPage() {
 
     return filtered;
   };
-
+/*
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setSearchText(text);
@@ -372,7 +372,7 @@ export default function ClientPage() {
     const status = e.target.value;
     setStatusFilter(status);
     setFilteredClients(filterClients(searchText, status));
-  };
+  };*/
 
   const columns = [
     { key: 'name', label: 'Name' },
@@ -402,7 +402,7 @@ export default function ClientPage() {
     }
   ];
 
-  // Dashboard stats - using the filtered clients to update stats based on filters
+  // Dashboard stats - using the filtered client to update stats based on filters
   const clientStats = [
     {
       label: "Active Clients",

@@ -4,25 +4,14 @@ import { useState, useEffect } from 'react';
 import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
-import { parameterService } from '@/lib/api/parameter';
+import { parameterService, Parameter } from '@/lib/api/parameter';
 import { useSidebarWidth } from '@/hooks/useSidebarWidth';
 import {
-  DocumentIcon,
+
   PlusIcon,
   PencilSquareIcon,
 } from '@heroicons/react/24/outline';
 
-// Define Parameter interface based on your API
-interface Parameter {
-  id: number;
-  name: string;
-  //value: string;
-  category: string;
-  status: string;
-  description?: string;
-  createdAt?: string;
-  updatedAt?: string;
-}
 
 // Modal component for the parameter form
 const ParameterFormModal = ({
@@ -176,12 +165,12 @@ export default function GenericTypesPage() {
   const [formData, setFormData] = useState<Parameter>({
     id: 0,
     name: '',
-    //value: '',
+    value: '',
     category: '',
     status: 'active',
     description: ''
   });
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm] = useState('');
 
   // Use the sidebar width hook
   useSidebarWidth();
@@ -228,7 +217,7 @@ export default function GenericTypesPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: number) => {
+  /*const handleDelete = async (id: number) => {
     if (window.confirm('Are you sure you want to delete this parameter?')) {
       try {
         await parameterService.delete(id);
@@ -239,7 +228,7 @@ export default function GenericTypesPage() {
         setNotification({ type: 'error', message: 'Failed to delete parameter' });
       }
     }
-  };
+  };*/
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -322,7 +311,7 @@ export default function GenericTypesPage() {
             data={filteredParameters}
             columns={columns}
             onEdit={handleEdit}
-            onDelete={handleDelete}
+            onDelete={()=>{}}
           />
         </div>
       </div>

@@ -20,6 +20,7 @@ import Notification from "@/components/common/Notification";
 import DataTable from "@/components/common/DataTable";
 import Layout from '@/components/layout/Layout';
 import InputConSugerencias from '@/components/InputConSugerencias';
+import {Driver, driverService} from "@/lib/api/driver";
 
 // Modal component for the schedule form
 const ScheduleFormModal = ({
@@ -45,11 +46,11 @@ const ScheduleFormModal = ({
     const [loadingVehicles, setLoadingVehicles] = useState(false);
     const [vehicleError, setVehicleError] = useState<string | null>(null);
 
-    const [drivers, setDrivers] = useState<any[]>([]);
+    const [drivers, setDrivers] = useState<Driver[]>([]);
     const [loadingDrivers, setLoadingDrivers] = useState(false);
     const [driverError, setDriverError] = useState<string | null>(null);
 
-    // Fetch clients, vehicles, and drivers when the modal is shown
+    // Fetch client, vehicle, and drivers when the modal is shown
     useEffect(() => {
         if (show) {
             fetchClients();
@@ -65,8 +66,8 @@ const ScheduleFormModal = ({
             const data = await clientService.getAll();
             setClients(data);
         } catch (error) {
-            console.error('Error loading clients:', error);
-            setClientError('Failed to load clients');
+            console.error('Error loading client:', error);
+            setClientError('Failed to load client');
         } finally {
             setLoadingClients(false);
         }
@@ -79,8 +80,8 @@ const ScheduleFormModal = ({
             const data = await vehicleService.getAll();
             setVehicles(data);
         } catch (error) {
-            console.error('Error loading vehicles:', error);
-            setVehicleError('Failed to load vehicles');
+            console.error('Error loading vehicle:', error);
+            setVehicleError('Failed to load vehicle');
         } finally {
             setLoadingVehicles(false);
         }
@@ -386,8 +387,8 @@ export default function ProgramacionTab() {
     });
 
     // Filter state management
-    const [searchText, setSearchText] = useState<string>('');
-    const [statusFilter, setStatusFilter] = useState<string>('');
+    const [searchText] = useState<string>('');
+    const [statusFilter] = useState<string>('');
     const [filteredSchedules, setFilteredSchedules] = useState<Schedule[]>([]);
     const [initialSortConfig] = useState({
         key: 'startTime',
@@ -427,11 +428,11 @@ export default function ProgramacionTab() {
     const [schedules, setSchedules] = useState<Schedule[]>([]);
     const [vehicles, setVehicles] = useState<Vehicle[]>([]);
     const [clients, setClients] = useState<Client[]>([]);
-    const [drivers, setDrivers] = useState<any[]>([]);
+    const [drivers, setDrivers] = useState<Driver[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Filter schedules based on search text and status
+    // Filter schedule based on search text and status
     const filterSchedules = (text: string, status: string, schedulesToFilter = schedules) => {
         let filtered = [...schedulesToFilter];
 
@@ -462,7 +463,7 @@ export default function ProgramacionTab() {
         return filtered;
     };
 
-    // Load schedules, vehicles, clients, and drivers on component mount
+    // Load schedule, vehicle, client, and drivers on component mount
     useEffect(() => {
         const loadData = async () => {
             try {
@@ -480,7 +481,7 @@ export default function ProgramacionTab() {
         loadData();
     }, []);
 
-    // Update filtered schedules when schedules, search text, or status filter changes
+    // Update filtered schedule when schedule, search text, or status filter changes
     useEffect(() => {
         setFilteredSchedules(filterSchedules(searchText, statusFilter));
     }, [schedules, searchText, statusFilter]);
@@ -491,8 +492,8 @@ export default function ProgramacionTab() {
             setSchedules(data);
             return data;
         } catch (error) {
-            console.error('Error loading schedules:', error);
-            setError('Failed to load schedules');
+            console.error('Error loading schedule:', error);
+            setError('Failed to load schedule');
             return [];
         }
     };
@@ -503,8 +504,8 @@ export default function ProgramacionTab() {
             setVehicles(data);
             return data;
         } catch (error) {
-            console.error('Error loading vehicles:', error);
-            setError('Failed to load vehicles');
+            console.error('Error loading vehicle:', error);
+            setError('Failed to load vehicle');
             return [];
         }
     };
@@ -515,21 +516,18 @@ export default function ProgramacionTab() {
             setClients(data);
             return data;
         } catch (error) {
-            console.error('Error loading clients:', error);
-            setError('Failed to load clients');
+            console.error('Error loading client:', error);
+            setError('Failed to load client');
             return [];
         }
     };
 
     const loadDrivers = async () => {
         try {
-            const response = await fetch('/api/drivers');
-            if (!response.ok) {
-                throw new Error('Failed to load drivers');
-            }
-            const data = await response.json();
-            setDrivers(data);
-            return data;
+            const response = await driverService.getAll();
+            //const data = await response.json();
+            setDrivers(response);
+            return response;
         } catch (error) {
             console.error('Error loading drivers:', error);
             setError('Failed to load drivers');
@@ -653,7 +651,7 @@ export default function ProgramacionTab() {
                 try {
                     setError(null);
                     await scheduleService.delete(id);
-                    setSchedules(schedules.filter(schedule => schedule.id !== id));
+                    setSchedules(schedule.filter(schedule => schedule.id !== id));
                 } catch (error) {
                     console.error('Error deleting schedule:', error);
                     let errorMessage = 'Failed to delete schedule';

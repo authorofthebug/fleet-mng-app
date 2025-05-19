@@ -187,8 +187,8 @@ export default function VehiclePage() {
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchText, setSearchText] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [searchText] = useState<string>('');
+  const [statusFilter] = useState<string>('');
   // No tabs are used anymore
   const [formData, setFormData] = useState<Vehicle>({
     id: '',
@@ -211,14 +211,14 @@ export default function VehiclePage() {
     try {
       setLoading(true);
       setError(null);
-      console.log('Attempting to load vehicles...');
+      console.log('Attempting to load vehicle...');
       const data = await vehicleService.getAll();
       console.log('Vehicles loaded successfully:', data);
       setVehicles(data);
       setFilteredVehicles(data);
     } catch (error) {
-      console.error('Error loading vehicles:', error);
-      let errorMessage = 'Failed to load vehicles';
+      console.error('Error loading vehicle:', error);
+      let errorMessage = 'Failed to load vehicle';
       if (error instanceof Error) {
         errorMessage = `${error.name}: ${error.message}`;
       }
@@ -231,6 +231,7 @@ export default function VehiclePage() {
   const handleEdit = (vehicle: Vehicle) => {
     setEditingVehicle(vehicle);
     setFormData({
+      id: vehicle.id, // Add this line
       brand: vehicle.brand || vehicle.make || '',
       licensePlate: vehicle.licensePlate || vehicle.plateNumber || '',
       model: vehicle.model || '',
@@ -243,14 +244,15 @@ export default function VehiclePage() {
     });
     setShowForm(true);
   };
+  /*
   const handleDelete = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this vehicle?')) {
       try {
         setError(null);
         await vehicleService.delete(id);
-        const updatedVehicles = vehicles.filter(vehicle => vehicle.id !== id);
+        const updatedVehicles = vehicle.filter(vehicle => vehicle.id !== id);
         setVehicles(updatedVehicles);
-        // Apply filtering to the updated vehicles array directly
+        // Apply filtering to the updated vehicle array directly
         filterVehicles(searchText, statusFilter, updatedVehicles);
       } catch (error) {
         console.error('Error deleting vehicle:', error);
@@ -258,7 +260,7 @@ export default function VehiclePage() {
       }
     }
   };
-
+*/
   const handleAdd = () => {
     setEditingVehicle(null);
     setFormData({
@@ -287,7 +289,7 @@ export default function VehiclePage() {
           vehicle.id === id ? updatedVehicle : vehicle
         );
         setVehicles(updatedVehicles);
-        // Apply filtering to the updated vehicles array directly
+        // Apply filtering to the updated vehicle array directly
         filterVehicles(searchText, statusFilter, updatedVehicles);
       } else {
         console.log('Creating new vehicle with data:', formData);
@@ -295,7 +297,7 @@ export default function VehiclePage() {
         console.log('Vehicle created successfully:', newVehicle);
         const updatedVehicles = [...vehicles, newVehicle];
         setVehicles(updatedVehicles);
-        // Apply filtering to the updated vehicles array directly
+        // Apply filtering to the updated vehicle array directly
         filterVehicles(searchText, statusFilter, updatedVehicles);
       }
       setShowForm(false);
@@ -314,7 +316,7 @@ export default function VehiclePage() {
     setEditingVehicle(null);
   };
 
-  // Function to filter vehicles based on search text and status
+  // Function to filter vehicle based on search text and status
   const filterVehicles = (text: string, status: string, vehiclesToFilter = vehicles) => {
     let filtered = [...vehiclesToFilter];
 
@@ -407,7 +409,7 @@ export default function VehiclePage() {
     }
   ];
 
-  // Dashboard stats - using the filtered vehicles to update stats based on filters
+  // Dashboard stats - using the filtered vehicle to update stats based on filters
   const vehicleStats = [
     {
       label: "Available Vehicles",
@@ -493,7 +495,7 @@ export default function VehiclePage() {
               data={filteredVehicles}
               columns={columns}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={()=>{}}
           />
         </div>
         

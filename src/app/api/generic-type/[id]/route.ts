@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import {API_SERVER_URL} from "@/lib/config";
 
-// GET /api/generic-types/[id]
+// GET /api/generic-type/[id]
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -9,7 +10,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const response = await fetch(`http://0.0.0.0:8385/api/generic-types/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/generic-type/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -37,7 +38,7 @@ export async function GET(
   }
 }
 
-// PUT /api/generic-types/[id]
+// PUT /api/generic-type/[id]
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -46,7 +47,7 @@ export async function PUT(
     const { id } = params;
     const body = await request.json();
 
-    const response = await fetch(`http://0.0.0.0:8385/api/generic-types/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/generic-type/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -75,7 +76,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/generic-types/[id]
+// DELETE /api/generic-type/[id]
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -83,7 +84,7 @@ export async function DELETE(
   try {
     const { id } = params;
 
-    const response = await fetch(`http://0.0.0.0:8385/api/generic-types/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/generic-type/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

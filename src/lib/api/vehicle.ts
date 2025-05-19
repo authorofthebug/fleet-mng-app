@@ -18,13 +18,13 @@ export interface Vehicle {
 }
 
 const vehicleService = {
-  getAll: () => get<Vehicle[]>('/api/vehicles'),
-  getById: (id: string) => get<Vehicle>(`/api/vehicles/${id}`),
-  getByLicensePlate: (licensePlate: string) => get<Vehicle>(`/api/vehicles/${licensePlate}`),
-  create: (data: Vehicle) => post<Vehicle>('/api/vehicles', data),
-  update: (id: string, data: Vehicle) => put<Vehicle>(`/api/vehicles/${id}`, data),
+  getAll: () => get<Vehicle[]>('/vehicle'),
+  getById: (id: string) => get<Vehicle>(`/vehicle/${id}`),
+  getByLicensePlate: (licensePlate: string) => get<Vehicle>(`/vehicle/${licensePlate}`),
+  create: (data: Vehicle) => post<Vehicle>('/vehicle', data),
+  update: (id: string, data: Vehicle) => put<Vehicle>(`/vehicle/${id}`, data),
   delete: (id: string) => del(`/api/vehicles/${id}`),
-  getByStatus: (status: Vehicle['status']) => get<Vehicle[]>(`/api/vehicles/status/${status}`)
+  getByStatus: (status: Vehicle['status']) => get<Vehicle[]>(`/vehicle/status/${status}`)
 };
 
 export { vehicleService };

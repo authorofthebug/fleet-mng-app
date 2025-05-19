@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { API_SERVER_URL } from '@/lib/config';
 
+const baseUrl = `${API_SERVER_URL}/api/drivers`;
 // GET /api/drivers/[id] - Get a driver by ID
 export async function GET(
   request: NextRequest,
@@ -9,7 +11,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const response = await fetch(`http://0.0.0.0:8385/api/drivers/${id}`, {
+    const response = await fetch(`${baseUrl}/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -46,7 +48,7 @@ export async function PUT(
     const { id } = params;
     const body = await request.json();
 
-    const response = await fetch(`http://0.0.0.0:8385/api/drivers/${id}`, {
+    const response = await fetch(`${baseUrl}/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -84,7 +86,7 @@ export async function DELETE(
   try {
     const { id } = params;
 
-    const response = await fetch(`http://0.0.0.0:8385/api/drivers/${id}`, {
+    const response = await fetch(`${baseUrl}/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

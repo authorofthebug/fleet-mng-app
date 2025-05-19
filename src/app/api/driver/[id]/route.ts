@@ -1,15 +1,16 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { API_SERVER_URL } from '@/lib/config';
 
-// GET /api/generic-types/by-category/[category]/[status]
+// GET /api/driver/[id] - Get a driver by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { category: string; status: string } }
+  { params }: { params: { id: string } }
 ) {
   try {
-    const { category, status } = params;
+    const { id } = params;
 
-    const response = await fetch(`http://0.0.0.0:8385/api/generic-types/${category}/${status}`, {
+    const response = await fetch(`${API_SERVER_URL}/driver/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -19,19 +20,19 @@ export async function GET(
     if (!response.ok) {
       if (response.status === 404) {
         return NextResponse.json(
-          { error: 'Parameters not found' },
+          { error: 'Driver not found' },
           { status: 404 }
         );
       }
-      throw new Error('Failed to fetch parameters');
+      throw new Error('Failed to fetch driver');
     }
 
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error(`Error fetching ${params.category} parameters:`, error);
+    console.error('Error fetching driver:', error);
     return NextResponse.json(
-      { error: 'Failed to fetch parameters' },
+      { error: 'Failed to fetch driver' },
       { status: 500 }
     );
   }

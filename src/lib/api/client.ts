@@ -14,13 +14,13 @@ export interface Client {
 }
 
 const clientService = {
-  getAll: () => get<Client[]>('/api/clients'),
-  getById: (id: string) => get<Client>(`/api/clients/${id}`),
-  create: (data: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>) => post<Client>('/api/clients', data),
+  getAll: () => get<Client[]>('/client'),
+  getById: (id: string) => get<Client>(`/client/${id}`),
+  create: (data: Omit<Client, 'id' | 'createdAt' | 'updatedAt'>) => post<Client>('/client', data),
   update: (id: string, data: Partial<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>) =>
-    put<Client>(`/api/clients/${id}`, data),
-  delete: (id: string) => del(`/api/clients/${id}`),
-  getByStatus: (status: Client['status']) => get<Client[]>(`/api/clients/status/${status}`)
+    put<Client>(`/client/${id}`, data),
+  delete: (id: string) => del(`/client/${id}`),
+  getByStatus: (status: Client['status']) => get<Client[]>(`/client/status/${status}`)
 };
 
 export { clientService };

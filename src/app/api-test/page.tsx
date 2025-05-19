@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Layout from '@/components/layout/Layout';
 import { get } from '@/lib/api/base';
+import { API_SERVER_URL } from "@/lib/config";
 
 export default function ApiTestPage() {
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,7 @@ export default function ApiTestPage() {
       setResult('');
       setServerInfo('');
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8385';
+      const baseUrl = API_SERVER_URL;
       console.log('Testing server connection to:', baseUrl);
 
       // Test server connection
@@ -66,7 +67,7 @@ export default function ApiTestPage() {
       setError(null);
       setResult('');
       
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8385';
+      const baseUrl = API_SERVER_URL;
       const fullUrl = `${baseUrl}${endpoint}`;
       console.log('Testing endpoint:', fullUrl);
 

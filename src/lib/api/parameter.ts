@@ -12,18 +12,18 @@ export interface Parameter {
 }
 
 export const parameterService = {
-  getAll: () => get<Parameter[]>('/api/generic-types'),
-  getById: (id: number) => get<Parameter>(`/api/generic-types/${id}`),
+  getAll: () => get<Parameter[]>('/generic-type'),
+  getById: (id: number) => get<Parameter>(`/generic-type/${id}`),
   create: (data: Omit<Parameter, 'id' | 'createdAt' | 'updatedAt'>) => 
-    post<Parameter>('/api/generic-types', data),
+    post<Parameter>('/generic-type', data),
   update: (id: number, data: Partial<Parameter>) => 
-    put<Parameter>(`/api/generic-types/${id}`, data),
-  delete: (id: number) => del(`/api/generic-types/${id}`),
+    put<Parameter>(`/generic-type/${id}`, data),
+  delete: (id: number) => del(`/api/generic-type/${id}`),
   
   // Get parameters by category and status
   getByCategoryAndStatus: (category: string, status: string) => 
-    get<Parameter[]>(`/api/generic-types/by-category/${category}/${status}`),
+    get<Parameter[]>(`/generic-type/by-category/${category}/${status}`),
   
   // Get service types (specific helper method)
-  getServiceTypes: () => get<Parameter[]>('/api/generic-types/by-category/SERVICE/status/active')
+  getServiceTypes: () => get<Parameter[]>('/generic-type/by-category/SERVICE/status/active')
 };

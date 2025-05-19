@@ -106,15 +106,15 @@ const server = http.createServer((req, res) => {
     console.log(`Request for resource: ${resource}, id: ${id}, subResource: ${subResource}, subId: ${subId}`);
     console.log(`Full URL: ${req.url}`);
 
-    // Special case for vehicles endpoint
+    // Special case for vehicle endpoint
     if (resource === 'vehicles') {
-      console.log('Handling vehicles endpoint');
-      // Use the vehicles data directly
+      console.log('Handling vehicle endpoint');
+      // Use the vehicle data directly
       const vehiclesData = defaultData.vehicles;
 
       if (req.method === 'GET') {
         if (!id) {
-          // GET all vehicles
+          // GET all vehicle
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify(vehiclesData));
           return;

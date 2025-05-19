@@ -56,7 +56,7 @@ const quickActions = [
   },
   { 
     name: 'Driver Scheduling', 
-    description: 'Assign and manage driver schedules',
+    description: 'Assign and manage driver schedule',
     href: '/driver', 
     icon: UserIcon,
     color: "from-emerald-500 to-teal-600",
@@ -64,7 +64,7 @@ const quickActions = [
   },
   { 
     name: 'Trip Planning', 
-    description: 'Create and manage trip schedules',
+    description: 'Create and manage trip schedule',
     href: '/schedule', 
     icon: CalendarDaysIcon,
     color: "from-violet-500 to-purple-600",

@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { API_SERVER_URL } from '@/lib/config';
 
-// GET /api/schedules/[id] - Get a schedule by ID
+// GET /api/schedule/[id] - Get a schedule by ID
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -9,7 +10,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const response = await fetch(`http://0.0.0.0:8385/api/schedules/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/schedule/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -37,7 +38,7 @@ export async function GET(
   }
 }
 
-// PUT /api/schedules/[id] - Update a schedule
+// PUT /api/schedule/[id] - Update a schedule
 export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -60,7 +61,7 @@ export async function PUT(
       );
     }
 
-    const response = await fetch(`http://0.0.0.0:8385/api/schedules/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/schedule/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -85,7 +86,7 @@ export async function PUT(
         const errorData = JSON.parse(errorText);
         errorMessage = errorData.error || errorData.message || errorMessage;
       } catch (e) {
-        // If not JSON, use the text directly
+        console.error('Error parsing error response:', e);
         if (errorText) errorMessage = errorText;
       }
 
@@ -107,7 +108,7 @@ export async function PUT(
   }
 }
 
-// DELETE /api/schedules/[id] - Delete a schedule
+// DELETE /api/schedule/[id] - Delete a schedule
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
@@ -115,7 +116,7 @@ export async function DELETE(
   try {
     const { id } = params;
 
-    const response = await fetch(`http://0.0.0.0:8385/api/schedules/${id}`, {
+    const response = await fetch(`${API_SERVER_URL}/schedules/${id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
