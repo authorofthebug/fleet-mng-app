@@ -107,13 +107,53 @@ export async function get<T>(endpoint: string): Promise<T> {
 }
 
 export async function post<T>(endpoint: string, data: unknown): Promise<T> {
-  const url = `${API_SERVER_URL}${endpoint}`;
+  const url = `/api${endpoint}`;
   console.log('Posting to:', url, data);
 
   try {
     console.log('Making POST request to:', url);
     const response = await fetch(url, {
       method: 'POST',
+      headers: defaultHeaders,
+      credentials: 'include',
+      mode: 'cors',
+      body: JSON.stringify(data)
+    });
+
+    console.log('Response status:', response.status, {
+      url: response.url,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
+    return handleResponse<T>(response);
+  } catch (error) {
+    console.error('Fetch error:', {
+      error,
+      url,
+      endpoint,
+      baseUrl: API_SERVER_URL,
+      data
+    });
+
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      console.error(`Failed to connect to the server: ${error}`);
+      throw new ApiError(0, 'Unable to connect to the server. Please check if the server is running and CORS is properly configured.');
+    }
+    if (error instanceof Error) {
+      throw new ApiError(0, `Failed to connect to the server: ${error.message}`);
+    }
+    throw error;
+  }
+}
+
+export async function put<T>(endpoint: string, data: unknown): Promise<T> {
+  const url = `/api${endpoint}`;
+  console.log('Putting to:', url, data);
+
+  try {
+    console.log('Making PUT request to:', url);
+    const response = await fetch(url, {
+      method: 'PUT',
       headers: defaultHeaders,
       credentials: 'include',
       mode: 'cors',
@@ -145,48 +185,8 @@ export async function post<T>(endpoint: string, data: unknown): Promise<T> {
   }
 }
 
-export async function put<T>(endpoint: string, data: unknown): Promise<T> {
-  const url = `${API_SERVER_URL}${endpoint}`;
-  console.log('Putting to:', url, data);
-
-  try {
-    console.log('Making PUT request to:', url);
-    const response = await fetch(url, {
-      method: 'PUT',
-      headers: defaultHeaders,
-      // Removed credentials and mode to avoid CORS issues
-      // credentials: 'include',
-      // mode: 'cors',
-      body: JSON.stringify(data)
-    });
-
-    console.log('Response status:', response.status, {
-      url: response.url,
-      statusText: response.statusText,
-      headers: Object.fromEntries(response.headers.entries())
-    });
-    return handleResponse<T>(response);
-  } catch (error) {
-    console.error('Fetch error:', {
-      error,
-      url,
-      endpoint,
-      baseUrl: API_SERVER_URL,
-      data
-    });
-
-    if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new ApiError(0, 'Unable to connect to the server. Please check if the server is running and CORS is properly configured.');
-    }
-    if (error instanceof Error) {
-      throw new ApiError(0, `Failed to connect to the server: ${error.message}`);
-    }
-    throw error;
-  }
-}
-
 export async function del<T>(endpoint: string): Promise<T> {
-  const url = `${API_SERVER_URL}${endpoint}`;
+  const url = `/api${endpoint}`;
   console.log('Deleting:', url);
 
   try {

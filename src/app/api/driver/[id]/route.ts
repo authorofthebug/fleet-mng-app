@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { API_SERVER_URL } from '@/lib/config';
+//import { API_SERVER_URL } from '@/lib/config';
 
 // GET /api/driver/[id] - Get a driver by ID
 export async function GET(
@@ -10,7 +10,7 @@ export async function GET(
   try {
     const { id } = params;
 
-    const response = await fetch(`${API_SERVER_URL}/driver/${id}`, {
+    const response = await fetch(`/api/driver/${id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

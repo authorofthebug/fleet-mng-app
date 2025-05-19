@@ -24,7 +24,7 @@ const menuItems = [
   //{ name: 'Contract', href: '/contract', icon: DocumentTextIcon },
   { name: 'Driver', href: '/driver', icon: UserIcon },
   //{ name: 'Employee', href: '/employee', icon: BriefcaseIcon },
-  { name: 'Generic Types', href: '/generic-type', icon: DocumentIcon },
+  { name: 'Generic Types', href: '/generic-types', icon: DocumentIcon },
   //{ name: 'Insurance', href: '/insurance', icon: ShieldCheckIcon },
   //{ name: 'Maintenance', href: '/maintenance', icon: WrenchScrewdriverIcon },
   //{ name: 'Permit', href: '/permit', icon: DocumentIcon },
