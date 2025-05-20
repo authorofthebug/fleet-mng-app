@@ -24,13 +24,13 @@ interface DataTableProps<T> {
   columns: Column<T>[];
   loading?: boolean;
   onEdit?: (item: T) => void;
-  onDelete?: (id: string | number| Promise<void> | void) => void;
+  onDelete?: (id: string | number | Promise<void> | void) => void;
   onAdd?: () => void;
   itemsPerPage?: number;
   initialSortConfig?: {
     key: keyof T | string;
     direction: 'asc' | 'desc';
-  };
+  } | null;
 }
 
 export default function DataTable<T extends { id: number | string }>({
@@ -123,7 +123,7 @@ export default function DataTable<T extends { id: number | string }>({
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm transition duration-150 ease-in-out"
+              className="block w-full pl-10 pr-3 py-2 border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-150 hover:bg-white focus:bg-white"
               placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

@@ -1,5 +1,11 @@
 "use client";
-import { useState, ChangeEvent, FormEvent, useEffect } from "react";
+
+// Add this at the top of your file to ensure client-only rendering
+// This prevents hydration mismatches by skipping server rendering entirely
+import dynamic from 'next/dynamic'
+
+// Rest of your imports...
+import { useState, ChangeEvent, FormEvent, useEffect, useCallback } from "react";
 import {
     ArrowUturnLeftIcon, CalendarDaysIcon,
     Cog6ToothIcon,
@@ -64,7 +70,7 @@ const ScheduleFormModal = ({
             setLoadingClients(true);
             setClientError(null);
             const data = await clientService.getAll();
-            setClients(data);
+            setClients(data.filter(c => c.status === 'ACTIVE'));
         } catch (error) {
             console.error('Error loading client:', error);
             setClientError('Failed to load client');
@@ -78,7 +84,7 @@ const ScheduleFormModal = ({
             setLoadingVehicles(true);
             setVehicleError(null);
             const data = await vehicleService.getAll();
-            setVehicles(data);
+            setVehicles(data.filter(v => v.status === 'ACTIVE'));
         } catch (error) {
             console.error('Error loading vehicle:', error);
             setVehicleError('Failed to load vehicle');
@@ -91,12 +97,8 @@ const ScheduleFormModal = ({
         try {
             setLoadingDrivers(true);
             setDriverError(null);
-            const response = await fetch('/api/driver');
-            if (!response.ok) {
-                throw new Error('Failed to load drivers');
-            }
-            const data = await response.json();
-            setDrivers(data);
+            const data = await driverService.getAll();
+            setDrivers(data.filter(d => d.status === 'ACTIVE'));
         } catch (error) {
             console.error('Error loading drivers:', error);
             setDriverError('Failed to load drivers');
@@ -354,7 +356,9 @@ const ScheduleFormModal = ({
     );
 };
 
-export default function ProgramacionTab() {
+export default dynamic(() => Promise.resolve(ProgramacionTab), { ssr: false })
+
+function ProgramacionTab() {
     // Use the sidebar width hook to set the CSS variable
     useSidebarWidth();
     const [currentTime, setCurrentTime] = useState(new Date());
@@ -432,8 +436,8 @@ export default function ProgramacionTab() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    // Filter schedule based on search text and status
-    const filterSchedules = (text: string, status: string, schedulesToFilter = schedules) => {
+    // Memoize the filterSchedules function to prevent unnecessary re-renders
+    const filterSchedules = useCallback((text: string, status: string, schedulesToFilter = schedules) => {
         let filtered = [...schedulesToFilter];
 
         // Filter by status if selected
@@ -461,7 +465,7 @@ export default function ProgramacionTab() {
         }
 
         return filtered;
-    };
+    }, [schedules]);
 
     // Load schedule, vehicle, client, and drivers on component mount
     useEffect(() => {
@@ -484,7 +488,7 @@ export default function ProgramacionTab() {
     // Update filtered schedule when schedule, search text, or status filter changes
     useEffect(() => {
         setFilteredSchedules(filterSchedules(searchText, statusFilter));
-    }, [schedules, searchText, statusFilter]);
+    }, [searchText, statusFilter, filterSchedules]);
 
     const loadSchedules = async () => {
         try {
@@ -501,7 +505,7 @@ export default function ProgramacionTab() {
     const loadVehicles = async () => {
         try {
             const data = await vehicleService.getAll();
-            setVehicles(data);
+            setVehicles(data.filter(v => v.status === 'ACTIVE'));
             return data;
         } catch (error) {
             console.error('Error loading vehicle:', error);
@@ -513,6 +517,7 @@ export default function ProgramacionTab() {
     const loadClients = async () => {
         try {
             const data = await clientService.getAll();
+            data.filter(c => c.status === 'ACTIVE');
             setClients(data);
             return data;
         } catch (error) {
@@ -525,6 +530,7 @@ export default function ProgramacionTab() {
     const loadDrivers = async () => {
         try {
             const response = await driverService.getAll();
+            response.filter(d => d.status === 'ACTIVE');
             //const data = await response.json();
             setDrivers(response);
             return response;
@@ -706,22 +712,22 @@ export default function ProgramacionTab() {
             label: "Programado",
             icon: CalendarDaysIcon,
             value: schedules.filter(s => s.status === 'PROGRAMED').length,
-            color: "text-blue-700",
-            bgColor: "bg-blue-100",
+            color: "text-fuchsia-700",
+            bgColor: "bg-fuchsia-100",
         },
         {
             label: "Llegada al Punto",
             icon: MapPinIcon,
             value: schedules.filter(s => s.status === 'ALMOST_ON_ARRIVAL').length,
-            color: "text-emerald-700",
-            bgColor: "bg-emerald-100",
+            color: "text-teal-700",
+            bgColor: "bg-teal-100",
         },
         {
             label: "Inicio del Servicio",
             icon: PlayCircleIcon,
             value: schedules.filter(s => s.status === 'STARTED').length,
-            color: "text-yellow-600",
-            bgColor: "bg-yellow-100",
+            color: "text-slate-600",
+            bgColor: "bg-slate-100",
         },
         {
             label: "Llegada al Cliente",
@@ -734,8 +740,8 @@ export default function ProgramacionTab() {
             label: "Retorno del Cliente",
             icon: ArrowUturnLeftIcon,
             value: schedules.filter(s => s.status === 'BACK_FROM_CLIENT').length,
-            color: "text-red-700",
-            bgColor: "bg-red-100",
+            color: "text-cyan-700",
+            bgColor: "bg-cyan-100",
         },
     ];
     return (
@@ -892,18 +898,18 @@ export default function ProgramacionTab() {
                                                 textColor = 'text-red-600';
                                                 break;
                                             case 'PROGRAMED':
-                                                bgColor = 'bg-blue-100';
-                                                textColor = 'text-blue-600';
+                                                bgColor = 'bg-fuchsia-100';
+                                                textColor = 'text-fuchsia-600';
                                                 displayStatus = 'Programado';
                                                 break;
                                             case 'ALMOST_ON_ARRIVAL':
-                                                bgColor = 'bg-emerald-100';
-                                                textColor = 'text-emerald-600';
+                                                bgColor = 'bg-teal-100';
+                                                textColor = 'text-teal-600';
                                                 displayStatus = 'Llegada al punto';
                                                 break;
                                             case 'STARTED':
-                                                bgColor = 'bg-yellow-100';
-                                                textColor = 'text-yellow-600';
+                                                bgColor = 'bg-slate-100';
+                                                textColor = 'text-slate-600';
                                                 displayStatus = 'Inicio del servicio';
                                                 break;
                                             case 'ON_CLIENT':
@@ -912,8 +918,8 @@ export default function ProgramacionTab() {
                                                 displayStatus = 'Llegada al cliente';
                                                 break;
                                             case 'BACK_FROM_CLIENT':
-                                                bgColor = 'bg-red-100';
-                                                textColor = 'text-red-600';
+                                                bgColor = 'bg-cyan-100';
+                                                textColor = 'text-cyan-600';
                                                 displayStatus = 'Retorno del cliente';
                                                 break;
                                         }

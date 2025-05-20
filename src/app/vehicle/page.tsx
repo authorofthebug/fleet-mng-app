@@ -102,7 +102,7 @@ const VehicleFormModal = ({
                   <div className="flex flex-col">
                     <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Year</label>
                     <input
-                      type="date"
+                      type="text"
                       value={formData.year}
                       onChange={(e) => setFormData({ ...formData, year: e.target.value })}
                       className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
@@ -126,7 +126,7 @@ const VehicleFormModal = ({
                       className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                     >
                       <option value="NEW" className="text-sm">New</option>
-                      <option value="AVAILABLE" className="text-sm">Available</option>
+                      <option value="ACTIVE" className="text-sm">Available</option>
                       <option value="IN_SERVICE" className="text-sm">In Service</option>
                       <option value="IN_MAINTENANCE" className="text-sm">In Maintenance</option>
                       <option value="WITH_ISSUE" className="text-sm">With Issue</option>
@@ -200,7 +200,9 @@ export default function VehiclePage() {
     notes: '',
     status: 'ACTIVE',
     plateNumber: '',
-    make: ''
+    make: '',
+    createdAt: '',
+    updatedAt: '',
   });
 
   useEffect(() => {
@@ -240,7 +242,9 @@ export default function VehiclePage() {
       notes: vehicle.notes || '',
       status: vehicle.status || 'AVAILABLE',
       plateNumber: vehicle.plateNumber || vehicle.licensePlate || '',
-      make: vehicle.make || vehicle.brand || ''
+      make: vehicle.make || vehicle.brand || '',
+      createdAt: vehicle.createdAt || '',
+      updatedAt: vehicle.updatedAt || '',
     });
     setShowForm(true);
   };
@@ -268,10 +272,14 @@ export default function VehiclePage() {
       brand: 'Tesla',
       licensePlate: 'JKL012',
       model: 'Model 3',
-      year: new Date().toISOString().split('T')[0], // Format as YYYY-MM-DD
+      year: 1920,
       color: 'Red',
       notes: 'Just added to fleet, pending first inspection',
-      status: 'NEW'
+      status: 'NEW',
+      plateNumber: 'JKL012',
+      make: 'Tesla',
+      createdAt: '',
+      updatedAt: '',
     });
     setShowForm(true);
   };
@@ -373,7 +381,8 @@ export default function VehiclePage() {
           const date = new Date(vehicle.year);
           // Format as DD/MM/YYYY if it's a full date
           if (!isNaN(date.getTime())) {
-            return date.toLocaleDateString('en-GB'); // en-GB uses DD/MM/YYYY format
+            //YYYY
+            return date.getFullYear().toString();
           }
         }
         // Otherwise return as is
@@ -387,12 +396,11 @@ export default function VehiclePage() {
       render: (vehicle: Vehicle) => {
         // Define status colors that match the dashboard stats
         const statusColors = {
+          'NEW': 'bg-blue-100 text-blue-700',
+          'ACTIVE': 'bg-blue-100 text-blue-700',
           'AVAILABLE': 'bg-blue-100 text-blue-700',
-          'active': 'bg-blue-100 text-blue-700',
           'IN_SERVICE': 'bg-green-100 text-green-600',
           'IN_MAINTENANCE': 'bg-yellow-100 text-yellow-500',
-          'maintenance': 'bg-yellow-100 text-yellow-500',
-          'NEW': 'bg-blue-100 text-blue-700',
           'WITH_ISSUE': 'bg-red-100 text-red-600',
           'inactive': 'bg-red-100 text-red-600'
         };

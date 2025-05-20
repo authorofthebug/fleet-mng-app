@@ -129,7 +129,7 @@ const ClientFormModal = ({
                       id="status"
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as Client['status'] })}
-                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     >
                       <option value="ACTIVE" className="text-green-600">Active</option>

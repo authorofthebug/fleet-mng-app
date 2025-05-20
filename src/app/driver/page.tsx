@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
@@ -137,7 +137,7 @@ const DriverFormModal = ({
                       id="status"
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as Driver['status'] })}
-                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                      className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     >
                       <option value="ACTIVE" className="text-green-600">Active</option>
@@ -206,28 +206,8 @@ export default function DriverPage() {
     loadDrivers();
   }, []);
 
-  // Update filtered drivers when drivers, search text, or status filter changes
-  useEffect(() => {
-    setFilteredDrivers(filterDrivers(searchText, statusFilter));
-  }, [drivers, searchText, statusFilter]);
-
-  const loadDrivers = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await driverService.getAll();
-      setDrivers(data);
-      setFilteredDrivers(data);
-    } catch (error) {
-      console.error('Error loading drivers:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load drivers');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-   // Filter drivers based on search text and status
-  const filterDrivers = (text: string, status: string, driversToFilter = drivers) => {
+  // Memoize the filterDrivers function to prevent unnecessary re-renders
+  const memoizedFilterDrivers = useCallback((text: string, status: string, driversToFilter: Driver[] = drivers) => {
     let filtered = [...driversToFilter];
 
     // Filter by status if selected
@@ -249,6 +229,26 @@ export default function DriverPage() {
     }
 
     return filtered;
+  }, [drivers]);
+
+  // Update filtered drivers when search text or status filter changes
+  useEffect(() => {
+    setFilteredDrivers(memoizedFilterDrivers(searchText, statusFilter));
+  }, [searchText, statusFilter, memoizedFilterDrivers]);
+
+  const loadDrivers = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await driverService.getAll();
+      setDrivers(data);
+      setFilteredDrivers(data);
+    } catch (error) {
+      console.error('Error loading drivers:', error);
+      setError(error instanceof Error ? error.message : 'Failed to load drivers');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (driver: Driver) => {

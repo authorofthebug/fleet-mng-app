@@ -9,22 +9,29 @@ export interface Vehicle {
   color: string;
   status: 'ACTIVE' | 'IN_SERVICE' | 'ON_SERVICE' | 'IN_MAINTENANCE' | 'ON_MAINTENANCE' | 'WITH_ISSUE' | 'CRASHED' | 'NEW' | 'active' | 'maintenance' | 'inactive';
   notes: string;
-  // Additional fields that might be in the API response
-  plateNumber?: string;
-  make?: string;
-  type?: string;
-  lastMaintenance?: string;
-  nextMaintenance?: string;
+  plateNumber: string;
+  make: string;
+  createdAt: string | null;
+  updatedAt: string | null;
 }
 
 const vehicleService = {
-  getAll: () => get<Vehicle[]>('/vehicle'),
+  // Get all vehicles
+  getAll: () => get<Vehicle[]>('vehicle'),
+  
+  // Get a specific vehicle by ID (MongoDB ObjectId)
   getById: (id: string) => get<Vehicle>(`/vehicle/${id}`),
-  getByLicensePlate: (licensePlate: string) => get<Vehicle>(`/vehicle/${licensePlate}`),
-  create: (data: Vehicle) => post<Vehicle>('/vehicle', data),
-  update: (id: string, data: Vehicle) => put<Vehicle>(`/vehicle/${id}`, data),
-  delete: (id: string) => del(`/vehicles/${id}`),
-  getByStatus: (status: Vehicle['status']) => get<Vehicle[]>(`/vehicle/status/${status}`)
+  
+  // Create a new vehicle
+  create: (data: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>) => 
+    post<Vehicle>('vehicle', data),
+  
+  // Update an existing vehicle
+  update: (id: string, data: Partial<Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>>) => 
+    put<Vehicle>(`/vehicle/${id}`, data),
+  
+  // Delete a vehicle
+  delete: (id: string) => del(`/vehicle/${id}`)
 };
 
 export { vehicleService };

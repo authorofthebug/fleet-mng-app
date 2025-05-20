@@ -1,4 +1,3 @@
-import { API_SERVER_URL } from '../config';
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {
@@ -22,6 +21,12 @@ async function handleResponse<T>(response: Response): Promise<T> {
       responseText = await response.text();
     } catch (e) {
       responseText = e instanceof Error ? e.message : 'Could not read response text';
+    }
+    
+    // Check if response is HTML instead of JSON
+    if (responseText.trim().startsWith('<!DOCTYPE') || responseText.trim().startsWith('<html')) {
+      console.error('Received HTML response instead of JSON:', responseText.substring(0, 100) + '...');
+      throw new ApiError(response.status, `Received HTML response instead of JSON. Server returned ${response.status} ${response.statusText}`);
     }
     
     // Then try to parse it as JSON
@@ -57,6 +62,13 @@ async function handleResponse<T>(response: Response): Promise<T> {
     if (!text) {
       return {} as T;
     }
+    
+    // Check if response is HTML instead of JSON
+    if (text.trim().startsWith('<!DOCTYPE') || text.trim().startsWith('<html')) {
+      console.error('Received HTML response instead of JSON:', text.substring(0, 100) + '...');
+      throw new ApiError(response.status, 'Received HTML response instead of JSON');
+    }
+    
     const data = JSON.parse(text);
     return data;
   } catch (parseError) {
@@ -71,8 +83,9 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 export async function get<T>(endpoint: string): Promise<T> {
-  // Use a relative URL that will be handled by Next.js API routes
-  const url = `/api${endpoint}`;
+
+  // Construct URL without adding /api prefix
+  const url = `/api/${endpoint}`;
   console.log('Fetching:', url);
 
   try {
@@ -92,8 +105,7 @@ export async function get<T>(endpoint: string): Promise<T> {
     console.error('Network error during fetch:', {
       error: error instanceof Error ? error.message : String(error),
       url,
-      endpoint,
-      baseUrl: API_SERVER_URL
+      endpoint
     });
 
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
@@ -107,9 +119,9 @@ export async function get<T>(endpoint: string): Promise<T> {
 }
 
 export async function post<T>(endpoint: string, data: unknown): Promise<T> {
-  const url = `/api${endpoint}`;
+  const url = `/api/${endpoint}`;
   console.log('Posting to:', url, data);
-
+  
   try {
     console.log('Making POST request to:', url);
     const response = await fetch(url, {
@@ -131,7 +143,7 @@ export async function post<T>(endpoint: string, data: unknown): Promise<T> {
       error,
       url,
       endpoint,
-      baseUrl: API_SERVER_URL,
+      baseUrl: url,
       data
     });
 
@@ -171,7 +183,7 @@ export async function put<T>(endpoint: string, data: unknown): Promise<T> {
       error,
       url,
       endpoint,
-      baseUrl: API_SERVER_URL,
+      baseUrl: url,
       data
     });
 
@@ -210,7 +222,7 @@ export async function del<T>(endpoint: string): Promise<T> {
       error,
       url,
       endpoint,
-      baseUrl: API_SERVER_URL
+      baseUrl: url
     });
 
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
