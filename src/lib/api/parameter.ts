@@ -6,7 +6,7 @@ export interface Parameter {
   description?: string;
   category: string;
   value: string;
-  status: 'active' | 'inactive';
+  status: 'ACTIVE' | 'INACTIVE';
   createdAt?: string;
   updatedAt?: string;
 }

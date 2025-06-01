@@ -6,22 +6,30 @@ export interface Schedule {
   status: 'PENDING' | 'CONFIRMED' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED' | 'PROGRAMED' | 'ALMOST_ON_ARRIVAL' | 'STARTED' | 'ON_CLIENT' | 'BACK_FROM_CLIENT' | string;
   createdAt: string;
   updatedAt: string;
-  clientId: string;
-  vehicleId: string;
-  driverId?: string;
-  origin: string;
-  plate: string;
+  clientId: string;//
+  vehicleId: string;//
+  driverId?: string;//
+  driver?: string;//
+  origin: string;//
+  plate: string;//
   zone: string;
-  destination: string;
-  startTime: string;
-  endTime: string;
+  destination: string;//
+  startTime: string;//
+  endTime: string;//
   // Additional fields from ProgramacionTab
-  startDate?: string;
-  endDate?: string;
-  days?: number;
-  client?: string;
-  serviceType?: string;
-  condition?: string;
+  startDate?: string;//
+  endDate?: string;//
+  days?: number;//
+  client?: string;//
+  vehicle?: string;//
+  serviceType?: string;//
+  condition?: string;//
+  vehicleType?: string;//
+  rut?:string;
+  docType?: string;
+  licenseNumber?: string;
+  folio?: string;
+  licenseExpiration?: string;
 }
 
 const scheduleService = {

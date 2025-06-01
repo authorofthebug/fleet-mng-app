@@ -36,7 +36,7 @@ const ParameterFormModal = ({
     ...formData,
     name: formData.name || '',
     category: formData.category || '',
-    status: formData.status || 'active',
+    status: formData.status || 'ACTIVE',
     description: formData.description || ''
   };
 
@@ -104,7 +104,7 @@ const ParameterFormModal = ({
                     <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Status</label>
                     <select
                       value={safeFormData.status}
-                      onChange={(e) => setFormData({...formData, status: e.target.value as 'active' | 'inactive'})}
+                      onChange={(e) => setFormData({...formData, status: e.target.value as 'ACTIVE' | 'INACTIVE'})}
                       className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     >
@@ -167,7 +167,7 @@ export default function GenericTypesPage() {
     name: '',
     value: '',
     category: '',
-    status: 'active',
+    status: 'ACTIVE',
     description: ''
   });
   const [searchTerm] = useState('');
@@ -199,7 +199,7 @@ export default function GenericTypesPage() {
       name: '',
       value: '',
       category: '',
-      status: 'active',
+      status: 'ACTIVE',
       description: ''
     });
     setShowForm(true);
@@ -210,9 +210,9 @@ export default function GenericTypesPage() {
     setFormData({
       ...parameter,
       name: parameter.name || '',
+      description: parameter.description || '',
       category: parameter.category || '',
-      status: parameter.status || 'active',
-      description: parameter.description || ''
+      status: parameter.status || 'active'
     });
     setShowForm(true);
   };
@@ -264,20 +264,19 @@ export default function GenericTypesPage() {
 
   const columns = [
     { key: 'name', label: 'Name' },
-    //{ key: 'value', label: 'Value' },
+    { key: 'description', label: 'Description' },
     { key: 'category', label: 'Category' },
     { 
       key: 'status', 
       label: 'Status',
       render: (parameter: Parameter) => (
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          parameter.status === 'active' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-800'
+          parameter.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-800'
         }`}>
           {parameter.status.charAt(0).toUpperCase() + parameter.status.slice(1)}
         </span>
       )
     },
-    { key: 'description', label: 'Description' },
   ];
 
   return (

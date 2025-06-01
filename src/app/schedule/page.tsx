@@ -27,6 +27,7 @@ import DataTable from "@/components/common/DataTable";
 import Layout from '@/components/layout/Layout';
 import InputConSugerencias from '@/components/InputConSugerencias';
 import {Driver, driverService} from "@/lib/api/driver";
+import {Parameter, parameterService} from "@/lib/api/parameter";
 
 // Modal component for the schedule form
 const ScheduleFormModal = ({
@@ -56,14 +57,37 @@ const ScheduleFormModal = ({
     const [loadingDrivers, setLoadingDrivers] = useState(false);
     const [driverError, setDriverError] = useState<string | null>(null);
 
+    const [conditionType, setConditionType] = useState<Parameter[]>([]);
+    const [serviceType, setServiceType] = useState<Parameter[]>([]);
+    const [vehicleType, setVehicleType] = useState<Parameter[]>([]);
+    const [loadingParameter, setLoadingParameter] = useState(false);
+    const [parameterError, setParameterError] = useState<string | null>(null);
+
     // Fetch client, vehicle, and drivers when the modal is shown
     useEffect(() => {
         if (show) {
             fetchClients();
             fetchVehicles();
             fetchDrivers();
+            fetchParameter();
         }
     }, [show]);
+
+    const fetchParameter = async () => {
+        try {
+            setLoadingParameter(true);
+            setParameterError(null);
+            const data = await parameterService.getAll();
+            setConditionType(data.filter(p => p.category === 'CONDITION'));
+            setVehicleType(data.filter(p => p.category === 'VEHICLE'));
+            setServiceType(data.filter(p => p.category === 'SERVICE'));
+        } catch (error) {
+            console.error('Error loading condition type:', error);
+            setParameterError('Failed to load condition type');
+        } finally {
+            setLoadingParameter(false);
+        }
+    };
 
     const fetchClients = async () => {
         try {
@@ -111,11 +135,39 @@ const ScheduleFormModal = ({
 
     const handleStartTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newStartTime = e.target.value;
+        const now = new Date();
+        const selectedDate = new Date(newStartTime);
+        const endDate = formData.endTime ? new Date(formData.endTime) : null;
+        
+        if (selectedDate < now) {
+            alert("Start time cannot be in the past");
+            return;
+        }
+        
+        if (endDate && selectedDate > endDate) {
+            alert("Start time cannot be after end time");
+            return;
+        }
+        
         setFormData(prev => ({ ...prev, startTime: newStartTime }));
     };
 
     const handleEndTimeChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newEndTime = e.target.value;
+        const now = new Date();
+        const selectedDate = new Date(newEndTime);
+        const startDate = formData.startTime ? new Date(formData.startTime) : null;
+        
+        if (selectedDate < now) {
+            alert("End time cannot be in the past");
+            return;
+        }
+        
+        if (startDate && selectedDate < startDate) {
+            alert("End time cannot be before start time");
+            return;
+        }
+        
         setFormData(prev => ({ ...prev, endTime: newEndTime }));
     };
 
@@ -149,39 +201,6 @@ const ScheduleFormModal = ({
 
                         <div className="p-6">
                             <form onSubmit={onSubmit} className="space-y-6">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Description</label>
-                                        <input
-                                            type="text"
-                                            value={formData.description}
-                                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
-                                            required
-                                        />
-                                    </div>
-                                    <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Status</label>
-                                        <select
-                                            value={formData.status}
-                                            onChange={e => setFormData({ ...formData, status: e.target.value })}
-                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
-                                            required
-                                        >
-                                            <option value="">Select Status</option>
-                                            <option value="PENDING">Pending</option>
-                                            <option value="CONFIRMED">Confirmed</option>
-                                            <option value="IN_PROGRESS">In Progress</option>
-                                            <option value="COMPLETED">Completed</option>
-                                            <option value="CANCELLED">Cancelled</option>
-                                            <option value="PROGRAMED">Programado</option>
-                                            <option value="ALMOST_ON_ARRIVAL">Llegada al punto</option>
-                                            <option value="STARTED">Inicio del servicio</option>
-                                            <option value="ON_CLIENT">Llegada al cliente</option>
-                                            <option value="BACK_FROM_CLIENT">Retorno del cliente</option>
-                                        </select>
-                                    </div>
-                                </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="flex flex-col">
@@ -200,7 +219,7 @@ const ScheduleFormModal = ({
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="flex flex-col">
                                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</label>
                                         <input
@@ -221,9 +240,27 @@ const ScheduleFormModal = ({
                                             required
                                         />
                                     </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Days</label>
+                                        <input
+                                            type="number"
+                                            value={(() => {
+                                                if (formData.startTime && formData.endTime) {
+                                                    const start = new Date(formData.startTime);
+                                                    const end = new Date(formData.endTime);
+                                                    const diffTime = Math.abs(end.getTime() - start.getTime());
+                                                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                                                    return diffDays;
+                                                }
+                                                return 0;
+                                            })()}
+                                            readOnly
+                                            className="border border-blue-200 rounded px-3 py-2 bg-gray-100 w-full text-gray-700 text-sm"
+                                        />
+                                    </div>
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                                     <div className="flex flex-col">
                                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Client</label>
                                         <select
@@ -241,6 +278,81 @@ const ScheduleFormModal = ({
                                                 clients.map(client => (
                                                     <option key={client.id} value={client.id}>
                                                         {client.name}
+                                                    </option>
+                                                ))
+                                            )}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Service Type</label>
+                                        <select
+                                            value={formData.serviceType}
+                                            onChange={e => setFormData({ ...formData, serviceType: e.target.value })}
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                                            required
+                                        >
+                                            <option value="">Select...</option>
+                                            {loadingParameter ? (
+                                                <option value="" disabled>Loading service types...</option>
+                                            ) : parameterError ? (
+                                                <option value="" disabled>Error loading service types</option>
+                                            ) : (
+                                                serviceType.map(service => (
+                                                    <option key={service.id} value={service.name}>
+                                                        {service.name}
+                                                    </option>
+                                                ))
+                                            )}
+
+                                        </select>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</label>
+                                        <select
+                                            value={formData.condition}
+                                            onChange={e => setFormData({ ...formData, condition: e.target.value })}
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                                            required
+                                        >
+                                            <option value="">Select...</option>
+                                            {loadingParameter ? (
+                                                <option value="" disabled>Loading conditions...</option>
+                                            ) : parameterError ? (
+                                                <option value="" disabled>Error loading conditions</option>
+                                            ) : (
+                                                conditionType.map(condition => (
+                                                    <option key={condition.id} value={condition.name}>
+                                                        {condition.name}
+                                                    </option>
+                                                ))
+                                            )}
+                                        </select>
+                                    </div>
+                                </div>
+
+
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle Type</label>
+                                        <select
+                                            value={formData.vehicleType}
+                                            onChange={e => setFormData({ ...formData, vehicleType: e.target.value })}
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                                            required
+                                        >
+                                            <option value="">Select...</option>
+                                            {loadingParameter ? (
+                                                <option value="" disabled>Loading vehicle types...</option>
+                                            ) : parameterError ? (
+                                                <option value="" disabled>Error loading vehicle types</option>
+                                            ) : (
+                                                vehicleType.map(vehicle => (
+                                                    <option key={vehicle.id} value={vehicle.name}>
+                                                        {vehicle.name}
                                                     </option>
                                                 ))
                                             )}
@@ -277,10 +389,35 @@ const ScheduleFormModal = ({
                                         </select>
                                     </div>
                                     <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Plate</label>
+                                        <input
+                                            type="text"
+                                            value={formData.plate}
+                                            readOnly
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 cursor-not-allowed bg-gray-100"
+                                            required
+                                        />
+                                    </div>
+
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
+                                    <div className="flex flex-col">
                                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Driver</label>
                                         <select
                                             value={formData.driverId || ''}
-                                            onChange={(e) => setFormData({ ...formData, driverId: e.target.value })}
+                                            onChange={(e) => {
+                                                const selectedDriverId = e.target.value;
+                                                const selectedDriver = drivers.find(d => d.id === selectedDriverId);
+
+                                                setFormData({ ...formData, driverId: selectedDriverId,
+                                                    rut: selectedDriver ? selectedDriver.rut : '',
+                                                    docType: selectedDriver ? selectedDriver.docType : '',
+                                                    licenseNumber: selectedDriver ? selectedDriver.licenseNumber : '',
+                                                    folio: selectedDriver ? selectedDriver.folio : '',
+                                                    licenseExpiration: selectedDriver ? selectedDriver.licenseExpiration : ''
+                                                });
+                                            }
+                                            }
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                         >
                                             <option value="">Select Driver</option>
@@ -297,25 +434,55 @@ const ScheduleFormModal = ({
                                             )}
                                         </select>
                                     </div>
+                                </div>
+                                <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Plate</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">RUT</label>
                                         <input
                                             type="text"
-                                            value={formData.plate}
-                                            readOnly
-                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 cursor-not-allowed bg-gray-100"
+                                            value={formData.rut || ''}
+                                            onChange={(e) => setFormData({ ...formData, rut: e.target.value })}
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         />
                                     </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Zone</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Doc Type</label>
                                         <input
                                             type="text"
-                                            value={formData.zone}
-                                            onChange={(e) => setFormData({ ...formData, zone: e.target.value })}
+                                            value={formData.docType || ''}
+                                            onChange={(e) => setFormData({ ...formData, docType: e.target.value })}
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Licence</label>
+                                        <input
+                                            type="text"
+                                            value={formData.licenseNumber || ''}
+                                            onChange={(e) => setFormData({ ...formData, licenseNumber: e.target.value })}
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Folio</label>
+                                        <input
+                                            type="text"
+                                            value={formData.folio || ''}
+                                            onChange={(e) => setFormData({ ...formData, folio: e.target.value })}
+                                            className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
+                                            required
+                                        />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date Licence</label>
+                                        <input
+                                            type="text"
+                                            value={formData.licenseExpiration || ''}
+                                            onChange={(e) => setFormData({ ...formData, licenseExpiration: e.target.value })}
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         />

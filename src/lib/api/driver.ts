@@ -11,6 +11,9 @@ export interface Driver {
   address?: string;
   notes?: string;
   status: 'ACTIVE' | 'INACTIVE' | string;
+  rut?:string;
+  docType?: string;
+  folio?: string;
 }
 
 export const driverService = {
