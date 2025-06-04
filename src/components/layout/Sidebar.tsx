@@ -58,19 +58,17 @@ export default function Sidebar() {
       
       <div className="p-5 flex items-center justify-between relative z-10">
         <button
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="p-2 bg-blue-500/30 hover:bg-blue-400/50 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 group"
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            className="p-2 bg-blue-500/30 hover:bg-blue-400/50 rounded-full transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/20 group"
         >
           {isCollapsed ? (
-            <ChevronRightIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+              <ChevronRightIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
           ) : (
-            <ChevronLeftIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
+              <ChevronLeftIcon className="h-5 w-5 group-hover:scale-110 transition-transform" />
           )}
         </button>
         {!isCollapsed && (
-          <h1 className="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-blue-100 to-indigo-200">
-            Fleet<span className="text-white">Manager</span>
-          </h1>
+            <TruckIcon className="h-8 w-8 text-white" />
         )}
       </div>
       

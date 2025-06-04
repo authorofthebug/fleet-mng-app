@@ -23,7 +23,7 @@ export interface Schedule {
   client?: string;//
   vehicle?: string;//
   serviceType?: string;//
-  condition?: string;//
+  conditionType?: string;//
   vehicleType?: string;//
   rut?:string;
   docType?: string;

@@ -176,7 +176,7 @@ export default function LoginPage() {
                     autoComplete="email"
                     required
                     className="mt-1 appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg 
-                             placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                             placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700
                              focus:border-transparent transition-all duration-200"
                     placeholder="you@example.com"
                     value={email}
@@ -195,7 +195,7 @@ export default function LoginPage() {
                     autoComplete="current-password"
                     required
                     className="mt-1 appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg 
-                             placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 
+                             placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 text-black
                              focus:border-transparent transition-all duration-200"
                     placeholder="••••••••"
                     value={password}

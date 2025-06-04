@@ -173,8 +173,8 @@ const ScheduleFormModal = ({
                                     <div className="flex flex-col">
                                         <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</label>
                                         <select
-                                            value={formData.condition}
-                                            onChange={e => setFormData({ ...formData, condition: e.target.value })}
+                                            value={formData.conditionType}
+                                            onChange={e => setFormData({ ...formData, conditionType: e.target.value })}
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         >
