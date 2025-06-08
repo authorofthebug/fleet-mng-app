@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslation } from '@/hooks/use-translation';
 import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
@@ -32,6 +33,7 @@ const ClientFormModal = ({
   setFormData: React.Dispatch<React.SetStateAction<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>>;
   editingClient: Client | null;
 }) => {
+  const { t } = useTranslation();
   if (!show) return null;
 
   return (
@@ -52,7 +54,7 @@ const ClientFormModal = ({
           <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">
-                {editingClient ? 'Edit Client' : 'Add New Client'}
+                {editingClient ? t('client.editClient') : t('client.addClient')}
               </h2>
               <button
                 onClick={onClose}
@@ -67,7 +69,7 @@ const ClientFormModal = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex flex-col">
                     <label htmlFor="name" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Name
+                      {t('client.name')}
                     </label>
                     <input
                       type="text"
@@ -81,7 +83,7 @@ const ClientFormModal = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="email" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
+                      {t('client.email')}
                     </label>
                     <input
                       type="email"
@@ -95,7 +97,7 @@ const ClientFormModal = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="phone" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Phone
+                      {t('client.phone')}
                     </label>
                     <input
                       type="text"
@@ -109,7 +111,7 @@ const ClientFormModal = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="taxId" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Tax ID
+                      {t('client.taxId')}
                     </label>
                     <input
                       type="text"
@@ -123,7 +125,7 @@ const ClientFormModal = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="status" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
+                      {t('client.status')}
                     </label>
                     <select
                       id="status"
@@ -132,16 +134,16 @@ const ClientFormModal = ({
                       className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     >
-                      <option value="ACTIVE" className="text-green-600">Active</option>
-                      <option value="INACTIVE" className="text-red-600">Inactive</option>
-                      <option value="PENDING" className="text-yellow-500">Pending</option>
+                      <option value="ACTIVE" className="text-green-600">{t('client.statusActive')}</option>
+                      <option value="INACTIVE" className="text-red-600">{t('client.statusInactive')}</option>
+                      <option value="PENDING" className="text-yellow-500">{t('client.statusPending')}</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="flex flex-col">
                   <label htmlFor="address" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Address
+                    {t('client.address')}
                   </label>
                   <textarea
                     id="address"
@@ -155,7 +157,7 @@ const ClientFormModal = ({
 
                 <div className="flex flex-col">
                   <label htmlFor="notes" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Notes
+                    {t('client.notes')}
                   </label>
                   <textarea
                     id="notes"
@@ -172,7 +174,7 @@ const ClientFormModal = ({
                     onClick={onClose}
                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center"
                   >
-                    Cancel
+                    {t('client.cancel')}
                   </button>
                   <button
                     type="submit"
@@ -181,12 +183,12 @@ const ClientFormModal = ({
                     {editingClient ? (
                       <>
                         <PencilSquareIcon className="h-5 w-5 mr-2" />
-                        Update
+                        {t('client.update')}
                       </>
                     ) : (
                       <>
                         <PlusIcon className="h-5 w-5 mr-2" />
-                        Create
+                        {t('client.create')}
                       </>
                     )}
                   </button>
@@ -210,6 +212,7 @@ export default function ClientPage() {
   const [editingClient, setEditingClient] = useState<Client | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
   const [searchText] = useState<string>('');
   const [statusFilter] = useState<string>('');
   const [formData, setFormData] = useState<Omit<Client, 'id' | 'createdAt' | 'updatedAt'>>({
@@ -237,7 +240,7 @@ export default function ClientPage() {
       setFilteredClients(data);
     } catch (error) {
       console.error('Error loading client:', error);
-      let errorMessage = 'Failed to load client';
+      let errorMessage = t('client.errorLoading');
       if (error instanceof Error) {
         errorMessage = `${error.name}: ${error.message}`;
       }
@@ -261,23 +264,23 @@ export default function ClientPage() {
     setShowForm(true);
   };
 
-  /*const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this client?')) {
+  const handleDelete = async (id: string) => {
+    if (window.confirm(t('client.deleteConfirm'))) {
       try {
         setError(null);
         await clientService.delete(id);
-        setClients(client.filter(client => client.id !== id));
+        setClients(clients.filter(client => client.id !== id));
         setFilteredClients(filteredClients.filter(client => client.id !== id));
       } catch (error) {
         console.error('Error deleting client:', error);
-        let errorMessage = 'Failed to delete client';
+        let errorMessage = t('client.errorDeleting');
         if (error instanceof Error) {
           errorMessage = `${error.name}: ${error.message}`;
         }
         setError(errorMessage);
       }
     }
-  };*/
+  };
 
   const handleAdd = () => {
     setEditingClient(null);
@@ -322,7 +325,7 @@ export default function ClientPage() {
       setShowForm(false);
     } catch (error) {
       console.error('Error saving client:', error);
-      let errorMessage = 'Failed to save client';
+      let errorMessage = t('client.errorSaving');
       if (error instanceof Error) {
         errorMessage = `${error.name}: ${error.message}`;
       }
@@ -375,14 +378,14 @@ export default function ClientPage() {
   };*/
 
   const columns = [
-    { key: 'name', label: 'Name' },
-    { key: 'email', label: 'Email' },
-    { key: 'phone', label: 'Phone' },
-    { key: 'address', label: 'Address' },
-    { key: 'taxId', label: 'Tax ID' },
+    { key: 'name', label: t('client.name') },
+    { key: 'email', label: t('client.email') },
+    { key: 'phone', label: t('client.phone') },
+    { key: 'address', label: t('client.address') },
+    { key: 'taxId', label: t('client.taxId') },
     {
       key: 'status',
-      label: 'Status',
+      label: t('client.status'),
       render: (client: Client) => {
         // Define status colors that match the dashboard stats
         const statusColors = {
@@ -405,50 +408,49 @@ export default function ClientPage() {
   // Dashboard stats - using the filtered client to update stats based on filters
   const clientStats = [
     {
-      label: "Active Clients",
+      label: t('client.activeClients'),
       icon: CheckCircleIcon,
-      value: filteredClients.filter(c => c.status === 'ACTIVE').length,
+      value: loading ? '-' : filteredClients.filter(c => c.status === 'ACTIVE').length,
       color: "text-green-600",
       bgColor: "bg-green-100",
     },
     {
-      label: "Pending Clients",
+      label: t('client.pendingClients'),
       icon: ClockIcon,
-      value: filteredClients.filter(c => c.status === 'PENDING').length,
+      value: loading ? '-' : filteredClients.filter(c => c.status === 'PENDING').length,
       color: "text-yellow-500",
       bgColor: "bg-yellow-100",
     },
     {
-      label: "Inactive Clients",
+      label: t('client.inactiveClients'),
       icon: XCircleIcon,
-      value: filteredClients.filter(c => c.status === 'INACTIVE').length,
+      value: loading ? '-' : filteredClients.filter(c => c.status === 'INACTIVE').length,
       color: "text-red-600",
       bgColor: "bg-red-100",
     },
     {
-      label: "Total Clients",
+      label: t('client.totalClients'),
       icon: UserGroupIcon,
-      value: filteredClients.length,
+      value: loading ? '-' : filteredClients.length,
       color: "text-blue-700",
       bgColor: "bg-blue-100",
     }
   ];
 
   return (
-    <Layout>
       <div className="space-y-6">
         {/* Dashboard Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {clientStats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-xl shadow p-4 flex items-center">
-              <div className={`p-3 rounded-lg ${stat.bgColor} mr-4`}>
-                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              <div key={index} className="bg-white rounded-xl shadow p-4 flex items-center">
+                <div className={`p-3 rounded-lg ${stat.bgColor} mr-4`}>
+                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-500">{stat.label}</p>
+                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm text-gray-500">{stat.label}</p>
-                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-              </div>
-            </div>
           ))}
         </div>
 
@@ -474,8 +476,9 @@ export default function ClientPage() {
           )}
 
           {loading && (
-              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
+              <div className="absolute inset-0 bg-white bg-opacity-75 flex flex-col items-center justify-center z-10 space-y-2">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="text-sm text-gray-500">{t('client.loading')}</p>
               </div>
           )}
           <DataTable
@@ -485,27 +488,26 @@ export default function ClientPage() {
               onDelete={()=>{}}
           />
         </div>
-        
+
         {/* Floating Add Button */}
         <button
-          onClick={handleAdd}
-          className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
+            onClick={handleAdd}
+            className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
         >
           {/* Animated background effect */}
           <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
-          
+
           {/* Shine effect */}
           <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
-          
+
           {/* Button content */}
           <PlusIcon className="h-6 w-6 text-white relative z-10" />
-          
+
           {/* Tooltip on hover */}
           <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
             Add Client
           </span>
         </button>
       </div>
-    </Layout>
   );
 }

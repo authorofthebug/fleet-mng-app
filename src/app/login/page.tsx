@@ -1,9 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import {useRouter} from 'next/navigation';
 import { signIn } from '@/lib/auth';
 import Link from 'next/link';
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -22,13 +23,13 @@ export default function LoginPage() {
   // Handle redirect after successful login
   useEffect(() => {
     let redirectTimer: NodeJS.Timeout;
-    
+
     if (success) {
       redirectTimer = setTimeout(() => {
         router.push('/');
       }, 2000); // Redirect after 2 seconds
     }
-    
+
     return () => {
       if (redirectTimer) clearTimeout(redirectTimer);
     };
@@ -121,19 +122,19 @@ export default function LoginPage() {
         
         {/* Content */}
         <div className="relative z-10">
-          <h1 className="text-4xl font-bold text-white animate-fade-in">Fleet Manager</h1>
-          <p className="text-blue-100 mt-4 text-lg animate-slide-up">Manage your fleet operations with ease and efficiency</p>
+          <h1 className="text-4xl font-bold text-white animate-fade-in">Gestión Vehicular</h1>
+          <p className="text-blue-100 mt-4 text-lg animate-slide-up">Gestiona las operaciones de tu flota con facilidad y eficiencia</p>
         </div>
         
         <div className="space-y-8 relative z-10">
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl animate-fade-in-delay-1 hover:bg-white/20 transition-all duration-300">
-            <h3 className="text-xl font-semibold text-white mb-2">Streamlined Operations</h3>
-            <p className="text-blue-100">Manage vehicles, drivers, and maintenance in one place</p>
+            <h3 className="text-xl font-semibold text-white mb-2">Operaciones Simplificadas</h3>
+            <p className="text-blue-100">Gestiona vehículos, conductores y mantenimiento en un solo lugar</p>
           </div>
           
           <div className="bg-white/10 backdrop-blur-sm p-6 rounded-xl animate-fade-in-delay-2 hover:bg-white/20 transition-all duration-300">
-            <h3 className="text-xl font-semibold text-white mb-2">Real-time Tracking</h3>
-            <p className="text-blue-100">Monitor your fleet&rsquo;s performance and location in real-time</p>
+            <h3 className="text-xl font-semibold text-white mb-2">Seguimiento en tiempo real</h3>
+            <p className="text-blue-100">Monitorea el rendimiento y la ubicación de tu flota en tiempo real</p>
           </div>
         </div>
       </div>
@@ -145,8 +146,8 @@ export default function LoginPage() {
             <svg className="h-16 w-16 text-blue-600 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
             </svg>
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Welcome back</h2>
-            <p className="mt-2 text-gray-600">Sign in to access your dashboard</p>
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">Bienvenido otra vez</h2>
+            <p className="mt-2 text-gray-600">Inicia sesión para acceder a tu panel</p>
           </div>
           
           {success ? (
@@ -155,8 +156,8 @@ export default function LoginPage() {
                 <svg className="h-12 w-12 text-green-500 mx-auto animate-bounce" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
-                <h3 className="mt-4 text-xl font-medium text-green-800">Login Successful!</h3>
-                <p className="mt-2 text-green-600">Redirecting to dashboard...</p>
+                <h3 className="mt-4 text-xl font-medium text-green-800">¡Inicio de sesión exitoso!</h3>
+                <p className="mt-2 text-green-600">Redirigiendo al panel...</p>
                 <div className="mt-4 w-full bg-gray-200 rounded-full h-2.5">
                   <div className="bg-green-500 h-2.5 rounded-full animate-[progress_2s_ease-in-out]"></div>
                 </div>
@@ -167,7 +168,7 @@ export default function LoginPage() {
               <div className="space-y-4">
                 <div>
                   <label htmlFor="email-address" className="block text-sm font-medium text-gray-700">
-                    Email address
+                    Correo
                   </label>
                   <input
                     id="email-address"
@@ -186,7 +187,7 @@ export default function LoginPage() {
                 
                 <div>
                   <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                    Password
+                    Contraseña
                   </label>
                   <input
                     id="password"
@@ -224,13 +225,13 @@ export default function LoginPage() {
                     className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
                   <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
-                    Remember me
+                    Recuérdame
                   </label>
                 </div>
 
                 <div className="text-sm">
                   <Link href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                    Forgot password?
+                    ¿Olvidaste tu contraseña?
                   </Link>
                 </div>
               </div>
@@ -250,11 +251,11 @@ export default function LoginPage() {
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                         <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                       </svg>
-                      Processing...
+                      Procesando...
                     </span>
                   ) : (
                     <span className="flex items-center">
-                      Sign in
+                      Iniciar sesión
                       <svg className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>
@@ -267,9 +268,9 @@ export default function LoginPage() {
           
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Don&rsquo;t have an account?{' '}
+              ¿No tienes una cuenta?{' '}
               <Link href="#" className="font-medium text-blue-600 hover:text-blue-500">
-                Contact your administrator
+                Contacta a tu administrador
               </Link>
             </p>
           </div>

@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 import { API_SERVER_URL } from "@/lib/config";
 
 const nextConfig: NextConfig = {
-  //output: 'export',
   async rewrites() {
     return [
       {

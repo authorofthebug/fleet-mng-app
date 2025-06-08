@@ -1,28 +1,61 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useTranslation } from '@/hooks/use-translation';
 import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
 import { driverService, Driver } from '@/lib/api/driver';
-import { UserIcon, UserCircleIcon, PlusIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
+import { UserIcon, UserGroupIcon, PlusIcon, PencilSquareIcon, UserCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useSidebarWidth } from '@/hooks/useSidebarWidth';
 
+// Interface for driver form data
+interface DriverFormData {
+  id?: string;
+  firstName: string;
+  lastName: string;
+  licenseNumber: string;
+  phone: string;
+  email: string;
+  status: 'ACTIVE' | 'INACTIVE';
+}
+
+// Interface for driver stats
+interface DriverStat {
+  label: string;
+  value: string | number;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  bgColor: string;
+}
+
+// Interface for table column
+type TableColumn = {
+  key: string;
+  label: string;
+  render?: (item: Driver) => React.ReactNode;
+};
+
+// Interface for DriverFormModal props
+interface DriverFormModalProps {
+  show: boolean;
+  onClose: () => void;
+  onSubmit: (e: React.FormEvent) => Promise<void>;
+  formData: DriverFormData;
+  setFormData: React.Dispatch<React.SetStateAction<DriverFormData>>;
+  loading?: boolean;
+  error: string | null;
+}
+
 // Modal component for the driver form
-const DriverFormModal = ({
+const DriverFormModal: React.FC<DriverFormModalProps> = ({
   show,
   onClose,
   onSubmit,
   formData,
   setFormData,
-  editingDriver
-}: {
-  show: boolean;
-  onClose: () => void;
-  onSubmit: (e: React.FormEvent) => Promise<void>;
-  formData: Omit<Driver, 'id'>;
-  setFormData: React.Dispatch<React.SetStateAction<Omit<Driver, 'id'>>>;
-  editingDriver: Driver | null;
+  loading = false,
+  error,
 }) => {
   if (!show) return null;
 
@@ -44,7 +77,7 @@ const DriverFormModal = ({
           <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">
-                {editingDriver ? 'Edit Driver' : 'Add New Driver'}
+                {formData.id ? 'Edit Driver' : 'Add New Driver'}
               </h2>
               <button
                 onClick={onClose}
@@ -158,7 +191,7 @@ const DriverFormModal = ({
                     type="submit"
                     className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
                   >
-                    {editingDriver ? (
+                    {formData.id ? (
                       <>
                         <PencilSquareIcon className="h-5 w-5 mr-2" />
                         Update
@@ -180,7 +213,7 @@ const DriverFormModal = ({
   );
 };
 
-export default function DriverPage() {
+const DriverPage: React.FC = () => {
   // Use the sidebar width hook to set the CSS variable
   useSidebarWidth();
   
@@ -189,7 +222,8 @@ export default function DriverPage() {
   const [editingDriver, setEditingDriver] = useState<Driver | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState<Omit<Driver, 'id'>>({
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState<DriverFormData>({
     firstName: '',
     lastName: '',
     licenseNumber: '',
@@ -197,18 +231,114 @@ export default function DriverPage() {
     email: '',
     status: 'ACTIVE'
   });
+  
   // Add search and filter state
-  const [searchText] = useState<string>('');
-  const [statusFilter] = useState<string>('');
+  const [searchText, setSearchText] = useState<string>('');
+  const [statusFilter, setStatusFilter] = useState<string>('');
   const [filteredDrivers, setFilteredDrivers] = useState<Driver[]>([]);
-
+  
+  // Load drivers on component mount
+  const loadDrivers = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await driverService.getAll();
+      setDrivers(data);
+      setFilteredDrivers(data);
+    } catch (err) {
+      console.error('Error loading drivers:', err);
+      setError(t('driver.errorLoading'));
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+  
+  // Handle form submission
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      setError(null);
+      
+      if (editingDriver && editingDriver.id) {
+        const updatedDriver = await driverService.update(editingDriver.id, formData);
+        setDrivers(prevDrivers => 
+          prevDrivers.map(driver =>
+            driver.id === editingDriver.id ? updatedDriver : driver
+          )
+        );
+      } else {
+        const newDriver = await driverService.create(formData);
+        setDrivers(prevDrivers => [...prevDrivers, newDriver]);
+      }
+      setShowForm(false);
+    } catch (err) {
+      console.error('Error saving driver:', err);
+      setError(t('driver.errorSaving'));
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  // Handle edit button click
+  const handleEdit = (driver: Driver) => {
+    setEditingDriver(driver);
+    setFormData({
+      id: driver.id,
+      firstName: driver.firstName,
+      lastName: driver.lastName,
+      licenseNumber: driver.licenseNumber || '',
+      phone: driver.phone || '',
+      email: driver.email || '',
+      status: driver.status
+    });
+    setShowForm(true);
+  };
+  
+  // Handle delete button click
+  const handleDelete = async (id: string) => {
+    if (window.confirm(t('driver.deleteConfirm'))) {
+      try {
+        setLoading(true);
+        setError(null);
+        await driverService.delete(id);
+        setDrivers(prevDrivers => prevDrivers.filter(driver => driver.id !== id));
+      } catch (err) {
+        console.error('Error deleting driver:', err);
+        setError(t('driver.errorDeleting'));
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+  
+  // Handle add new driver button click
+  const handleAdd = () => {
+    setEditingDriver(null);
+    setFormData({
+      firstName: '',
+      lastName: '',
+      licenseNumber: '',
+      phone: '',
+      email: '',
+      status: 'ACTIVE'
+    });
+    setShowForm(true);
+  };
+  
+  // Handle form cancel
+  const handleFormCancel = () => {
+    setShowForm(false);
+  };
+  
+  // Load drivers on component mount
   useEffect(() => {
     loadDrivers();
-  }, []);
+  }, [loadDrivers]);
 
-  // Memoize the filterDrivers function to prevent unnecessary re-renders
-  const memoizedFilterDrivers = useCallback((text: string, status: string, driversToFilter: Driver[] = drivers) => {
-    let filtered = [...driversToFilter];
+  // Filter drivers based on search and status
+  const filterDrivers = useCallback((text: string, status: string, driversList: Driver[] = drivers) => {
+    let filtered = [...driversList];
 
     // Filter by status if selected
     if (status) {
@@ -233,208 +363,146 @@ export default function DriverPage() {
 
   // Update filtered drivers when search text or status filter changes
   useEffect(() => {
-    setFilteredDrivers(memoizedFilterDrivers(searchText, statusFilter));
-  }, [searchText, statusFilter, memoizedFilterDrivers]);
+    setFilteredDrivers(filterDrivers(searchText, statusFilter));
+  }, [searchText, statusFilter, filterDrivers]);
 
-  const loadDrivers = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await driverService.getAll();
-      setDrivers(data);
-      setFilteredDrivers(data);
-    } catch (error) {
-      console.error('Error loading drivers:', error);
-      setError(error instanceof Error ? error.message : 'Failed to load drivers');
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Render the page
+  if (!t) return null; // Wait for translations to load
 
-  const handleEdit = (driver: Driver) => {
-    setEditingDriver(driver);
-    setFormData({
-      firstName: driver.firstName,
-      lastName: driver.lastName,
-      licenseNumber: driver.licenseNumber,
-      phone: driver.phone,
-      email: driver.email,
-      status: driver.status
-    });
-    setShowForm(true);
-  };
-  /*
-  const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this driver?')) {
-      try {
-        setError(null);
-        await driverService.delete(id);
-        setDrivers(drivers.filter(driver => driver.id !== id));
-      } catch (error) {
-        console.error('Error deleting driver:', error);
-        setError(error instanceof Error ? error.message : 'Failed to delete driver');
-      }
-    }
-  };*/
-
-  const handleAdd = () => {
-    setEditingDriver(null);
-    setFormData({
-      firstName: '',
-      lastName: '',
-      licenseNumber: '',
-      phone: '',
-      email: '',
-      status: 'ACTIVE'
-    });
-    setShowForm(true);
-  };
-
-  const handleFormSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      setError(null);
-      if (editingDriver) {
-        const updatedDriver = await driverService.update(editingDriver.id, formData);
-        setDrivers(drivers.map(driver =>
-          driver.id === editingDriver.id ? updatedDriver : driver
-        ));
-      } else {
-        const newDriver = await driverService.create(formData);
-        setDrivers([...drivers, newDriver]);
-      }
-      setShowForm(false);
-    } catch (error) {
-      console.error('Error saving driver:', error);
-      setError(error instanceof Error ? error.message : 'Failed to save driver');
-    }
-  };
-
-  const handleFormCancel = () => {
-    setShowForm(false);
-  };
-
-  const columns = [
+  // Define table columns
+  const columns: TableColumn[] = [
     {
       key: 'name',
-      label: 'Name',
+      label: t('driver.fullName'),
       render: (driver: Driver) => (
-        <span>{driver.firstName} {driver.lastName}</span>
-      )
+        <div className="flex items-center">
+          <UserCircleIcon className="h-8 w-8 text-gray-400 mr-3" />
+          <span className="font-medium">{`${driver.firstName} ${driver.lastName}`}</span>
+        </div>
+      ),
     },
-    { key: 'licenseNumber', label: 'License Number' },
-    { key: 'phone', label: 'Phone' },
-    { key: 'email', label: 'Email' },
+    { 
+      key: 'licenseNumber', 
+      label: t('driver.licenseNumber'),
+      render: (driver: Driver) => driver.licenseNumber || '-',
+    },
+    { 
+      key: 'email', 
+      label: t('driver.email'),
+      render: (driver: Driver) => driver.email || '-',
+    },
+    { 
+      key: 'phone', 
+      label: t('driver.phone'),
+      render: (driver: Driver) => driver.phone || '-',
+    },
     {
       key: 'status',
-      label: 'Status',
-      render: (driver: Driver) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          driver.status === 'ACTIVE' ? 'bg-green-100 text-green-700' :
-          driver.status === 'INACTIVE' ? 'bg-red-100 text-red-700' :
-          'bg-yellow-100 text-yellow-500'
-        }`}>
-          {driver.status.charAt(0).toUpperCase() + driver.status.slice(1)}
-        </span>
-      )
-    }
+      label: t('driver.status'),
+      render: (driver: Driver) => {
+        const statusClass = driver.status === 'ACTIVE' 
+          ? 'bg-green-100 text-green-800' 
+          : 'bg-red-100 text-red-800';
+        return (
+          <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${statusClass}`}>
+            {driver.status === 'ACTIVE' ? t('driver.statusActive') : t('driver.statusInactive')}
+          </span>
+        );
+      },
+    },
   ];
 
-  // Driver stats based on filtered drivers
-  const driverStats = [
+  // Define driver stats
+  const driverStats: DriverStat[] = [
     {
-      label: "Active Drivers",
-      icon: UserCircleIcon,
-      value: filteredDrivers.filter(d => d.status === 'ACTIVE').length,
-      color: "text-green-600",
-      bgColor: "bg-green-100",
+      label: t('driver.activeDrivers'),
+      value: loading ? '-' : filteredDrivers.filter(d => d.status === 'ACTIVE').length,
+      icon: UserIcon,
+      color: 'text-green-600',
+      bgColor: 'bg-green-100',
     },
     {
-      label: "Inactive Drivers",
+      label: t('driver.inactiveDrivers'),
+      value: loading ? '-' : filteredDrivers.filter(d => d.status === 'INACTIVE').length,
       icon: UserIcon,
-      value: filteredDrivers.filter(d => d.status === 'INACTIVE').length,
-      color: "text-red-600",
-      bgColor: "bg-red-100",
+      color: 'text-red-600',
+      bgColor: 'bg-red-100',
     },
     {
-      label: "Total Drivers",
-      icon: UserIcon,
-      value: filteredDrivers.length,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100",
-    }
+      label: t('driver.totalDrivers'),
+      value: loading ? '-' : filteredDrivers.length,
+      icon: UserGroupIcon,
+      color: 'text-blue-600',
+      bgColor: 'bg-blue-100',
+    },
   ];
 
   return (
-    <Layout>
-      <div className="space-y-6">
-        {/* Dashboard Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {driverStats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-lg shadow p-4 flex items-center">
-              <div className={`${stat.bgColor} p-3 rounded-full mr-4`}>
-                <stat.icon className={`h-6 w-6 ${stat.color}`} />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">{stat.label}</p>
-                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+    <div className="space-y-6">
+        {/* Header with title and add button */}
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-gray-900">{t('driver.title')}</h1>
+          <button
+            onClick={handleAdd}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
+            {t('driver.addDriver')}
+          </button>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {driverStats.map((stat, idx) => (
+            <div key={idx} className="bg-white overflow-hidden shadow rounded-lg">
+              <div className="p-5">
+                <div className="flex items-center">
+                  <div className={`flex-shrink-0 rounded-md p-3 ${stat.bgColor}`}>
+                    <stat.icon className={`h-6 w-6 ${stat.color}`} aria-hidden="true" />
+                  </div>
+                  <div className="ml-5 w-0 flex-1">
+                    <dl>
+                      <dt className="text-sm font-medium text-gray-500 truncate">
+                        {stat.label}
+                      </dt>
+                      <dd className="flex items-baseline">
+                        <div className="text-2xl font-semibold text-gray-900">
+                          {stat.value}
+                        </div>
+                      </dd>
+                    </dl>
+                  </div>
+                </div>
               </div>
             </div>
           ))}
         </div>
 
-        {error && (
-          <Notification
-            message={error}
-            type="error"
-            onClose={() => setError(null)}
-          />
-        )}
-
-        {/* Driver form modal */}
-        <DriverFormModal
-          show={showForm}
-          onClose={handleFormCancel}
-          onSubmit={handleFormSubmit}
-          formData={formData}
-          setFormData={setFormData}
-          editingDriver={editingDriver}
-        />
-
-        <div className="relative">
-          {loading && (
-            <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            </div>
-          )}
-          <DataTable
-            data={filteredDrivers}
-            columns={columns}
-            onEdit={handleEdit}
-            onDelete={()=>{}}
-          />
+        {/* Data Table */}
+        <div className="bg-white shadow overflow-hidden sm:rounded-lg">
+          <div className="border-t border-gray-200">
+            <DataTable<Driver>
+              columns={columns}
+              data={filteredDrivers}
+              onEdit={handleEdit}
+              loading={loading}
+              onDelete={()=>{}}
+            />
+          </div>
         </div>
-        
-        {/* Floating Add Button */}
-        <button
-          onClick={handleAdd}
-          className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
-        >
-          {/* Animated background effect */}
-          <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
-          
-          {/* Shine effect */}
-          <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
-          
-          {/* Button content */}
-          <PlusIcon className="h-6 w-6 text-white relative z-10" />
-          
-          {/* Tooltip on hover */}
-          <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
-            Add Driver
-          </span>
-        </button>
+      {/* Driver Form Modal */}
+      <DriverFormModal
+        show={showForm}
+        onClose={handleFormCancel}
+        onSubmit={handleFormSubmit}
+        formData={formData}
+        setFormData={setFormData}
+        loading={loading}
+        error={error}
+      />
       </div>
-    </Layout>
+
   );
-}
+};
+
+export default DriverPage;

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import Layout from '@/components/layout/Layout';
+import { useTranslation } from '@/hooks/use-translation';
 import Link from 'next/link';
 import {
   TruckIcon,
@@ -12,14 +12,107 @@ import {
   BellAlertIcon,
   ArrowTrendingUpIcon
 } from '@heroicons/react/24/outline';
-import {vehicleService, Vehicle} from "@/lib/api/vehicle";
-import {driverService, Driver} from "@/lib/api/driver";
-import {scheduleService, Schedule} from "@/lib/api/schedule";
-import {clientService, Client} from "@/lib/api/client";
+import { vehicleService, Vehicle } from "@/lib/api/vehicle";
+import { driverService, Driver } from "@/lib/api/driver";
+import { scheduleService, Schedule } from "@/lib/api/schedule";
+import { clientService, Client } from "@/lib/api/client";
 
+// Stats card component
+function StatCard({ 
+  title, 
+  value, 
+  icon: Icon, 
+  color,
+  href 
+}: { 
+  title: string; 
+  value: number | string; 
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  href: string;
+}) {
+  const { t } = useTranslation();
+  
+  return (
+    <div className="group relative overflow-hidden bg-white/70 backdrop-blur-lg rounded-2xl shadow-lg border border-white/30 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+      <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+      <div className="relative p-6">
+        <div className="flex items-start justify-between">
+          <div className={`flex-shrink-0 p-3 rounded-xl bg-gradient-to-br ${color.replace('text-', 'from-').replace('text-', 'to-')} bg-opacity-10 backdrop-blur-sm`}>
+            <Icon className={`w-6 h-6 ${color}`} />
+          </div>
+          <div className="ml-4 flex-1">
+            <p className="text-sm font-medium text-gray-500">
+              {title}
+            </p>
+            <p className="mt-1 text-2xl font-bold bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              {value}
+            </p>
+          </div>
+        </div>
+        <div className="mt-6">
+          <Link
+            href={href}
+            className={`inline-flex items-center text-sm font-medium ${color} group-hover:underline`}
+          >
+            {t('common.viewAll')}
+            <svg className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <span className="sr-only"> {title.toLowerCase()}</span>
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
 
+// Quick action button component
+const QuickAction = ({
+  title,
+  description,
+  icon: Icon,
+  color,
+  textColor,
+  href
+}: {
+  title: string;
+  description: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  textColor?: string;
+  href: string;
+}) => {
+  const { t } = useTranslation();
+  return (
+    <Link 
+      href={href}
+      className={`group relative flex flex-col justify-between p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden hover:-translate-y-1`}
+    >
+      <div className={`absolute -top-4 -right-4 w-24 h-24 rounded-full opacity-10 ${color.replace('from-', 'bg-gradient-to-br from-').replace('to-', 'to-')}`}></div>
+      <div className="relative z-10">
+        <div className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center ${color.replace('from-', 'bg-gradient-to-br from-').replace('to-', 'to-')} text-white`}>
+          <Icon className="w-6 h-6" />
+        </div>
+        <h3 className={`text-lg font-semibold mb-2 ${textColor || 'text-gray-900'}`}>
+          {title}
+        </h3>
+        <p className="text-gray-600 text-sm mb-4">
+          {description}
+        </p>
+        <div className={`inline-flex items-center text-sm font-medium ${textColor || 'text-blue-600'} group-hover:underline`}>
+          {title.includes(t('common.view')) ? t('common.viewMore') : t('common.getStarted')}
+          <svg className="ml-1 w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
+      </div>
+    </Link>
+  );
+}
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [stats, setStats] = useState({
     vehicles: 0,
@@ -109,186 +202,178 @@ export default function HomePage() {
   // Dashboard stats with animated counters
   const dashboardStats = [
     { 
-      label: "Active Vehicles", 
+      label: t('dashboard.totalVehicles'),
       value: stats.vehicles,
       color: "text-blue-600", 
       bgColor: "from-blue-50 to-blue-100",
-      icon: TruckIcon 
+      icon: TruckIcon,
+      href: "/vehicles"
     },
     { 
-      label: "Available Drivers", 
+      label: t('dashboard.totalDrivers'),
       value: stats.drivers,
       color: "text-emerald-600", 
       bgColor: "from-emerald-50 to-emerald-100",
-      icon: UserIcon 
+      icon: UserIcon,
+      href: "/drivers"
     },
     { 
-      label: "Scheduled Trips", 
+      label: t('dashboard.totalSchedules'),
       value: stats.schedules,
       color: "text-violet-600", 
       bgColor: "from-violet-50 to-violet-100",
-      icon: CalendarDaysIcon 
+      icon: CalendarDaysIcon,
+      href: "/schedules"
     },
     { 
-      label: "Active Clients", 
+      label: t('dashboard.totalClients'),
       value: stats.clients,
       color: "text-amber-600", 
       bgColor: "from-amber-50 to-amber-100",
-      icon: UserGroupIcon 
+      icon: UserGroupIcon,
+      href: "/clients"
     },
   ];
 
   const quickActions = [
     { 
-      name: 'Client Management', 
-      description: 'Add, edit, and manage client accounts',
-      href: '/client', 
+      name: t('quickActions.manageClients'),
+      description: t('quickActions.manageClientsDesc'),
+      href: '/clients', 
       icon: UserGroupIcon,
       color: "from-blue-500 to-indigo-600",
       textColor: "text-indigo-50"
     },
     { 
-      name: 'Driver Scheduling', 
-      description: 'Assign and manage driver schedule',
-      href: '/driver', 
+      name: t('quickActions.manageDrivers'),
+      description: t('quickActions.manageDriversDesc'),
+      href: '/drivers', 
       icon: UserIcon,
       color: "from-emerald-500 to-teal-600",
       textColor: "text-emerald-50"
     },
     { 
-      name: 'Trip Planning', 
-      description: 'Create and manage trip schedule',
-      href: '/schedule', 
+      name: t('quickActions.scheduleTrip'),
+      description: t('quickActions.scheduleTripDesc'),
+      href: '/schedules/new', 
       icon: CalendarDaysIcon,
       color: "from-violet-500 to-purple-600",
       textColor: "text-violet-50"
     },
     { 
-      name: 'Fleet Overview', 
-      description: 'Monitor and manage your vehicle fleet',
-      href: '/vehicle', 
+      name: t('quickActions.manageFleet'),
+      description: t('quickActions.manageFleetDesc'),
+      href: '/vehicles', 
       icon: TruckIcon,
       color: "from-amber-500 to-orange-600",
       textColor: "text-amber-50"
     },
   ];
 
-  // Static counter component (no animation)
-  function AnimatedCounter({ value }: { value: number }) {
-    return <>{value}</>;
-  }
-
   return (
-    <Layout>
-      <div className="space-y-8 max-w-7xl mx-auto">
+    <div className="h-full overflow-hidden">
+      {/* Animated background elements */}
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] bg-blue-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div className="absolute -bottom-40 -left-40 w-[600px] h-[600px] bg-indigo-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-100 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+      </div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
         {/* Welcome section with time */}
-        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
-          <div className="absolute inset-0 bg-grid-white/[0.05] bg-[length:20px_20px]"></div>
-          <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
-          <div className="absolute -left-20 -bottom-20 w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl"></div>
+        <div className="glass rounded-2xl shadow-xl p-6 sm:p-8 relative overflow-hidden transition-all duration-500 hover:shadow-2xl">
+          <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 via-indigo-500/5 to-purple-500/5"></div>
+          <div className="absolute -right-20 -top-20 w-96 h-96 bg-blue-100/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute -left-20 -bottom-20 w-96 h-96 bg-indigo-100/30 rounded-full blur-3xl animate-pulse"></div>
           
-          <div className="relative flex justify-between items-start">
-            <div className="space-y-2">
-              <h1 className="text-4xl font-bold tracking-tight">Welcome to Fleet Manager</h1>
-              <p className="text-blue-100 text-lg max-w-2xl">
-                Your comprehensive solution for efficient fleet operations management
+          <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <div className="space-y-3 max-w-2xl">
+              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                {t('dashboard.welcome')}
+              </h1>
+              <p className="text-gray-600 text-base sm:text-lg">
+                {t('dashboard.subtitle')}
               </p>
             </div>
-            <div className="text-right">
-              <div className="text-3xl font-mono font-bold">
+            <div className="text-right bg-white/90 backdrop-blur-sm p-4 sm:p-5 rounded-xl shadow-sm border border-gray-100/50 w-full sm:w-auto transition-all duration-300 hover:shadow-md">
+              <div className="text-2xl sm:text-3xl font-mono font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent">
                 {currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </div>
-              <div className="text-blue-200">
-                {currentTime.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' })}
+              <div className="text-gray-500 text-sm">
+                {currentTime.toLocaleDateString('es-ES', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
               </div>
-            </div>
-          </div>
-          
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <ChartBarIcon className="h-6 w-6 text-blue-200" />
-              <p className="mt-2 text-sm text-blue-100">Fleet Analytics</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <BellAlertIcon className="h-6 w-6 text-blue-200" />
-              <p className="mt-2 text-sm text-blue-100">Alerts Center</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <ArrowTrendingUpIcon className="h-6 w-6 text-blue-200" />
-              <p className="mt-2 text-sm text-blue-100">Performance</p>
-            </div>
-            <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-              <CalendarDaysIcon className="h-6 w-6 text-blue-200" />
-              <p className="mt-2 text-sm text-blue-100">Schedule</p>
             </div>
           </div>
         </div>
 
-        {/* Dashboard Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {loading ? (
-            // Loading skeleton for stats
-            Array(4).fill(0).map((_, index) => (
-              <div key={index} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 animate-pulse">
-                <div className="h-12 w-12 bg-gray-200 rounded-lg mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+        {/* Stats Grid */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{t('dashboard.overview')}</h2>
+            <div className="flex items-center space-x-2">
+              <span className="text-sm text-gray-500">{t('common.lastUpdated')}: {t('common.justNow')}</span>
+              <button className="p-1.5 rounded-full hover:bg-gray-100 transition-colors" aria-label={t('common.refresh')}>
+                <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {dashboardStats.map((stat, index) => (
+              <div 
+                key={index} 
+                className="h-full transform transition-all duration-300 hover:scale-[1.02]"
+                style={{
+                  animation: `fadeIn 0.5s ease-out forwards`,
+                  animationDelay: `${index * 100}ms`,
+                  opacity: 0
+                }}
+              >
+                <StatCard
+                  title={stat.label}
+                  value={loading ? '-' : stat.value}
+                  icon={stat.icon}
+                  color={stat.color}
+                  href={stat.href}
+                />
               </div>
-            ))
-          ) : (
-            dashboardStats.map((stat) => (
-              <div key={stat.label} className="bg-white rounded-xl shadow-lg p-6 border border-gray-100 transform transition-all duration-300 hover:scale-105 hover:shadow-xl">
-                <div className={`p-4 rounded-lg bg-gradient-to-br ${stat.bgColor} mb-4`}>
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                </div>
-                <div>
-                  <p className="text-gray-500 font-medium">{stat.label}</p>
-                  <p className={`text-3xl font-bold ${stat.color} mt-1`}>
-                    <AnimatedCounter value={stat.value} />
-                  </p>
-                  <div className="mt-2 h-1 w-full bg-gray-100 rounded-full overflow-hidden">
-                    <div className={`h-full ${stat.color.replace('text', 'bg')} rounded-full w-3/4`}></div>
-                  </div>
-                </div>
-              </div>
-            ))
-          )}
+            ))}
+          </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-gray-800">Quick Actions</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {quickActions.map((action) => (
-              <Link
-                key={action.name}
-                href={action.href}
-                className="group relative rounded-xl overflow-hidden shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+        <div className="space-y-6 pt-2">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800">{t('quickActions.title')}</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {quickActions.map((action, index) => (
+              <div 
+                key={index} 
+                className="h-full transform transition-all duration-300 hover:scale-[1.02]"
+                style={{
+                  animation: `fadeIn 0.5s ease-out forwards`,
+                  animationDelay: `${index * 100 + 400}ms`,
+                  opacity: 0
+                }}
               >
-                <div className={`absolute inset-0 bg-gradient-to-br ${action.color}`}></div>
-                <div className="absolute inset-0 bg-black opacity-0 group-hover:opacity-10 transition-opacity"></div>
-                <div className="relative p-6 flex flex-col h-full">
-                  <div className="bg-white/20 rounded-full p-3 w-fit backdrop-blur-sm">
-                    <action.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <h3 className={`mt-4 text-xl font-bold ${action.textColor}`}>
-                    {action.name}
-                  </h3>
-                  <p className={`mt-2 ${action.textColor} opacity-80 text-sm`}>
-                    {action.description}
-                  </p>
-                  <div className={`mt-auto pt-4 flex items-center ${action.textColor} text-sm font-medium`}>
-                    <span>Get started</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 transform group-hover:translate-x-1 transition-transform" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                    </svg>
-                  </div>
-                </div>
-              </Link>
+                <QuickAction
+                  title={action.name}
+                  description={action.description}
+                  icon={action.icon}
+                  color={action.color}
+                  href={action.href}
+                />
+              </div>
             ))}
           </div>
         </div>
       </div>
-    </Layout>
+    </div>
   );
 }

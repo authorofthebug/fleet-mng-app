@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Layout from '@/components/layout/Layout';
-import DataTable from '@/components/common/DataTable';
+import { useTranslation } from '@/hooks/use-translation';
+import DataTable, { Column } from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
 import { vehicleService, Vehicle } from '@/lib/api/vehicle';
 import { useSidebarWidth } from '@/hooks/useSidebarWidth';
@@ -181,6 +181,7 @@ export default function VehiclePage() {
   // Use the sidebar width hook to set the CSS variable
   useSidebarWidth();
 
+  const { t } = useTranslation();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
   const [showForm, setShowForm] = useState(false);
@@ -220,11 +221,7 @@ export default function VehiclePage() {
       setFilteredVehicles(data);
     } catch (error) {
       console.error('Error loading vehicle:', error);
-      let errorMessage = 'Failed to load vehicle';
-      if (error instanceof Error) {
-        errorMessage = `${error.name}: ${error.message}`;
-      }
-      setError(errorMessage);
+      setError(t('vehicle.errorLoading'));
     } finally {
       setLoading(false);
     }
@@ -358,43 +355,87 @@ export default function VehiclePage() {
     }
 
     setFilteredVehicles(filtered);
-  };
 
-  const columns = [
+  // Filter by status if selected
+  if (status) {
+    filtered = filtered.filter(vehicle =>
+      vehicle.status === status ||
+      // Handle legacy status values
+      (status === 'AVAILABLE' && vehicle.status === 'active') ||
+      (status === 'IN_MAINTENANCE' && vehicle.status === 'maintenance') ||
+      (status === 'WITH_ISSUE' && vehicle.status === 'inactive')
+    );
+  }
+
+  // Filter by search text if provided
+  if (text) {
+    const searchLower = text.toLowerCase();
+    filtered = filtered.filter(vehicle => {
+      // Search across all relevant fields
+      return (
+        (vehicle.licensePlate && vehicle.licensePlate.toLowerCase().includes(searchLower)) ||
+        (vehicle.plateNumber && vehicle.plateNumber.toLowerCase().includes(searchLower)) ||
+        (vehicle.brand && vehicle.brand.toLowerCase().includes(searchLower)) ||
+        (vehicle.make && vehicle.make.toLowerCase().includes(searchLower)) ||
+        (vehicle.model && vehicle.model.toLowerCase().includes(searchLower)) ||
+        (vehicle.year && vehicle.year.toString().includes(searchLower)) ||
+        (vehicle.color && vehicle.color.toLowerCase().includes(searchLower)) ||
+        (vehicle.notes && vehicle.notes.toLowerCase().includes(searchLower))
+      );
+    });
+  }
+
+  setFilteredVehicles(filtered);
+};
+
+  // Define the vehicle stats type
+  interface VehicleStat {
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    value: number;
+    color: string;
+    bgColor: string;
+  }
+
+  // Define the columns for the data table
+  const columns: Column<Vehicle>[] = [
     {
       key: 'licensePlate',
-      label: 'License Plate',
-      render: (vehicle: Vehicle) => vehicle.plateNumber || vehicle.licensePlate
+      label: t('vehicle.licensePlate'),
+      render: (vehicle: Vehicle) => vehicle.plateNumber || vehicle.licensePlate || ''
     },
     {
       key: 'brand',
-      label: 'Brand',
-      render: (vehicle: Vehicle) => vehicle.make || vehicle.brand
+      label: t('vehicle.brand'),
+      render: (vehicle: Vehicle) => vehicle.make || vehicle.brand || ''
     },
-    { key: 'model', label: 'Model' },
+    { 
+      key: 'model', 
+      label: t('vehicle.model'),
+      render: (vehicle: Vehicle) => vehicle.model || ''
+    },
     { 
       key: 'year', 
-      label: 'Year',
+      label: t('vehicle.year'),
       render: (vehicle: Vehicle) => {
-        // If it's a date format, display just the year
         if (vehicle.year && typeof vehicle.year === 'string' && vehicle.year.includes('-')) {
           const date = new Date(vehicle.year);
-          // Format as DD/MM/YYYY if it's a full date
           if (!isNaN(date.getTime())) {
-            //YYYY
             return date.getFullYear().toString();
           }
         }
-        // Otherwise return as is
-        return vehicle.year;
+        return vehicle.year || '';
       }
     },
-    { key: 'color', label: 'Color' },
+    { 
+      key: 'color', 
+      label: t('vehicle.color'),
+      render: (vehicle: Vehicle) => vehicle.color || ''
+    },
     {
       key: 'status',
-      label: 'Status',
+      label: t('vehicle.status'),
       render: (vehicle: Vehicle) => {
-        // Define status colors that match the dashboard stats
         const statusColors = {
           'NEW': 'bg-blue-100 text-blue-700',
           'ACTIVE': 'bg-blue-100 text-blue-700',
@@ -407,77 +448,97 @@ export default function VehiclePage() {
 
         const statusKey = vehicle.status as keyof typeof statusColors;
         const colorClass = statusColors[statusKey] || 'bg-gray-100 text-gray-800';
+        
+        // Get translated status text
+        const statusText = {
+          'NEW': t('vehicle.statusNew'),
+          'ACTIVE': t('vehicle.statusActive'),
+          'AVAILABLE': t('vehicle.statusActive'),
+          'IN_SERVICE': t('vehicle.statusInService'),
+          'IN_MAINTENANCE': t('vehicle.statusInMaintenance'),
+          'WITH_ISSUE': t('vehicle.statusWithIssue'),
+          'inactive': t('vehicle.statusInactive')
+        }[statusKey] || vehicle.status;
 
         return (
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>
-            {typeof vehicle.status === 'string' ? vehicle.status.replace('_', ' ') : vehicle.status}
+            {statusText}
           </span>
         );
       }
     }
   ];
 
-  // Dashboard stats - using the filtered vehicle to update stats based on filters
-  const vehicleStats = [
+  // Define the vehicle stats array with proper typing
+  const vehicleStats: VehicleStat[] = [
     {
-      label: "Available Vehicles",
+      label: t('vehicle.availableVehicles'),
       icon: TruckIcon,
       value: filteredVehicles.filter(v => v.status === 'ACTIVE' || v.status === 'active').length,
       color: "text-blue-700",
-      bgColor: "bg-blue-100",
+      bgColor: "bg-blue-100"
     },
     {
-      label: "In Service",
+      label: t('vehicle.inService'),
       icon: Cog6ToothIcon,
       value: filteredVehicles.filter(v => v.status === 'IN_SERVICE').length,
       color: "text-green-600",
-      bgColor: "bg-green-100",
+      bgColor: "bg-green-100"
     },
     {
-      label: "In Maintenance",
+      label: t('vehicle.inMaintenance'),
       icon: WrenchScrewdriverIcon,
       value: filteredVehicles.filter(v => v.status === 'IN_MAINTENANCE' || v.status === 'maintenance').length,
       color: "text-yellow-500",
-      bgColor: "bg-yellow-100",
+      bgColor: "bg-yellow-100"
     },
     {
-      label: "With Issues",
+      label: t('vehicle.withIssues'),
       icon: ExclamationTriangleIcon,
       value: filteredVehicles.filter(v => v.status === 'WITH_ISSUE' || v.status === 'inactive').length,
       color: "text-red-600",
-      bgColor: "bg-red-100",
-    },
+      bgColor: "bg-red-100"
+    }
   ];
 
   return (
-    <Layout>
-      <div className="space-y-6">
-        {/* Title removed as requested */}
+    <div className="space-y-6">
+      {/* Header with title and add button */}
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900">{t('vehicle.title')}</h1>
+        <button
+          onClick={handleAdd}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+        >
+          <PlusIcon className="h-5 w-5 mr-2" />
+          {t('vehicle.addVehicle')}
+        </button>
+      </div>
 
-        {error && (
-          <Notification
-            message={error}
-            type="error"
-            onClose={() => setError(null)}
-          />
-        )}
+      {error && (
+        <Notification
+          message={error}
+          type="error"
+          onClose={() => setError(null)}
+        />
+      )}
 
-        {/* Dashboard Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {vehicleStats.map((stat) => (
-            <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-              <div className="flex items-center">
-                <div className={`p-3 rounded-full ${stat.bgColor} mr-4`}>
-                  <stat.icon className={`h-6 w-6 ${stat.color}`} />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
-                  <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                </div>
+      {/* Dashboard Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        {vehicleStats.map((stat) => (
+          <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center">
+              <div className={`p-3 rounded-full ${stat.bgColor} mr-4`}>
+                <stat.icon className={`h-6 w-6 ${stat.color}`} />
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">{stat.label}</p>
+                <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
 
         {/* Vehicle Inventory Section */}
 
@@ -506,27 +567,26 @@ export default function VehiclePage() {
               onDelete={()=>{}}
           />
         </div>
-        
+
         {/* Floating Add Button */}
         <button
-          onClick={handleAdd}
-          className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
+            onClick={handleAdd}
+            className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
         >
           {/* Animated background effect */}
           <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
-          
+
           {/* Shine effect */}
           <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
-          
+
           {/* Button content */}
           <PlusIcon className="h-6 w-6 text-white relative z-10" />
-          
+
           {/* Tooltip on hover */}
           <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
             Add Vehicle
           </span>
         </button>
       </div>
-    </Layout>
   );
 }

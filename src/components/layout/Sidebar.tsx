@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -14,34 +14,47 @@ import {
 } from '@heroicons/react/24/outline';
 import { useSidebarWidth } from '@/hooks/useSidebarWidth';
 
-const menuItems = [
-  //{ name: 'Agency', href: '/agency', icon: BuildingOffice2Icon },
-  //{ name: 'Alert', href: '/alert', icon: BellAlertIcon },
-  //{ name: 'Certification', href: '/certification', icon: ClipboardDocumentCheckIcon },
-  //{ name: 'Checklist', href: '/checklist', icon: ClipboardDocumentListIcon },
-  { name: 'Client', href: '/client', icon: UserGroupIcon },
-  //{ name: 'Company', href: '/company', icon: BuildingLibraryIcon },
-  //{ name: 'Contract', href: '/contract', icon: DocumentTextIcon },
-  { name: 'Driver', href: '/driver', icon: UserIcon },
-  //{ name: 'Employee', href: '/employee', icon: BriefcaseIcon },
-  { name: 'Generic Types', href: '/generic-types', icon: DocumentIcon },
-  //{ name: 'Insurance', href: '/insurance', icon: ShieldCheckIcon },
-  //{ name: 'Maintenance', href: '/maintenance', icon: WrenchScrewdriverIcon },
-  //{ name: 'Permit', href: '/permit', icon: DocumentIcon },
-  //{ name: 'Position', href: '/position', icon: UserCircleIcon },
-  //{ name: 'Role', href: '/role', icon: KeyIcon },
-  { name: 'Schedule', href: '/schedule', icon: CalendarDaysIcon },
-  //{ name: 'Tariff', href: '/tariff', icon: CurrencyDollarIcon },
-  { name: 'Vehicle', href: '/vehicle', icon: TruckIcon },
+interface MenuItem {
+  name: string;
+  href: string;
+  icon: React.ComponentType<{ className?: string }> | ((props: { className?: string }) => ReactNode);
+  className?: string;
+}
+
+const menuItems: MenuItem[] = [
+  { 
+    name: 'Inicio', 
+    href: '/', 
+    icon: (props: any) => (
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" {...props}>
+        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+        <polyline points="9 22 9 12 15 12 15 22" />
+      </svg>
+    ) 
+  },
+  { name: 'Clientes', href: '/client', icon: UserGroupIcon },
+  { name: 'Conductores', href: '/driver', icon: UserIcon },
+  { name: 'Vehículos', href: '/vehicle', icon: TruckIcon },
+  { name: 'Programación', href: '/schedule', icon: CalendarDaysIcon },
+  { name: 'Catálogo', href: '/generic-types', icon: DocumentIcon },
+
 ];
 
 export default function Sidebar() {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const pathname = usePathname();
+  const pathnameRaw = usePathname();
+  const pathname = pathnameRaw || '/';
   
   // Add useSidebarWidth hook to update CSS variable
-
   useSidebarWidth();
+  
+  // Check if a menu item is active
+  const isActive = (href: string): boolean => {
+    if (href === '/') {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
     <div 
@@ -74,40 +87,40 @@ export default function Sidebar() {
       
       <nav className="mt-6 px-2 relative z-10">
         {menuItems.map((item) => {
-          const isActive = pathname.startsWith(item.href);
+          const active = isActive(item.href);
+          const IconComponent = item.icon;
+          const iconProps = { className: `h-6 w-6 transition-all duration-300 ${
+            active 
+              ? 'text-white drop-shadow-glow' 
+              : 'text-blue-200 group-hover:text-white group-hover:scale-110'
+          }` };
+          
           return (
             <Link
               key={item.name}
               href={item.href}
               className={`group flex items-center px-3 py-3 my-1 rounded-xl transition-all duration-200 ${
-                isActive 
+                active 
                   ? 'bg-gradient-to-r from-blue-500/80 to-blue-600/80 text-white shadow-lg' 
                   : 'hover:bg-blue-600/30 text-blue-100'
-              }`}
+              } ${item.className || ''}`}
             >
-              <div className={`relative ${isActive ? 'animate-pulse' : ''}`}>
-                {isActive && (
+              <div className={`relative ${active ? 'animate-pulse' : ''}`}>
+                {active && (
                   <span className="absolute inset-0 rounded-full bg-white/20 blur-sm animate-ping opacity-75"></span>
                 )}
-                <item.icon className={`h-6 w-6 transition-all duration-300 ${
-                  isActive 
-                    ? 'text-white drop-shadow-glow' 
-                    : 'text-blue-200 group-hover:text-white group-hover:scale-110'
-                }`} />
+                <IconComponent {...iconProps} />
               </div>
               {!isCollapsed && (
                 <div className="ml-3 flex flex-col">
                   <span className={`font-medium transition-all duration-200 ${
-                    isActive ? 'text-lg' : 'text-base group-hover:translate-x-1'
+                    active ? 'text-lg' : 'text-base group-hover:translate-x-1'
                   }`}>
                     {item.name}
                   </span>
-                  {isActive && (
-                    <span className="text-xs text-blue-200 opacity-80">Active</span>
-                  )}
                 </div>
               )}
-              {isActive && !isCollapsed && (
+              {active && !isCollapsed && (
                 <div className="ml-auto">
                   <div className="h-2 w-2 rounded-full bg-white"></div>
                 </div>

@@ -19,6 +19,7 @@ import {
 } from "@heroicons/react/24/outline";
 
 import { useSidebarWidth } from "@/hooks/useSidebarWidth";
+import { useTranslation } from '@/hooks/use-translation';
 import { scheduleService, Schedule } from "@/lib/api/schedule";
 import { clientService, Client } from "@/lib/api/client";
 import { vehicleService, Vehicle } from "@/lib/api/vehicle";
@@ -45,6 +46,7 @@ const ScheduleFormModal = ({
     setFormData: React.Dispatch<React.SetStateAction<Schedule>>;
     editingSchedule: Schedule | null;
 }) => {
+    const { t } = useTranslation();
     const [clients, setClients] = useState<Client[]>([]);
     const [loadingClients, setLoadingClients] = useState(false);
     const [clientError, setClientError] = useState<string | null>(null);
@@ -140,12 +142,12 @@ const ScheduleFormModal = ({
         const endDate = formData.endTime ? new Date(formData.endTime) : null;
         
         if (selectedDate < now) {
-            alert("Start time cannot be in the past");
+            alert(t('schedule.messages.startTimeInPast'));
             return;
         }
         
         if (endDate && selectedDate > endDate) {
-            alert("Start time cannot be after end time");
+            alert(t('schedule.messages.startTimeAfterEnd'));
             return;
         }
         
@@ -159,12 +161,12 @@ const ScheduleFormModal = ({
         const startDate = formData.startTime ? new Date(formData.startTime) : null;
         
         if (selectedDate < now) {
-            alert("End time cannot be in the past");
+            alert(t('schedule.messages.endTimeInPast'));
             return;
         }
         
         if (startDate && selectedDate < startDate) {
-            alert("End time cannot be before start time");
+            alert(t('schedule.messages.endTimeBeforeStart'));
             return;
         }
         
@@ -189,7 +191,7 @@ const ScheduleFormModal = ({
                     <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
                         <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
                             <h2 className="text-xl font-semibold text-gray-900">
-                                {editingSchedule ? 'Edit Schedule' : 'Add New Schedule'}
+                                {editingSchedule ? t('schedule.editSchedule') : t('schedule.addSchedule')}
                             </h2>
                             <button
                                 onClick={onClose}
@@ -207,21 +209,23 @@ const ScheduleFormModal = ({
                                         <InputConSugerencias
                                             value={formData.origin}
                                             onChange={(value) => setFormData({ ...formData, origin: value })}
-                                            label="Origin"
+                                            label={t('schedule.origin')}
                                         />
                                     </div>
                                     <div className="flex flex-col">
                                         <InputConSugerencias
                                             value={formData.destination}
                                             onChange={(value) => setFormData({ ...formData, destination: value })}
-                                            label="Destination"
+                                            label={t('schedule.destination')}
                                         />
                                     </div>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Start Time</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.startTime')}
+                                        </label>
                                         <input
                                             type="datetime-local"
                                             value={formData.startTime}
@@ -231,7 +235,9 @@ const ScheduleFormModal = ({
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">End Time</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.endTime')}
+                                        </label>
                                         <input
                                             type="datetime-local"
                                             value={formData.endTime}
@@ -241,7 +247,9 @@ const ScheduleFormModal = ({
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Days</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.days')}
+                                        </label>
                                         <input
                                             type="number"
                                             value={(() => {
@@ -262,18 +270,20 @@ const ScheduleFormModal = ({
 
                                 <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Client</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.client')}
+                                        </label>
                                         <select
                                             value={formData.clientId}
                                             onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         >
-                                            <option value="">Select Client</option>
+                                            <option value="">{t('schedule.selectClient')}</option>
                                             {loadingClients ? (
-                                                <option value="" disabled>Loading clients...</option>
+                                                <option value="" disabled>{t('schedule.loadingClients')}</option>
                                             ) : clientError ? (
-                                                <option value="" disabled>Error loading clients</option>
+                                                <option value="" disabled>{t('schedule.errorLoading')}</option>
                                             ) : (
                                                 clients.map(client => (
                                                     <option key={client.id} value={client.id}>
@@ -287,18 +297,20 @@ const ScheduleFormModal = ({
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Service Type</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.serviceType')}
+                                        </label>
                                         <select
                                             value={formData.serviceType}
                                             onChange={e => setFormData({ ...formData, serviceType: e.target.value })}
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         >
-                                            <option value="">Select...</option>
+                                            <option value="">{t('schedule.selectServiceType')}</option>
                                             {loadingParameter ? (
-                                                <option value="" disabled>Loading service types...</option>
+                                                <option value="" disabled>{t('schedule.loadingServiceTypes')}</option>
                                             ) : parameterError ? (
-                                                <option value="" disabled>Error loading service types</option>
+                                                <option value="" disabled>{t('schedule.errorLoading')}</option>
                                             ) : (
                                                 serviceType.map(service => (
                                                     <option key={service.id} value={service.name}>
@@ -310,18 +322,20 @@ const ScheduleFormModal = ({
                                         </select>
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Condition</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.condition')}
+                                        </label>
                                         <select
                                             value={formData.conditionType}
                                             onChange={e => setFormData({ ...formData, conditionType: e.target.value })}
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         >
-                                            <option value="">Select...</option>
+                                            <option value="">{t('schedule.selectCondition')}</option>
                                             {loadingParameter ? (
-                                                <option value="" disabled>Loading conditions...</option>
+                                                <option value="" disabled>{t('schedule.loadingConditions')}</option>
                                             ) : parameterError ? (
-                                                <option value="" disabled>Error loading conditions</option>
+                                                <option value="" disabled>{t('schedule.errorLoading')}</option>
                                             ) : (
                                                 conditionType.map(condition => (
                                                     <option key={condition.id} value={condition.name}>
@@ -337,18 +351,20 @@ const ScheduleFormModal = ({
 
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle Type</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.vehicleType')}
+                                        </label>
                                         <select
                                             value={formData.vehicleType}
                                             onChange={e => setFormData({ ...formData, vehicleType: e.target.value })}
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         >
-                                            <option value="">Select...</option>
+                                            <option value="">{t('schedule.selectVehicleType')}</option>
                                             {loadingParameter ? (
-                                                <option value="" disabled>Loading vehicle types...</option>
+                                                <option value="" disabled>{t('schedule.loadingVehicleTypes')}</option>
                                             ) : parameterError ? (
-                                                <option value="" disabled>Error loading vehicle types</option>
+                                                <option value="" disabled>{t('schedule.errorLoading')}</option>
                                             ) : (
                                                 vehicleType.map(vehicle => (
                                                     <option key={vehicle.id} value={vehicle.name}>
@@ -359,7 +375,9 @@ const ScheduleFormModal = ({
                                         </select>
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Vehicle</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.vehicle')}
+                                        </label>
                                         <select
                                             value={formData.vehicleId}
                                             onChange={(e) => {
@@ -374,11 +392,11 @@ const ScheduleFormModal = ({
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                             required
                                         >
-                                            <option value="">Select Vehicle</option>
+                                            <option value="">{t('schedule.selectVehicle')}</option>
                                             {loadingVehicles ? (
-                                                <option value="" disabled>Loading vehicles...</option>
+                                                <option value="" disabled>{t('schedule.loadingVehicles')}</option>
                                             ) : vehicleError ? (
-                                                <option value="" disabled>Error loading vehicles</option>
+                                                <option value="" disabled>{t('schedule.errorLoading')}</option>
                                             ) : (
                                                 vehicles.map(vehicle => (
                                                     <option key={vehicle.id} value={vehicle.id}>
@@ -389,7 +407,9 @@ const ScheduleFormModal = ({
                                         </select>
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Plate</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.plate')}
+                                        </label>
                                         <input
                                             type="text"
                                             value={formData.plate}
@@ -402,7 +422,9 @@ const ScheduleFormModal = ({
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-1 gap-4">
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Driver</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.driver')}
+                                        </label>
                                         <select
                                             value={formData.driverId || ''}
                                             onChange={(e) => {
@@ -420,11 +442,11 @@ const ScheduleFormModal = ({
                                             }
                                             className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                                         >
-                                            <option value="">Select Driver</option>
+                                            <option value="">{t('schedule.selectDriver')}</option>
                                             {loadingDrivers ? (
-                                                <option value="" disabled>Loading drivers...</option>
+                                                <option value="" disabled>{t('schedule.loadingDrivers')}</option>
                                             ) : driverError ? (
-                                                <option value="" disabled>Error loading drivers</option>
+                                                <option value="" disabled>{t('schedule.errorLoading')}</option>
                                             ) : (
                                                 drivers.map(driver => (
                                                     <option key={driver.id} value={driver.id}>
@@ -438,7 +460,9 @@ const ScheduleFormModal = ({
                                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
 
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">RUT</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.rut')}
+                                        </label>
                                         <input
                                             type="text"
                                             value={formData.rut || ''}
@@ -448,7 +472,9 @@ const ScheduleFormModal = ({
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Doc Type</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.docType')}
+                                        </label>
                                         <input
                                             type="text"
                                             value={formData.docType || ''}
@@ -458,7 +484,9 @@ const ScheduleFormModal = ({
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Licence</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.license')}
+                                        </label>
                                         <input
                                             type="text"
                                             value={formData.licenseNumber || ''}
@@ -468,7 +496,9 @@ const ScheduleFormModal = ({
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Folio</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.folio')}
+                                        </label>
                                         <input
                                             type="text"
                                             value={formData.folio || ''}
@@ -478,7 +508,9 @@ const ScheduleFormModal = ({
                                         />
                                     </div>
                                     <div className="flex flex-col">
-                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date Licence</label>
+                                        <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            {t('schedule.licenseExpiration')}
+                                        </label>
                                         <input
                                             type="text"
                                             value={formData.licenseExpiration || ''}
@@ -493,23 +525,23 @@ const ScheduleFormModal = ({
                                     <button
                                         type="button"
                                         onClick={onClose}
-                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center"
+                                        className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                     >
-                                        Cancel
+                                        {t('schedule.cancel')}
                                     </button>
                                     <button
                                         type="submit"
-                                        className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+                                        className="px-4 py-2 ml-3 text-sm font-medium text-white bg-blue-600 border border-transparent rounded-md shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 flex items-center"
                                     >
                                         {editingSchedule ? (
                                             <>
                                                 <PencilSquareIcon className="h-5 w-5 mr-2" />
-                                                Update
+                                                {t('schedule.update')}
                                             </>
                                         ) : (
                                             <>
                                                 <PlusIcon className="h-5 w-5 mr-2" />
-                                                Create
+                                                {t('schedule.create')}
                                             </>
                                         )}
                                     </button>
@@ -528,7 +560,32 @@ export default dynamic(() => Promise.resolve(ProgramacionTab), { ssr: false })
 function ProgramacionTab() {
     // Use the sidebar width hook to set the CSS variable
     useSidebarWidth();
+    const { t } = useTranslation();
     const [currentTime, setCurrentTime] = useState(new Date());
+
+    const getStatusBadge = (status: string) => {
+        const statusMap: Record<string, { bg: string; text: string }> = {
+            'PENDING': { bg: 'bg-yellow-100', text: 'text-yellow-800' },
+            'CONFIRMED': { bg: 'bg-blue-100', text: 'text-blue-800' },
+            'IN_PROGRESS': { bg: 'bg-indigo-100', text: 'text-indigo-800' },
+            'COMPLETED': { bg: 'bg-green-100', text: 'text-green-800' },
+            'CANCELLED': { bg: 'bg-red-100', text: 'text-red-800' },
+            'PROGRAMED': { bg: 'bg-purple-100', text: 'text-purple-800' },
+            'ALMOST_ON_ARRIVAL': { bg: 'bg-pink-100', text: 'text-pink-800' },
+            'STARTED': { bg: 'bg-indigo-100', text: 'text-indigo-800' },
+            'ON_CLIENT': { bg: 'bg-green-100', text: 'text-green-800' },
+            'BACK_FROM_CLIENT': { bg: 'bg-blue-100', text: 'text-blue-800' },
+        };
+        
+        const statusInfo = statusMap[status] || { bg: 'bg-gray-100', text: 'text-gray-800' };
+        const statusLabel = t(`schedule.statuses.${status}`, { defaultValue: status });
+        
+        return (
+            <span className={`${statusInfo.bg} ${statusInfo.text} text-xs font-medium px-2.5 py-0.5 rounded`}>
+                {statusLabel}
+            </span>
+        );
+    };
     useEffect(() => {
         const timer = setInterval(() => {
             setCurrentTime(new Date());
@@ -844,28 +901,28 @@ function ProgramacionTab() {
     // Calculate dashboard stats based on actual vehicle data
     const dashboard = [
         {
-            label: "Vehículos Disponibles",
+            label: t('schedule.dashboard.availableVehicles'),
             icon: TruckIcon,
             value: vehicles.filter(v => v.status === 'ACTIVE').length,
             color: "text-blue-700",
             bgColor: "bg-blue-100",
         },
         {
-            label: "En Servicio",
+            label: t('schedule.dashboard.inService'),
             icon: Cog6ToothIcon,
             value: vehicles.filter(v => v.status === 'IN_SERVICE' || v.status === 'ON_SERVICE').length,
             color: "text-green-600",
             bgColor: "bg-green-100",
         },
         {
-            label: "En Mantenimiento",
+            label: t('schedule.dashboard.inMaintenance'),
             icon: WrenchScrewdriverIcon,
             value: vehicles.filter(v => v.status === 'IN_MAINTENANCE' || v.status === 'ON_MAINTENANCE').length,
             color: "text-yellow-500",
             bgColor: "bg-yellow-100",
         },
         {
-            label: "Siniestrados",
+            label: t('schedule.dashboard.accidented'),
             icon: ExclamationTriangleIcon,
             value: vehicles.filter(v => v.status === 'WITH_ISSUE' || v.status === 'CRASHED').length,
             color: "text-red-600",
@@ -876,35 +933,35 @@ function ProgramacionTab() {
     // Calculate seguimiento stats based on actual schedule data
     const seguimiento = [
         {
-            label: "Programado",
+            label: t('schedule.dashboard.programed'),
             icon: CalendarDaysIcon,
             value: schedules.filter(s => s.status === 'PROGRAMED').length,
             color: "text-fuchsia-700",
             bgColor: "bg-fuchsia-100",
         },
         {
-            label: "Llegada al Punto",
+            label: t('schedule.dashboard.arrival'),
             icon: MapPinIcon,
             value: schedules.filter(s => s.status === 'ALMOST_ON_ARRIVAL').length,
             color: "text-teal-700",
             bgColor: "bg-teal-100",
         },
         {
-            label: "Inicio del Servicio",
+            label: t('schedule.dashboard.serviceStart'),
             icon: PlayCircleIcon,
             value: schedules.filter(s => s.status === 'STARTED').length,
             color: "text-slate-600",
             bgColor: "bg-slate-100",
         },
         {
-            label: "Llegada al Cliente",
+            label: t('schedule.dashboard.clientArrival'),
             icon: UserIcon,
             value: schedules.filter(s => s.status === 'ON_CLIENT').length,
             color: "text-purple-700",
             bgColor: "bg-purple-100",
         },
         {
-            label: "Retorno del Cliente",
+            label: t('schedule.dashboard.clientReturn'),
             icon: ArrowUturnLeftIcon,
             value: schedules.filter(s => s.status === 'BACK_FROM_CLIENT').length,
             color: "text-cyan-700",
@@ -912,202 +969,151 @@ function ProgramacionTab() {
         },
     ];
     return (
-        <Layout>
-            <div className="space-y-6">
-                {/* Resumen Section - Always visible */}
-                <div className="space-y-6 mb-8">
+        <div className="space-y-6">
+            {/* Resumen Section - Always visible */}
+            <div className="space-y-6 mb-8">
 
 
-                    {/* Dashboard Stats - En Base */}
-                    <div className="mb-6">
+                {/* Dashboard Stats - En Base */}
+                <div className="mb-6">
 
-                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
-                                <div className="text-3xl font-mono font-bold flex items-center">
-                                    {currentTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
-                                    <span className="ml-1 text-blue-300 animate-pulse">
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+                            <div className="text-3xl font-mono font-bold flex items-center">
+                                {currentTime.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}
+                                <span className="ml-1 text-blue-300 animate-pulse">
                                         :{currentTime.getSeconds().toString().padStart(2, '0')}
                                     </span>
-                                </div>
-                                <div className="text-blue-200">
-                                    {currentTime.toLocaleDateString('es-ES', { weekday: 'long', month: 'long', day: 'numeric' })}
+                            </div>
+                            <div className="text-blue-200">
+                                {currentTime.toLocaleDateString('es-ES', { weekday: 'long', month: 'long', day: 'numeric' })}
+                            </div>
+                        </div>
+                        {dashboard.map((stat) => (
+                            <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                                <div className="flex items-center">
+                                    <div className={`p-3 rounded-full ${stat.bgColor} mr-4`}>
+                                        <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">{stat.label}</p>
+                                        <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                                    </div>
                                 </div>
                             </div>
-                            {dashboard.map((stat) => (
-                                <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                                    <div className="flex items-center">
-                                        <div className={`p-3 rounded-full ${stat.bgColor} mr-4`}>
-                                            <stat.icon className={`h-6 w-6 ${stat.color}`} />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">{stat.label}</p>
-                                            <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Dashboard Stats - En Ruta */}
-                    <div>
-                        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                            {seguimiento.map((stat) => (
-                                <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-                                    <div className="flex items-center">
-                                        <div className={`p-3 rounded-full ${stat.bgColor} mr-4`}>
-                                            <stat.icon className={`h-6 w-6 ${stat.color}`} />
-                                        </div>
-                                        <div>
-                                            <p className="text-sm text-gray-500">{stat.label}</p>
-                                            <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
+                        ))}
                     </div>
                 </div>
 
-                {/* Schedule form modal */}
-                <ScheduleFormModal
-                    show={showForm}
-                    onClose={handleFormCancel}
-                    onSubmit={handleFormSubmit}
-                    formData={formData}
-                    setFormData={setFormData}
-                    editingSchedule={editingSchedule}
-                />
-
-                {/* Schedule header with add button */}
-
-                {/* Error notification */}
-                {error && (
-                    <Notification
-                        type="error"
-                        message={error}
-                        onClose={() => setError(null)}
-                    />
-                )}
-
-                {/* DataTable Content */}
-                <div className="space-y-6">
-                    {loading ? (
-                        <div className="flex justify-center p-8">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                        </div>
-                    ) : (
-                        <DataTable
-                            data={filteredSchedules}
-                            columns={[
-                                {
-                                    key: 'startTime',
-                                    label: 'Departure',
-                                    render: (schedule: Schedule) => (
-                                        <span>{new Date(schedule.startTime).toLocaleDateString('en-GB')}</span>
-                                    )
-                                },
-                                {
-                                    key: 'clientId',
-                                    label: 'Client',
-                                    render: (schedule: Schedule) => {
-                                        // Find the client by ID
-                                        const client = clients.find(c => c.id === schedule.clientId);
-                                        return <span>{client ? client.name : schedule.clientId}</span>;
-                                    }
-                                },
-                                { key: 'destination', label: 'Destination' },
-                                { key: 'plate', label: 'Plate' },
-                                {
-                                    key: 'driverId',
-                                    label: 'Driver',
-                                    render: (schedule: Schedule) => {
-                                        // Find the driver by ID
-                                        const driver = drivers.find(d => d.id === schedule.driverId);
-                                        return <span>{driver ? `${driver.firstName} ${driver.lastName}` : (schedule.driverId || '-')}</span>;
-                                    }
-                                },
-                                {
-                                    key: 'endTime',
-                                    label: 'End Time',
-                                    render: (schedule: Schedule) => (
-                                        <span>{new Date(schedule.endTime).toLocaleDateString('en-GB')}</span>
-                                    )
-                                },
-                                { key: 'zone', label: 'Area' },
-                                {
-                                    key: 'status',
-                                    label: 'Status',
-                                    render: (schedule: Schedule) => {
-                                        let bgColor = 'bg-gray-100';
-                                        let textColor = 'text-gray-600';
-                                        let displayStatus = schedule.status;
-
-                                        switch(schedule.status) {
-                                            case 'PENDING':
-                                                bgColor = 'bg-yellow-100';
-                                                textColor = 'text-yellow-600';
-                                                break;
-                                            case 'CONFIRMED':
-                                                bgColor = 'bg-blue-100';
-                                                textColor = 'text-blue-600';
-                                                break;
-                                            case 'IN_PROGRESS':
-                                                bgColor = 'bg-purple-100';
-                                                textColor = 'text-purple-600';
-                                                break;
-                                            case 'COMPLETED':
-                                                bgColor = 'bg-green-100';
-                                                textColor = 'text-green-600';
-                                                break;
-                                            case 'CANCELLED':
-                                                bgColor = 'bg-red-100';
-                                                textColor = 'text-red-600';
-                                                break;
-                                            case 'PROGRAMED':
-                                                bgColor = 'bg-fuchsia-100';
-                                                textColor = 'text-fuchsia-600';
-                                                displayStatus = 'Programado';
-                                                break;
-                                            case 'ALMOST_ON_ARRIVAL':
-                                                bgColor = 'bg-teal-100';
-                                                textColor = 'text-teal-600';
-                                                displayStatus = 'Llegada al punto';
-                                                break;
-                                            case 'STARTED':
-                                                bgColor = 'bg-slate-100';
-                                                textColor = 'text-slate-600';
-                                                displayStatus = 'Inicio del servicio';
-                                                break;
-                                            case 'ON_CLIENT':
-                                                bgColor = 'bg-purple-100';
-                                                textColor = 'text-purple-600';
-                                                displayStatus = 'Llegada al cliente';
-                                                break;
-                                            case 'BACK_FROM_CLIENT':
-                                                bgColor = 'bg-cyan-100';
-                                                textColor = 'text-cyan-600';
-                                                displayStatus = 'Retorno del cliente';
-                                                break;
-                                        }
-
-                                        return (
-                                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${bgColor} ${textColor}`}>
-                                                {displayStatus}
-                                            </span>
-                                        );
-                                    }
-                                }
-                            ]}
-                            onEdit={handleEdit}
-                            onDelete={()=>{}}
-                            loading={loading}
-                            initialSortConfig={initialSortConfig}
-                        />
-                    )}
+                {/* Dashboard Stats - En Ruta */}
+                <div>
+                    <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        {seguimiento.map((stat) => (
+                            <div key={stat.label} className="bg-white p-4 rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                                <div className="flex items-center">
+                                    <div className={`p-3 rounded-full ${stat.bgColor} mr-4`}>
+                                        <stat.icon className={`h-6 w-6 ${stat.color}`} />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">{stat.label}</p>
+                                        <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
-            
+
+            {/* Schedule form modal */}
+            <ScheduleFormModal
+                show={showForm}
+                onClose={handleFormCancel}
+                onSubmit={handleFormSubmit}
+                formData={formData}
+                setFormData={setFormData}
+                editingSchedule={editingSchedule}
+            />
+
+            {/* Schedule header with add button */}
+
+            {/* Error notification */}
+            {error && (
+                <Notification
+                    type="error"
+                    message={error}
+                    onClose={() => setError(null)}
+                />
+            )}
+
+            {/* DataTable Content */}
+            <div className="space-y-6">
+                {loading ? (
+                    <div className="flex justify-center p-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                    </div>
+                ) : (
+                    <DataTable
+                        data={filteredSchedules}
+                        columns={[
+                            {
+                                key: 'startTime',
+                                label: t('schedule.departure'),
+                                render: (schedule: Schedule) => (
+                                    <span>{new Date(schedule.startTime).toLocaleString()}</span>
+                                )
+                            },
+                            {
+                                key: 'clientId',
+                                label: t('schedule.client'),
+                                render: (schedule: Schedule) => {
+                                    const client = clients.find(c => c.id === schedule.clientId);
+                                    return <span>{client?.name || 'N/A'}</span>;
+                                }
+                            },
+                            {
+                                key: 'destination',
+                                label: t('schedule.destination'),
+                                render: (schedule: Schedule) => <span>{schedule.destination || 'N/A'}</span>
+                            },
+                            {
+                                key: 'plate',
+                                label: t('schedule.plate'),
+                                render: (schedule: Schedule) => <span>{schedule.plate || 'N/A'}</span>
+                            },
+                            {
+                                key: 'driverId',
+                                label: t('schedule.driver'),
+                                render: (schedule: Schedule) => {
+                                    const driver = drivers.find(d => d.id === schedule.driverId);
+                                    return <span>{driver ? `${driver.firstName} ${driver.lastName}` : 'N/A'}</span>;
+                                }
+                            },
+                            {
+                                key: 'endTime',
+                                label: t('schedule.endTime'),
+                                render: (schedule: Schedule) => (
+                                    <span>{schedule.endTime ? new Date(schedule.endTime).toLocaleString() : 'N/A'}</span>
+                                )
+                            },
+                            {
+                                key: 'zone',
+                                label: t('schedule.area'),
+                                render: (schedule: Schedule) => <span>{schedule.zone || 'N/A'}</span>
+                            },
+                            {
+                                key: 'status',
+                                label: t('schedule.status'),
+                                render: (schedule: Schedule) => getStatusBadge(schedule.status)
+                            }
+                        ]}
+                        onEdit={handleEdit}
+                        onDelete={()=>{}}
+                        loading={loading}
+                        initialSortConfig={initialSortConfig}
+                    />
+                )}
+            </div>
             {/* Floating Add Button */}
             <button
                 onClick={handleAdd}
@@ -1115,18 +1121,18 @@ function ProgramacionTab() {
             >
                 {/* Animated background effect */}
                 <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
-                
+
                 {/* Shine effect */}
                 <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
-                
+
                 {/* Button content */}
                 <PlusIcon className="h-6 w-6 text-white relative z-10" />
-                
+
                 {/* Tooltip on hover */}
                 <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
                     Add Schedule
                 </span>
             </button>
-        </Layout>
+        </div>
     );
 }

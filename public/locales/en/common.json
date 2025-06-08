@@ -1,0 +1,57 @@
+{
+  "AppName": "Fleet Manager",
+  "navigation": {
+    "home": "Home",
+    "vehicles": "Vehicles",
+    "schedule": "Schedule",
+    "drivers": "Drivers",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "overview": "Overview",
+    "welcome": "Welcome to Fleet Management",
+    "subtitle": "Your comprehensive solution for efficient fleet operations management",
+    "totalVehicles": "Total Vehicles",
+    "totalDrivers": "Total Drivers",
+    "totalSchedules": "Total Schedules",
+    "totalClients": "Total Clients",
+    "vehicles": "vehicles",
+    "drivers": "drivers",
+    "schedules": "schedules",
+    "clients": "clients"
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "viewAll": "View all",
+    "search": "Search...",
+    "noResults": "No results found",
+    "error": "An error occurred"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "manageClients": "Manage Clients",
+    "manageClientsDesc": "View and manage all client information",
+    "manageDrivers": "Manage Drivers",
+    "manageDriversDesc": "View and manage driver information",
+    "scheduleTrip": "Schedule Trip",
+    "scheduleTripDesc": "Create a new trip schedule",
+    "manageFleet": "Manage Fleet",
+    "manageFleetDesc": "View and manage your vehicle fleet"
+  },
+  "breadcrumb": {
+    "dashboard": "Dashboard",
+    "vehicles": "Vehicles",
+    "drivers": "Drivers",
+    "schedules": "Schedules",
+    "clients": "Clients",
+    "reports": "Reports",
+    "settings": "Settings"
+  }
+}

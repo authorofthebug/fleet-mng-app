@@ -8,10 +8,10 @@ export default function Breadcrumb() {
 
     const friendlyNames: Record<string, string> = {
         schedule: "Programación",
-        agency: "Agencias",
-        client: "Clients",
-        driver: "Drivers",
-        vehicle: "Vehicles",
+        client: "Cliente",
+        driver: "Conductor",
+        vehicle: "Vehículo",
+        "generic-types": "Catálogo",
         // Add more as needed
     };
 
@@ -24,7 +24,7 @@ export default function Breadcrumb() {
                         className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
                     >
                         <HomeIcon className="w-4 h-4 mr-2" />
-                        Home
+                        Inicio
                     </Link>
                 </li>
                 
