@@ -8,9 +8,7 @@ import {
   UserIcon,
   UserGroupIcon,
   CalendarDaysIcon,
-  ChartBarIcon,
-  BellAlertIcon,
-  ArrowTrendingUpIcon
+
 } from '@heroicons/react/24/outline';
 import { vehicleService, Vehicle } from "@/lib/api/vehicle";
 import { driverService, Driver } from "@/lib/api/driver";

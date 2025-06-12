@@ -13,11 +13,11 @@ interface Vehicle {
 
 interface VehicleFormProps {
   vehicle?: Vehicle;
-  onSubmit: (vehicle: Omit<Vehicle, 'id'>) => void;
-  onCancel: () => void;
+  onSubmitAction: (vehicle: Omit<Vehicle, 'id'>) => void;
+  onCancelAction: () => void;
 }
 
-export default function VehicleForm({ vehicle, onSubmit, onCancel }: VehicleFormProps) {
+export default function VehicleForm({ vehicle, onSubmitAction, onCancelAction }: VehicleFormProps) {
   const [formData, setFormData] = useState<Omit<Vehicle, 'id'>>({
     plateNumber: '',
     make: '',
@@ -40,7 +40,7 @@ export default function VehicleForm({ vehicle, onSubmit, onCancel }: VehicleForm
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmitAction(formData);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -136,7 +136,7 @@ export default function VehicleForm({ vehicle, onSubmit, onCancel }: VehicleForm
       <div className="flex justify-end space-x-3">
         <button
           type="button"
-          onClick={onCancel}
+          onClick={onCancelAction}
           className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
         >
           Cancel

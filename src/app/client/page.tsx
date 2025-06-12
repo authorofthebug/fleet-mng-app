@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from '@/hooks/use-translation';
-import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
 import Notification from '@/components/common/Notification';
 import { clientService, Client } from '@/lib/api/client';
@@ -264,7 +263,7 @@ export default function ClientPage() {
     setShowForm(true);
   };
 
-  const handleDelete = async (id: string) => {
+  /*const handleDelete = async (id: string) => {
     if (window.confirm(t('client.deleteConfirm'))) {
       try {
         setError(null);
@@ -280,7 +279,7 @@ export default function ClientPage() {
         setError(errorMessage);
       }
     }
-  };
+  };*/
 
   const handleAdd = () => {
     setEditingClient(null);

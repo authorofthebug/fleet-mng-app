@@ -25,7 +25,6 @@ import { clientService, Client } from "@/lib/api/client";
 import { vehicleService, Vehicle } from "@/lib/api/vehicle";
 import Notification from "@/components/common/Notification";
 import DataTable from "@/components/common/DataTable";
-import Layout from '@/components/layout/Layout';
 import InputConSugerencias from '@/components/InputConSugerencias';
 import {Driver, driverService} from "@/lib/api/driver";
 import {Parameter, parameterService} from "@/lib/api/parameter";

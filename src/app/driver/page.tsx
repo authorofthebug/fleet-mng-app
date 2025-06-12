@@ -2,11 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from '@/hooks/use-translation';
-import Layout from '@/components/layout/Layout';
 import DataTable from '@/components/common/DataTable';
-import Notification from '@/components/common/Notification';
 import { driverService, Driver } from '@/lib/api/driver';
-import { UserIcon, UserGroupIcon, PlusIcon, PencilSquareIcon, UserCircleIcon, TrashIcon } from '@heroicons/react/24/outline';
+import { UserIcon, UserGroupIcon, PlusIcon, PencilSquareIcon, UserCircleIcon } from '@heroicons/react/24/outline';
 import { useSidebarWidth } from '@/hooks/useSidebarWidth';
 
 // Interface for driver form data
@@ -17,7 +15,7 @@ interface DriverFormData {
   licenseNumber: string;
   phone: string;
   email: string;
-  status: 'ACTIVE' | 'INACTIVE';
+  status: string;
 }
 
 // Interface for driver stats
@@ -54,8 +52,6 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
   onSubmit,
   formData,
   setFormData,
-  loading = false,
-  error,
 }) => {
   const { t } = useTranslation();
   if (!show) return null;
@@ -234,8 +230,8 @@ const DriverPage: React.FC = () => {
   });
   
   // Add search and filter state
-  const [searchText, setSearchText] = useState<string>('');
-  const [statusFilter, setStatusFilter] = useState<string>('');
+  const [searchText] = useState<string>('');
+  const [statusFilter] = useState<string>('');
   const [filteredDrivers, setFilteredDrivers] = useState<Driver[]>([]);
   
   // Load drivers on component mount
@@ -297,7 +293,7 @@ const DriverPage: React.FC = () => {
   };
   
   // Handle delete button click
-  const handleDelete = async (id: string) => {
+  /*const handleDelete = async (id: string) => {
     if (window.confirm(t('driver.deleteConfirm'))) {
       try {
         setLoading(true);
@@ -311,7 +307,7 @@ const DriverPage: React.FC = () => {
         setLoading(false);
       }
     }
-  };
+  };*/
   
   // Handle add new driver button click
   const handleAdd = () => {

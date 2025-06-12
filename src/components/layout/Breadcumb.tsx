@@ -4,6 +4,9 @@ import { ChevronRightIcon, HomeIcon } from '@heroicons/react/24/solid';
 
 export default function Breadcrumb() {
     const pathname = usePathname();
+    if (!pathname) {
+        return null; // or some fallback UI
+    }
     const segments = pathname.split("/").filter(Boolean);
 
     const friendlyNames: Record<string, string> = {
