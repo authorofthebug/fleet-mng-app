@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, ReactNode } from 'react';
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -15,8 +15,8 @@ import {
 
 export interface Column<T> {
   key: keyof T | string;
-  label: string;
-  render?: (item: T) => React.ReactNode;
+  label: string | ReactNode;
+  render?: (item: T) => ReactNode;
 }
 
 interface DataTableProps<T> {
@@ -27,6 +27,7 @@ interface DataTableProps<T> {
   onDelete?: (id: string | number | Promise<void> | void) => void;
   onAdd?: () => void;
   itemsPerPage?: number;
+  datePicker?: ReactNode;
   initialSortConfig?: {
     key: keyof T | string;
     direction: 'asc' | 'desc';
@@ -40,6 +41,7 @@ export default function DataTable<T extends { id: number | string }>({
   onDelete,
   onAdd,
   itemsPerPage = 10,
+  datePicker,
   initialSortConfig = null,
 }: DataTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -116,18 +118,27 @@ export default function DataTable<T extends { id: number | string }>({
       <div className="px-4 py-5 sm:p-6">
         {/* Table Controls */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-          {/* Search */}
-          <div className="relative w-full md:w-64">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            {/* Search */}
+            <div className="relative flex-1 md:w-64">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="text"
+                className="block w-full pl-10 pr-3 py-2 border border-blue-200 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-150 hover:bg-white focus:bg-white"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
             </div>
-            <input
-              type="text"
-              className="block w-full pl-10 pr-3 py-2 border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm placeholder-gray-400 bg-blue-50/30 transition-all duration-150 hover:bg-white focus:bg-white"
-              placeholder="Search..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+            
+            {/* Date Picker */}
+            {datePicker && (
+              <div className="relative">
+                {datePicker}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center justify-between w-full md:w-auto gap-4">

@@ -57,6 +57,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
   loading = false,
   error,
 }) => {
+  const { t } = useTranslation();
   if (!show) return null;
 
   return (
@@ -77,7 +78,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
           <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">
-                {formData.id ? 'Edit Driver' : 'Add New Driver'}
+                {formData.id ? t('driver.editDriver') : t('driver.addDriver')}
               </h2>
               <button
                 onClick={onClose}
@@ -94,7 +95,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex flex-col">
                     <label htmlFor="firstName" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      First Name
+                      {t('driver.firstName')}
                     </label>
                     <input
                       type="text"
@@ -108,7 +109,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="lastName" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Last Name
+                      {t('driver.lastName')}
                     </label>
                     <input
                       type="text"
@@ -122,7 +123,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="licenseNumber" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      License Number
+                      {t('driver.licenseNumber')}
                     </label>
                     <input
                       type="text"
@@ -136,7 +137,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="phone" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Phone
+                      {t('driver.phone')}
                     </label>
                     <input
                       type="tel"
@@ -150,7 +151,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="email" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
+                      {t('driver.email')}
                     </label>
                     <input
                       type="email"
@@ -164,7 +165,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
 
                   <div className="flex flex-col">
                     <label htmlFor="status" className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
+                      {t('driver.status')}
                     </label>
                     <select
                       id="status"
@@ -173,8 +174,8 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
                       className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                       required
                     >
-                      <option value="ACTIVE" className="text-green-600">Active</option>
-                      <option value="INACTIVE" className="text-red-600">Inactive</option>
+                      <option value="ACTIVE" className="text-green-600">{t('driver.statusActive')}</option>
+                      <option value="INACTIVE" className="text-red-600">{t('driver.statusInactive')}</option>
                     </select>
                   </div>
                 </div>
@@ -185,7 +186,7 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
                     onClick={onClose}
                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
@@ -194,12 +195,12 @@ const DriverFormModal: React.FC<DriverFormModalProps> = ({
                     {formData.id ? (
                       <>
                         <PencilSquareIcon className="h-5 w-5 mr-2" />
-                        Update
+                        {t('common.update')}
                       </>
                     ) : (
                       <>
                         <PlusIcon className="h-5 w-5 mr-2" />
-                        Create
+                        {t('common.create')}
                       </>
                     )}
                   </button>
@@ -439,17 +440,30 @@ const DriverPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-        {/* Header with title and add button */}
+        {/* Header with title */}
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-gray-900">{t('driver.title')}</h1>
-          <button
-            onClick={handleAdd}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            <PlusIcon className="-ml-1 mr-2 h-5 w-5" />
-            {t('driver.addDriver')}
-          </button>
         </div>
+        
+        {/* Floating Add Button */}
+        <button
+          onClick={handleAdd}
+          className="fixed bottom-8 right-8 z-50 flex items-center justify-center w-14 h-14 rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition-all duration-300 hover:scale-110 group"
+        >
+          {/* Animated background effect */}
+          <span className="absolute inset-0 w-full h-full rounded-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-700 opacity-0 group-hover:opacity-100 group-hover:animate-gradient-x transition-opacity"></span>
+
+          {/* Shine effect */}
+          <span className="absolute top-0 left-0 w-full h-full rounded-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000"></span>
+
+          {/* Button content */}
+          <PlusIcon className="h-6 w-6 text-white relative z-10" />
+
+          {/* Tooltip on hover */}
+          <span className="absolute right-full mr-3 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+            {t('driver.addDriver')}
+          </span>
+        </button>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">

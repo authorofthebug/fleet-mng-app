@@ -32,6 +32,7 @@ const VehicleFormModal = ({
   setFormData: React.Dispatch<React.SetStateAction<Vehicle>>;
   editingVehicle: Vehicle | null;
 }) => {
+  const { t } = useTranslation();
   if (!show) return null;
 
   // Get the sidebar width - could be 16rem (expanded) or 4rem (collapsed)
@@ -54,7 +55,7 @@ const VehicleFormModal = ({
           <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
             <div className="sticky top-0 bg-white p-4 border-b flex justify-between items-center">
               <h2 className="text-xl font-semibold text-gray-900">
-                {editingVehicle ? 'Edit Vehicle' : 'Add New Vehicle'}
+                {editingVehicle ? t('vehicle.editVehicle') : t('vehicle.addVehicle')}
               </h2>
               <button
                 onClick={onClose}
@@ -70,7 +71,7 @@ const VehicleFormModal = ({
               <form onSubmit={onSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex flex-col">
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">License Plate</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('vehicle.licensePlate')}</label>
                     <input
                       type="text"
                       value={formData.licensePlate}
@@ -80,7 +81,7 @@ const VehicleFormModal = ({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Brand</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('vehicle.brand')}</label>
                     <input
                       type="text"
                       value={formData.brand}
@@ -90,7 +91,7 @@ const VehicleFormModal = ({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Model</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('vehicle.model')}</label>
                     <input
                       type="text"
                       value={formData.model}
@@ -100,7 +101,7 @@ const VehicleFormModal = ({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Year</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('vehicle.year')}</label>
                     <input
                       type="text"
                       value={formData.year}
@@ -110,7 +111,7 @@ const VehicleFormModal = ({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Color</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('vehicle.color')}</label>
                     <input
                       type="text"
                       value={formData.color}
@@ -119,23 +120,23 @@ const VehicleFormModal = ({
                     />
                   </div>
                   <div className="flex flex-col">
-                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Status</label>
+                    <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('vehicle.status')}</label>
                     <select
                       value={formData.status}
                       onChange={(e) => setFormData({ ...formData, status: e.target.value as Vehicle['status'] })}
                       className="border border-blue-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400 text-gray-700 text-sm bg-blue-50/30 transition-all duration-200 hover:bg-white focus:bg-white"
                     >
-                      <option value="NEW" className="text-sm">New</option>
-                      <option value="ACTIVE" className="text-sm">Available</option>
-                      <option value="IN_SERVICE" className="text-sm">In Service</option>
-                      <option value="IN_MAINTENANCE" className="text-sm">In Maintenance</option>
-                      <option value="WITH_ISSUE" className="text-sm">With Issue</option>
+                      <option value="NEW" className="text-sm">{t('vehicle.statusNew')}</option>
+                      <option value="ACTIVE" className="text-sm">{t('vehicle.statusActive')}</option>
+                      <option value="IN_SERVICE" className="text-sm">{t('vehicle.statusInService')}</option>
+                      <option value="IN_MAINTENANCE" className="text-sm">{t('vehicle.statusInMaintenance')}</option>
+                      <option value="WITH_ISSUE" className="text-sm">{t('vehicle.statusWithIssue')}</option>
                     </select>
                   </div>
                 </div>
 
                 <div className="flex flex-col">
-                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">Notes</label>
+                  <label className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('vehicle.notes')}</label>
                   <textarea
                     value={formData.notes}
                     onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -149,7 +150,7 @@ const VehicleFormModal = ({
                     onClick={onClose}
                     className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center"
                   >
-                    Cancel
+                    {t('common.cancel')}
                   </button>
                   <button
                     type="submit"
@@ -158,12 +159,12 @@ const VehicleFormModal = ({
                     {editingVehicle ? (
                       <>
                         <PencilSquareIcon className="h-5 w-5 mr-2" />
-                        Update
+                        {t('common.update')}
                       </>
                     ) : (
                       <>
                         <PlusIcon className="h-5 w-5 mr-2" />
-                        Create
+                        {t('common.create')}
                       </>
                     )}
                   </button>

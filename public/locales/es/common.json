@@ -175,6 +175,7 @@
   },
   "schedule": {
     "title": "Programación",
+    "selectDate": "Seleccionar fecha",
     "addSchedule": "Agregar Programación",
     "editSchedule": "Editar Programación",
     "origin": "Origen",
@@ -199,7 +200,7 @@
     "docType": "Tipo de Documento",
     "license": "Licencia",
     "folio": "Folio",
-    "licenseExpiration": "Vencimiento de Licencia",
+    "licenseExpiration": "Vencimiento de Lic.",
     "area": "Área",
     "cancel": "Cancelar",
     "update": "Actualizar",

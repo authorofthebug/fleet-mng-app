@@ -53,5 +53,8 @@
     "clients": "Clients",
     "reports": "Reports",
     "settings": "Settings"
+  },
+  "schedule": {
+    "selectDate": "Select date"
   }
 }
