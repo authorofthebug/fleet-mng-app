@@ -4,15 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="aacdc023-e3cc-4ddc-803e-7f0226c9ddae" name="Changes" comment="add i18n supper">
+    <list default="true" id="aacdc023-e3cc-4ddc-803e-7f0226c9ddae" name="Changes" comment="fix compile error">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/client/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/client/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/driver/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/driver/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/generic-types/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/generic-types/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app/schedule/page.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/app/schedule/page.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/layout/Breadcumb.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/layout/Breadcumb.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/vehicle/VehicleForm.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/vehicle/VehicleForm.tsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -120,7 +113,7 @@
       <workItem from="1749342556346" duration="2018000" />
       <workItem from="1749350672031" duration="29000" />
       <workItem from="1749350824156" duration="851000" />
-      <workItem from="1749358470302" duration="3265000" />
+      <workItem from="1749358470302" duration="4170000" />
     </task>
     <task id="LOCAL-00001" summary="crud vehicle almost complete">
       <option name="closed" value="true" />
@@ -242,7 +235,15 @@
       <option name="project" value="LOCAL" />
       <updated>1749745920426</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="fix compile error">
+      <option name="closed" value="true" />
+      <created>1749747896031</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1749747896031</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,6 +274,7 @@
     <MESSAGE value="before add features in scheduler" />
     <MESSAGE value="add fields on scheduler" />
     <MESSAGE value="add i18n supper" />
-    <option name="LAST_COMMIT_MESSAGE" value="add i18n supper" />
+    <MESSAGE value="fix compile error" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix compile error" />
   </component>
 </project>

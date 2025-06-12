@@ -88,7 +88,7 @@ const scheduleService = {
     status: 'PENDING',
     ...data
   }),
-  delete: async (id: string): Promise<void> => {}
+  //delete: async (id: string): Promise<void> => {}
 };
 
 const clientService = {
@@ -136,10 +136,10 @@ function getStatusColor(status: ScheduleStatus): string {
 
 export default function SchedulePage() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
-  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [drivers, setDrivers] = useState<Driver[]>([]);
-  const [parameters, setParameters] = useState<Parameter[]>([]);
+  const [,setClients] = useState<Client[]>([]);
+  const [,setVehicles] = useState<Vehicle[]>([]);
+  const [,setDrivers] = useState<Driver[]>([]);
+  const [,setParameters] = useState<Parameter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
